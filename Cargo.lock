@@ -1194,7 +1194,7 @@ version = "3.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "faf9468729b8cbcea668e36183cb69d317348c2e08e994829fb56ebfdfbaac34"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -2125,7 +2125,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -3285,7 +3285,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -3649,7 +3649,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-audit"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "arc-swap",
  "assert2",
@@ -3681,7 +3681,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-authz"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "bon",
@@ -3700,7 +3700,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-backup"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "async-trait",
@@ -3740,7 +3740,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-barrier"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "bytes",
@@ -3761,7 +3761,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-bench-driver"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "anyhow",
  "assert2",
@@ -3808,7 +3808,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-broker"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "apache-avro",
  "arc-swap",
@@ -4052,7 +4052,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-docgen"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "anyhow",
  "assert2",
@@ -4071,7 +4071,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-format"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "base64 0.23.1",
@@ -4105,7 +4105,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-guard"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "clap",
@@ -4143,7 +4143,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-java-regex"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "fancy-regex 0.20.0",
@@ -4155,7 +4155,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-kraft-core"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "bon",
@@ -4178,7 +4178,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-log"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "bon",
@@ -4214,7 +4214,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-log-iobench"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "bytes",
@@ -4231,7 +4231,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-logfmt"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "serde_json",
@@ -4242,7 +4242,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-macros"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "bytes",
@@ -4290,7 +4290,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-object-store"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "async-trait",
@@ -4316,7 +4316,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-parse-benches"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "bon",
@@ -4351,7 +4351,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-raft"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "async-trait",
@@ -4396,7 +4396,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-records-legacy"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "bytes",
@@ -4413,7 +4413,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-remote-storage"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "async-trait",
@@ -4460,7 +4460,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-remote-storage-topic"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "async-trait",
@@ -4495,7 +4495,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-restore"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "async-trait",
@@ -4651,7 +4651,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-telemetry"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "axum",
@@ -4686,7 +4686,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-throttle"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "derive_more",
@@ -4736,7 +4736,7 @@ dependencies = [
 
 [[package]]
 name = "krabka-verified"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "assert2",
  "bon",
@@ -6666,7 +6666,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "22505a5c94da8e3b7c2996394d1c933236c4d743e81a410bcca4e6989fc066a4"
 dependencies = [
  "bytes",
- "heck 0.4.1",
+ "heck 0.5.0",
  "itertools 0.12.1",
  "log",
  "multimap",
@@ -6872,7 +6872,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -7455,7 +7455,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -7524,7 +7524,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -8369,7 +8369,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -9340,7 +9340,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

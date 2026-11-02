@@ -23,6 +23,8 @@ publishes `krabka-log`, `krabka-verified`, `krabka-macros` and
 
 ## [Unreleased]
 
+## [1.1.6] - 2026-11-02
+
 ### Added
 
 - `aspect jepsen` runs Jepsen's Kafka workload, `jepsen.tests.kafka`, against a five-node krabka cluster in Docker containers. The harness in `tools/jepsen/` supplies the Kafka Java client, the database setup and Jepsen's combined nemesis; the workload, its generator and its checker are Jepsen's. The manifest `tools/jepsen/suite.json` crosses `assign` and `subscribe` consumers, with and without transactions, with network partitions, process kills, process pauses, packet faults and clock faults, and adds crashed clients and KIP-848's `consumer` group protocol. Containers share the host's clock, so each broker takes its wall clock from libfaketime and the clock nemesis moves that instead. An entry the machine cannot run, such as packet faults on a kernel without `netem`, is reported as skipped, or as a regression with `--no-skips`. The task writes `target/jepsen/report.md` and gives each entry one of the verdicts that `aspect kafka-system-tests` uses, plus skipped. The nightly `jepsen` lane of `ci.yml` runs the whole manifest on the release build, so it gates releases. The suite found four broker bugs, each fixed under Fixed: a retried idempotent batch appended twice, a partition that stays unavailable after an unclean-restart re-election, a transaction left open after broker kills, and committed records that no consumer read after a KIP-848 group's write failed. No entry is marked as a known failure, so any invalid entry fails the lane. [Jepsen Kafka workload](docs/jepsen.md) describes the task and the bugs.
@@ -2652,7 +2654,8 @@ robot-head/crabka.
 - An audit stamp carries the value that its freeze signature covers.
 - The release publishes the image digest that cosign signed.
 
-[Unreleased]: https://github.com/krabka-io/krabka-broker/compare/v1.1.5...HEAD
+[Unreleased]: https://github.com/krabka-io/krabka-broker/compare/v1.1.6...HEAD
+[1.1.6]: https://github.com/krabka-io/krabka-broker/releases/tag/v1.1.6
 [1.1.5]: https://github.com/krabka-io/krabka-broker/releases/tag/v1.1.5
 [1.1.4]: https://github.com/krabka-io/krabka-broker/releases/tag/v1.1.4
 [1.1.3]: https://github.com/krabka-io/krabka-broker/releases/tag/v1.1.3
