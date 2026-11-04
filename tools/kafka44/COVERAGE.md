@@ -177,3 +177,51 @@ Fresh released/enabled wire fixtures match **80cases per endpoint**:17protocol,1
 Ten scoped released/enabled copy/failure/data executions pass57.6s, including CRC/record checks and restored archive permissions. Default legacy plus enabled modern/legacy groups preserve six UUID/committed7-not-aborted42 assertions after actual owned SIGKILL/restart; enabled controller removal remains durable after crash. Repeatable released-data upgrade/candidate/old rollback passes5.4s on the exact immutable final executable. Fresh native43integration tests and two targeted library regressions pass, including all7381cleanup actor schedules in3.43s; workspace all-targets Clippy passes4m53s, production build49.57s, AXL568/32, CPD0, scripts27, formatter and diff checks pass.
 
 This closes the final combined-source rerun obligation for this bounded evidence PR, **not** full issue1969 qualification. `qualification_pass=false`; defaults and issue1970 remain unchanged, and broader six-surface/default/minimum/fault obligations above remain open.
+
+## Pending transaction process-crash continuation (2026-11-04)
+
+`PendingTransactionRecovery.java` extends the completed-transaction checks with
+unfinished v5/v6 offsets. It commits baseline7, stages42, requires invisibility,
+then resolves the original producer identity after an owned SIGKILL/restart. Both
+post-crash commit and abort are checked, with unchanged topic UUID and exact stable
+offset assertions. `aspect kafka44 --protocol-scenarios --transaction-scenarios
+--oracle-crash-recovery` runs all four cases against its immutable released oracle
+in the existing crash CI variant. The caller-owned candidate fixture never kills
+arbitrary supplied endpoints. Execution receipt:
+[`qualification/kafka44-pending-crash-20261104.json`](../../qualification/kafka44-pending-crash-20261104.json).
+
+This closes the single-node pending-offset recovery evidence gap only. It does
+not close coordinator movement, offsets-topic leader failure, mid-marker crash,
+power-loss durability, or the remaining six-surface obligations. Keep #1969 open
+and `qualification_pass=false` until those obligations have verifiable evidence.
+
+## Pending transactional offsets with real coordinator movement (2026-11-04)
+
+`qualification/kafka44-pending-movement-20261104.json` records a caller-owned
+three-node RF3/minISR2 matrix on the pinned released4.4 oracle and the immutable
+final candidate binary7c4e3aa7. Each endpoint executes v6 and legacyv5, commit and
+abort, after killing either the transaction coordinator or the group coordinator
+(the leader of that group's offsets partition). Every accepted case requires the
+selected owner endpoint to change, the original topic UUID to survive, pending42
+to remain invisible over committed7 after failure, then stable42 on commit or7
+on abort using the original producer identity. Shared ownership is recorded when
+one failure moves both roles. Exact configs, source/tree/binary identities,
+wire responses and lifecycle provisioning commands are retained.
+
+The first oracle attempt found asynchronous transaction completion returning
+`CONCURRENT_TRANSACTIONS` on reinitialization after a visible baseline commit.
+The fixture now permits a bounded, wire-recorded retry for InitProducerId only.
+An initial candidate attempt resolved after8s, shorter than the default9s broker
+failure detector, and reached the dead coordinator. It is retained as a failed
+setup, not parity evidence. Accepted candidate runs wait20s for startup, election
+and rejoin and still explicitly verify ownership and exact state. A separate
+released Admin readiness diagnostic after the first rejoin observed100/100
+internal partitions with three replicas and three ISR; it is not mislabeled as
+an orchestration precondition. See the caller-owned recipe in `README.md`.
+
+This strengthens the transaction coordinator-movement and offsets-leader-failure
+rows for pending offsets, not the other five surfaces' movement obligations. It
+does not inject a deterministic mid-marker cut or power failure, nor discharge
+the remaining default/minimum-feature/DLQ/Streams/remote-storage obligations.
+The matrix is separately provisioned, not automatically run by the single-node
+oracle CI lane. `qualification_pass=false`; #1969 must remain open.

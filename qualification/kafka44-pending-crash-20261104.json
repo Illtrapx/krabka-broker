@@ -1,0 +1,1195 @@
+{
+  "qualification_pass": false,
+  "scope": "Single-node RF1 pending transactional offset SIGKILL recovery; not coordinator movement or full six-surface qualification",
+  "candidate_revision": "6374276628d9bd1607b3bde64ee6a1e56db48a83",
+  "candidate_binary": {
+    "binary": "/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-runtime/krabka-broker",
+    "binary_sha256": "7c4e3aa7fd46b8c32a0ea076c30cd095c6476e070bd57d37a54292fcbcf78c5c"
+  },
+  "build_receipt": {
+    "source_revision": "d4890ecde31f111c21f17de6e67e866b1c04d2cb",
+    "sha256": "7c4e3aa7fd46b8c32a0ea076c30cd095c6476e070bd57d37a54292fcbcf78c5c",
+    "path": "/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-runtime/krabka-broker",
+    "source_trees": {
+      "crates/broker": "787adc2e68c1e5d5e1e0b7af2ac4d6a75fd06213",
+      "crates/verified": "45d6fefe1af5d6e89db7cac9685848be2aed55c9",
+      "crates/raft": "823abe060b84580397e8c8cef5469845b80102e0"
+    },
+    "production_build": "CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS=2 cargo build -p krabka-broker --bin krabka-broker",
+    "build_complete_before_copy": true,
+    "copy_after_all_native_test_linking": true
+  },
+  "current_main_source_trees": {
+    "crates/broker": "787adc2e68c1e5d5e1e0b7af2ac4d6a75fd06213",
+    "crates/raft": "823abe060b84580397e8c8cef5469845b80102e0",
+    "crates/verified": "45d6fefe1af5d6e89db7cac9685848be2aed55c9"
+  },
+  "fixture_sha256": {
+    "tools/kafka44/PendingTransactionRecovery.java": "52667355b26d9b425190fb5103af2747b117c2af8ee44ea6f4512ec7818d6069",
+    "tools/kafka44/TransactionScenarios.java": "96706fce1e61d48cd8a76ea5777e7961f6d54ac0c78c6bfe77bbbc45bbf16a90",
+    "tools/kafka44/ProtocolScenarios.java": "182f4eae3728475289b0255614af76a61f0f501c784afaf938ef6ead7f964dbe",
+    ".aspect/kafka44.axl": "d77a42a7c9b5e3fefa38a443c7aa16262a91469609816156dd05557dd1ae3ad6"
+  },
+  "oracle_image": "apache/kafka:4.4.0@sha256:76af3d0116abbb33b4cd964af410d4921c33d1f663e7a95d5453a9c35a84869b",
+  "checks": {
+    "oracle_collector": "exit0,31.3s, four pending transactions added to existing crash lane",
+    "axl_tests": "568 passed across32 suites",
+    "format": "passed",
+    "javac": "--release17 against immutable released4.4 image jars",
+    "check_scripts": "passed",
+    "git_diff_check": "passed"
+  },
+  "paired_enabled": [
+    {
+      "command": [
+        "docker",
+        "run",
+        "-d",
+        "--network",
+        "host",
+        "--name",
+        "qualification-pending-1969-final",
+        "-e",
+        "KAFKA_NODE_ID=1",
+        "-e",
+        "KAFKA_PROCESS_ROLES=broker,controller",
+        "-e",
+        "KAFKA_LISTENERS=PLAINTEXT://:63492,CONTROLLER://:63493",
+        "-e",
+        "KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:63492",
+        "-e",
+        "KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER",
+        "-e",
+        "KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT",
+        "-e",
+        "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT",
+        "-e",
+        "KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:63493",
+        "-e",
+        "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1",
+        "-e",
+        "KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1",
+        "-e",
+        "KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1",
+        "-e",
+        "CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk",
+        "apache/kafka:4.4.0@sha256:76af3d0116abbb33b4cd964af410d4921c33d1f663e7a95d5453a9c35a84869b"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "/home/matt/.openclaw/workspace/coordinator/.private/kafka44-1969/target/debug/krabka-format",
+        "--log-dir",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104/data",
+        "--node-id",
+        "1",
+        "--release-version",
+        "4.4-IV2",
+        "--unstable-feature-versions-enable",
+        "--standalone",
+        "--controller-listener",
+        "127.0.0.1:63593"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63492",
+        "modern"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-6b0e791d-fa00-423d-b33f-ec39868124b4\tkafka44-pending-group-6b0e791d-fa00-423d-b33f-ec39868124b4\tyS7DwcwLQs2DDfJm_KjPoQ\tkafka44-pending-txn-6b0e791d-fa00-423d-b33f-ec39868124b4\t0\t2"
+      ]
+    },
+    {
+      "command": [
+        "docker",
+        "kill",
+        "--signal",
+        "KILL",
+        "qualification-pending-1969-final"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "docker",
+        "start",
+        "qualification-pending-1969-final"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63492",
+        "kafka44-pending-6b0e791d-fa00-423d-b33f-ec39868124b4",
+        "kafka44-pending-group-6b0e791d-fa00-423d-b33f-ec39868124b4",
+        "yS7DwcwLQs2DDfJm_KjPoQ",
+        "kafka44-pending-txn-6b0e791d-fa00-423d-b33f-ec39868124b4",
+        "0",
+        "2",
+        "commit"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-commit\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63492",
+        "modern"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-ac838995-03b5-41a8-9883-45cbeb04cf8b\tkafka44-pending-group-ac838995-03b5-41a8-9883-45cbeb04cf8b\tHJJw0NtgTyaFDS70P1YC1Q\tkafka44-pending-txn-ac838995-03b5-41a8-9883-45cbeb04cf8b\t1000\t2"
+      ]
+    },
+    {
+      "command": [
+        "docker",
+        "kill",
+        "--signal",
+        "KILL",
+        "qualification-pending-1969-final"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "docker",
+        "start",
+        "qualification-pending-1969-final"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63492",
+        "kafka44-pending-ac838995-03b5-41a8-9883-45cbeb04cf8b",
+        "kafka44-pending-group-ac838995-03b5-41a8-9883-45cbeb04cf8b",
+        "HJJw0NtgTyaFDS70P1YC1Q",
+        "kafka44-pending-txn-ac838995-03b5-41a8-9883-45cbeb04cf8b",
+        "1000",
+        "2",
+        "abort"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-abort\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63492",
+        "legacy"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-2a9214c3-b66e-4b7a-bed9-1e4b050893cf\tkafka44-pending-group-2a9214c3-b66e-4b7a-bed9-1e4b050893cf\tlf90jk_GRdqUZRh_gXNQtg\tkafka44-pending-txn-2a9214c3-b66e-4b7a-bed9-1e4b050893cf\t2000\t2"
+      ]
+    },
+    {
+      "command": [
+        "docker",
+        "kill",
+        "--signal",
+        "KILL",
+        "qualification-pending-1969-final"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "docker",
+        "start",
+        "qualification-pending-1969-final"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63492",
+        "kafka44-pending-2a9214c3-b66e-4b7a-bed9-1e4b050893cf",
+        "kafka44-pending-group-2a9214c3-b66e-4b7a-bed9-1e4b050893cf",
+        "lf90jk_GRdqUZRh_gXNQtg",
+        "kafka44-pending-txn-2a9214c3-b66e-4b7a-bed9-1e4b050893cf",
+        "2000",
+        "2",
+        "commit"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-commit\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63492",
+        "legacy"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-7669fe46-2352-4abf-91f1-b216224e1362\tkafka44-pending-group-7669fe46-2352-4abf-91f1-b216224e1362\t4MZoTJwGQWeTMvPLZKxlEw\tkafka44-pending-txn-7669fe46-2352-4abf-91f1-b216224e1362\t3000\t2"
+      ]
+    },
+    {
+      "command": [
+        "docker",
+        "kill",
+        "--signal",
+        "KILL",
+        "qualification-pending-1969-final"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "docker",
+        "start",
+        "qualification-pending-1969-final"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63492",
+        "kafka44-pending-7669fe46-2352-4abf-91f1-b216224e1362",
+        "kafka44-pending-group-7669fe46-2352-4abf-91f1-b216224e1362",
+        "4MZoTJwGQWeTMvPLZKxlEw",
+        "kafka44-pending-txn-7669fe46-2352-4abf-91f1-b216224e1362",
+        "3000",
+        "2",
+        "abort"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-abort\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63592",
+        "modern"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-4100ebae-cf41-4cc4-bfc5-55400712d61a\tkafka44-pending-group-4100ebae-cf41-4cc4-bfc5-55400712d61a\tpbfceVEkT2aXQVEoPxtO0w\tkafka44-pending-txn-4100ebae-cf41-4cc4-bfc5-55400712d61a\t0\t2"
+      ]
+    },
+    {
+      "owned_candidate_sigkill_exit": -9
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63592",
+        "kafka44-pending-4100ebae-cf41-4cc4-bfc5-55400712d61a",
+        "kafka44-pending-group-4100ebae-cf41-4cc4-bfc5-55400712d61a",
+        "pbfceVEkT2aXQVEoPxtO0w",
+        "kafka44-pending-txn-4100ebae-cf41-4cc4-bfc5-55400712d61a",
+        "0",
+        "2",
+        "commit"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-commit\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63592",
+        "modern"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-77084c07-42a6-4bd3-85c7-c41f49a3f650\tkafka44-pending-group-77084c07-42a6-4bd3-85c7-c41f49a3f650\tHZl78RZpRgG1W0Nv5xXgZg\tkafka44-pending-txn-77084c07-42a6-4bd3-85c7-c41f49a3f650\t1000\t2"
+      ]
+    },
+    {
+      "owned_candidate_sigkill_exit": -9
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63592",
+        "kafka44-pending-77084c07-42a6-4bd3-85c7-c41f49a3f650",
+        "kafka44-pending-group-77084c07-42a6-4bd3-85c7-c41f49a3f650",
+        "HZl78RZpRgG1W0Nv5xXgZg",
+        "kafka44-pending-txn-77084c07-42a6-4bd3-85c7-c41f49a3f650",
+        "1000",
+        "2",
+        "abort"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-abort\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63592",
+        "legacy"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-55fbeb34-39a7-4be6-bd9c-6b66cb4b2841\tkafka44-pending-group-55fbeb34-39a7-4be6-bd9c-6b66cb4b2841\tc7OMWn2BQC2NfCO42hZr4Q\tkafka44-pending-txn-55fbeb34-39a7-4be6-bd9c-6b66cb4b2841\t2000\t2"
+      ]
+    },
+    {
+      "owned_candidate_sigkill_exit": -9
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63592",
+        "kafka44-pending-55fbeb34-39a7-4be6-bd9c-6b66cb4b2841",
+        "kafka44-pending-group-55fbeb34-39a7-4be6-bd9c-6b66cb4b2841",
+        "c7OMWn2BQC2NfCO42hZr4Q",
+        "kafka44-pending-txn-55fbeb34-39a7-4be6-bd9c-6b66cb4b2841",
+        "2000",
+        "2",
+        "commit"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-commit\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63592",
+        "legacy"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-b94cd6d3-29f2-449d-8d70-e120c60be60e\tkafka44-pending-group-b94cd6d3-29f2-449d-8d70-e120c60be60e\tbbDEiGfJQ0SZDU1zDaGHaA\tkafka44-pending-txn-b94cd6d3-29f2-449d-8d70-e120c60be60e\t3000\t2"
+      ]
+    },
+    {
+      "owned_candidate_sigkill_exit": -9
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63592",
+        "kafka44-pending-b94cd6d3-29f2-449d-8d70-e120c60be60e",
+        "kafka44-pending-group-b94cd6d3-29f2-449d-8d70-e120c60be60e",
+        "bbDEiGfJQ0SZDU1zDaGHaA",
+        "kafka44-pending-txn-b94cd6d3-29f2-449d-8d70-e120c60be60e",
+        "3000",
+        "2",
+        "abort"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-abort\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "docker",
+        "stop",
+        "qualification-pending-1969-final"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    }
+  ],
+  "paired_default_legacy": [
+    {
+      "command": [
+        "docker",
+        "run",
+        "-d",
+        "--network",
+        "host",
+        "--name",
+        "qualification-pending-1969-default",
+        "-e",
+        "KAFKA_NODE_ID=1",
+        "-e",
+        "KAFKA_PROCESS_ROLES=broker,controller",
+        "-e",
+        "KAFKA_LISTENERS=PLAINTEXT://:63692,CONTROLLER://:63693",
+        "-e",
+        "KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:63692",
+        "-e",
+        "KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER",
+        "-e",
+        "KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT",
+        "-e",
+        "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT",
+        "-e",
+        "KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:63693",
+        "-e",
+        "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1",
+        "-e",
+        "KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1",
+        "-e",
+        "KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1",
+        "-e",
+        "CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk",
+        "apache/kafka:4.4.0@sha256:76af3d0116abbb33b4cd964af410d4921c33d1f663e7a95d5453a9c35a84869b"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "/home/matt/.openclaw/workspace/coordinator/.private/kafka44-1969/target/debug/krabka-format",
+        "--log-dir",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104/data",
+        "--node-id",
+        "1",
+        "--release-version",
+        "4.3-IV0",
+        "--unstable-feature-versions-enable",
+        "--standalone",
+        "--controller-listener",
+        "127.0.0.1:63793"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63692",
+        "legacy"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-27eba7d4-e138-4bae-9557-91105d8bf920\tkafka44-pending-group-27eba7d4-e138-4bae-9557-91105d8bf920\tfd0lw9nCQa6HJU2FwqBvqw\tkafka44-pending-txn-27eba7d4-e138-4bae-9557-91105d8bf920\t0\t2"
+      ]
+    },
+    {
+      "command": [
+        "docker",
+        "kill",
+        "--signal",
+        "KILL",
+        "qualification-pending-1969-default"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "docker",
+        "start",
+        "qualification-pending-1969-default"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63692",
+        "kafka44-pending-27eba7d4-e138-4bae-9557-91105d8bf920",
+        "kafka44-pending-group-27eba7d4-e138-4bae-9557-91105d8bf920",
+        "fd0lw9nCQa6HJU2FwqBvqw",
+        "kafka44-pending-txn-27eba7d4-e138-4bae-9557-91105d8bf920",
+        "0",
+        "2",
+        "commit"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-commit\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63692",
+        "legacy"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-af09b664-0db5-4245-b66d-7fea3aed90a2\tkafka44-pending-group-af09b664-0db5-4245-b66d-7fea3aed90a2\th5XS638zSP6NnRrH0mseTA\tkafka44-pending-txn-af09b664-0db5-4245-b66d-7fea3aed90a2\t1000\t2"
+      ]
+    },
+    {
+      "command": [
+        "docker",
+        "kill",
+        "--signal",
+        "KILL",
+        "qualification-pending-1969-default"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "docker",
+        "start",
+        "qualification-pending-1969-default"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63692",
+        "kafka44-pending-af09b664-0db5-4245-b66d-7fea3aed90a2",
+        "kafka44-pending-group-af09b664-0db5-4245-b66d-7fea3aed90a2",
+        "h5XS638zSP6NnRrH0mseTA",
+        "kafka44-pending-txn-af09b664-0db5-4245-b66d-7fea3aed90a2",
+        "1000",
+        "2",
+        "abort"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-abort\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63792",
+        "legacy"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-c491f0fd-08f9-4aec-b01e-1f0584ad5a11\tkafka44-pending-group-c491f0fd-08f9-4aec-b01e-1f0584ad5a11\tgwut6r7fTb6AT73A8dZAqg\tkafka44-pending-txn-c491f0fd-08f9-4aec-b01e-1f0584ad5a11\t0\t2"
+      ]
+    },
+    {
+      "owned_candidate_sigkill_exit": -9
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63792",
+        "kafka44-pending-c491f0fd-08f9-4aec-b01e-1f0584ad5a11",
+        "kafka44-pending-group-c491f0fd-08f9-4aec-b01e-1f0584ad5a11",
+        "gwut6r7fTb6AT73A8dZAqg",
+        "kafka44-pending-txn-c491f0fd-08f9-4aec-b01e-1f0584ad5a11",
+        "0",
+        "2",
+        "commit"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-commit\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "seed",
+        "localhost:63792",
+        "legacy"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-group-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tbaseline-offset\t{NONE=1}",
+        "SCENARIO\tbaseline-commit\t{NONE=1}",
+        "SCENARIO\tbaseline-visible\tPASS",
+        "SCENARIO\tpending-init\t{NONE=1}",
+        "SCENARIO\tpending-offset\t{NONE=1}",
+        "SCENARIO\tpending-invisible-before-crash\tPASS"
+      ],
+      "pending_identity": [
+        "PENDING\tkafka44-pending-f1cd1ac5-78bb-42d6-8571-8f6dd55fad20\tkafka44-pending-group-f1cd1ac5-78bb-42d6-8571-8f6dd55fad20\tG7NB2hZ8ReGP_7os7xderg\tkafka44-pending-txn-f1cd1ac5-78bb-42d6-8571-8f6dd55fad20\t1000\t2"
+      ]
+    },
+    {
+      "owned_candidate_sigkill_exit": -9
+    },
+    {
+      "command": [
+        "java",
+        "-cp",
+        "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104:/home/matt/.openclaw/workspace/coordinator/.private/qualification-20261104-final/final-collection-ready/libs/*",
+        "PendingTransactionRecovery",
+        "resolve",
+        "localhost:63792",
+        "kafka44-pending-f1cd1ac5-78bb-42d6-8571-8f6dd55fad20",
+        "kafka44-pending-group-f1cd1ac5-78bb-42d6-8571-8f6dd55fad20",
+        "G7NB2hZ8ReGP_7os7xderg",
+        "kafka44-pending-txn-f1cd1ac5-78bb-42d6-8571-8f6dd55fad20",
+        "1000",
+        "2",
+        "abort"
+      ],
+      "exit": 0,
+      "scenarios": [
+        "SCENARIO\tpending-crash-topic-id\tPASS",
+        "SCENARIO\tpending-invisible-after-crash\tPASS",
+        "SCENARIO\trecovered-txn-coordinator\t{NONE=1}",
+        "SCENARIO\tpending-resolve-abort\t{NONE=1}",
+        "SCENARIO\tpending-resolution-visible\tPASS"
+      ],
+      "pending_identity": []
+    },
+    {
+      "command": [
+        "docker",
+        "stop",
+        "qualification-pending-1969-default"
+      ],
+      "exit": 0,
+      "scenarios": [],
+      "pending_identity": []
+    }
+  ],
+  "oracle_ci": {
+    "pending_fixture_sha256": "sha256:52667355b26d9b425190fb5103af2747b117c2af8ee44ea6f4512ec7818d6069",
+    "pending_before_crash": {
+      "modern-commit": {
+        "command": [
+          "timeout",
+          "120",
+          "docker",
+          "exec",
+          "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci",
+          "java",
+          "-cp",
+          "/opt/kafka/libs/*:/opt/kafka/kafka44classes",
+          "PendingTransactionRecovery",
+          "seed",
+          "localhost:9092",
+          "modern"
+        ],
+        "returncode": 0,
+        "stdout": "WIRE\tpending-group-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-group-82f265a8-1917-454d-afef-a5f6706273bf', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\tpending-group-coordinator\t{NONE=1}\nWIRE\tpending-txn-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-txn-82f265a8-1917-454d-afef-a5f6706273bf', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\tpending-txn-coordinator\t{NONE=1}\nWIRE\tpending-init\tINIT_PRODUCER_ID/v5\tattempt=0\tInitProducerIdResponseData(throttleTimeMs=0, errorCode=0, producerId=4, producerEpoch=0, ongoingTxnProducerId=-1, ongoingTxnProducerEpoch=-1)\nSCENARIO\tpending-init\t{NONE=1}\nWIRE\tbaseline-offset\tTXN_OFFSET_COMMIT/v6\tattempt=0\tTxnOffsetCommitResponseData(throttleTimeMs=0, topics=[TxnOffsetCommitResponseTopic(name='', topicId=7Y8wqeKBSei5tlda7Xk4YQ, partitions=[TxnOffsetCommitResponsePartition(partitionIndex=0, errorCode=0)])])\nSCENARIO\tbaseline-offset\t{NONE=1}\nWIRE\tbaseline-commit\tEND_TXN/v5\tattempt=0\tEndTxnResponseData(throttleTimeMs=0, errorCode=0, producerId=4, producerEpoch=1)\nSCENARIO\tbaseline-commit\t{NONE=1}\nOBSERVATION\tbaseline-visible\t7\tstable=true\tattempt=0\nSCENARIO\tbaseline-visible\tPASS\nWIRE\tpending-init\tINIT_PRODUCER_ID/v5\tattempt=0\tInitProducerIdResponseData(throttleTimeMs=0, errorCode=0, producerId=4, producerEpoch=2, ongoingTxnProducerId=-1, ongoingTxnProducerEpoch=-1)\nSCENARIO\tpending-init\t{NONE=1}\nWIRE\tpending-offset\tTXN_OFFSET_COMMIT/v6\tattempt=0\tTxnOffsetCommitResponseData(throttleTimeMs=0, topics=[TxnOffsetCommitResponseTopic(name='', topicId=7Y8wqeKBSei5tlda7Xk4YQ, partitions=[TxnOffsetCommitResponsePartition(partitionIndex=0, errorCode=0)])])\nSCENARIO\tpending-offset\t{NONE=1}\nOBSERVATION\tpending-invisible-before-crash\t7\tstable=false\tattempt=0\nSCENARIO\tpending-invisible-before-crash\tPASS\nPENDING\tkafka44-pending-82f265a8-1917-454d-afef-a5f6706273bf\tkafka44-pending-group-82f265a8-1917-454d-afef-a5f6706273bf\t7Y8wqeKBSei5tlda7Xk4YQ\tkafka44-pending-txn-82f265a8-1917-454d-afef-a5f6706273bf\t4\t2\n",
+        "stderr": ""
+      },
+      "modern-abort": {
+        "command": [
+          "timeout",
+          "120",
+          "docker",
+          "exec",
+          "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci",
+          "java",
+          "-cp",
+          "/opt/kafka/libs/*:/opt/kafka/kafka44classes",
+          "PendingTransactionRecovery",
+          "seed",
+          "localhost:9092",
+          "modern"
+        ],
+        "returncode": 0,
+        "stdout": "WIRE\tpending-group-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-group-6d629fe2-293f-4931-9e1d-1ab210cd0887', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\tpending-group-coordinator\t{NONE=1}\nWIRE\tpending-txn-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-txn-6d629fe2-293f-4931-9e1d-1ab210cd0887', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\tpending-txn-coordinator\t{NONE=1}\nWIRE\tpending-init\tINIT_PRODUCER_ID/v5\tattempt=0\tInitProducerIdResponseData(throttleTimeMs=0, errorCode=0, producerId=5, producerEpoch=0, ongoingTxnProducerId=-1, ongoingTxnProducerEpoch=-1)\nSCENARIO\tpending-init\t{NONE=1}\nWIRE\tbaseline-offset\tTXN_OFFSET_COMMIT/v6\tattempt=0\tTxnOffsetCommitResponseData(throttleTimeMs=0, topics=[TxnOffsetCommitResponseTopic(name='', topicId=N55iWGN9Qz6tsUk5X4EOqg, partitions=[TxnOffsetCommitResponsePartition(partitionIndex=0, errorCode=0)])])\nSCENARIO\tbaseline-offset\t{NONE=1}\nWIRE\tbaseline-commit\tEND_TXN/v5\tattempt=0\tEndTxnResponseData(throttleTimeMs=0, errorCode=0, producerId=5, producerEpoch=1)\nSCENARIO\tbaseline-commit\t{NONE=1}\nOBSERVATION\tbaseline-visible\t7\tstable=true\tattempt=0\nSCENARIO\tbaseline-visible\tPASS\nWIRE\tpending-init\tINIT_PRODUCER_ID/v5\tattempt=0\tInitProducerIdResponseData(throttleTimeMs=0, errorCode=0, producerId=5, producerEpoch=2, ongoingTxnProducerId=-1, ongoingTxnProducerEpoch=-1)\nSCENARIO\tpending-init\t{NONE=1}\nWIRE\tpending-offset\tTXN_OFFSET_COMMIT/v6\tattempt=0\tTxnOffsetCommitResponseData(throttleTimeMs=0, topics=[TxnOffsetCommitResponseTopic(name='', topicId=N55iWGN9Qz6tsUk5X4EOqg, partitions=[TxnOffsetCommitResponsePartition(partitionIndex=0, errorCode=0)])])\nSCENARIO\tpending-offset\t{NONE=1}\nOBSERVATION\tpending-invisible-before-crash\t7\tstable=false\tattempt=0\nSCENARIO\tpending-invisible-before-crash\tPASS\nPENDING\tkafka44-pending-6d629fe2-293f-4931-9e1d-1ab210cd0887\tkafka44-pending-group-6d629fe2-293f-4931-9e1d-1ab210cd0887\tN55iWGN9Qz6tsUk5X4EOqg\tkafka44-pending-txn-6d629fe2-293f-4931-9e1d-1ab210cd0887\t5\t2\n",
+        "stderr": ""
+      },
+      "legacy-commit": {
+        "command": [
+          "timeout",
+          "120",
+          "docker",
+          "exec",
+          "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci",
+          "java",
+          "-cp",
+          "/opt/kafka/libs/*:/opt/kafka/kafka44classes",
+          "PendingTransactionRecovery",
+          "seed",
+          "localhost:9092",
+          "legacy"
+        ],
+        "returncode": 0,
+        "stdout": "WIRE\tpending-group-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-group-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\tpending-group-coordinator\t{NONE=1}\nWIRE\tpending-txn-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-txn-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\tpending-txn-coordinator\t{NONE=1}\nWIRE\tpending-init\tINIT_PRODUCER_ID/v5\tattempt=0\tInitProducerIdResponseData(throttleTimeMs=0, errorCode=0, producerId=6, producerEpoch=0, ongoingTxnProducerId=-1, ongoingTxnProducerEpoch=-1)\nSCENARIO\tpending-init\t{NONE=1}\nWIRE\tbaseline-offset\tTXN_OFFSET_COMMIT/v5\tattempt=0\tTxnOffsetCommitResponseData(throttleTimeMs=0, topics=[TxnOffsetCommitResponseTopic(name='kafka44-pending-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a', topicId=AAAAAAAAAAAAAAAAAAAAAA, partitions=[TxnOffsetCommitResponsePartition(partitionIndex=0, errorCode=0)])])\nSCENARIO\tbaseline-offset\t{NONE=1}\nWIRE\tbaseline-commit\tEND_TXN/v5\tattempt=0\tEndTxnResponseData(throttleTimeMs=0, errorCode=0, producerId=6, producerEpoch=1)\nSCENARIO\tbaseline-commit\t{NONE=1}\nOBSERVATION\tbaseline-visible\t7\tstable=true\tattempt=0\nSCENARIO\tbaseline-visible\tPASS\nWIRE\tpending-init\tINIT_PRODUCER_ID/v5\tattempt=0\tInitProducerIdResponseData(throttleTimeMs=0, errorCode=0, producerId=6, producerEpoch=2, ongoingTxnProducerId=-1, ongoingTxnProducerEpoch=-1)\nSCENARIO\tpending-init\t{NONE=1}\nWIRE\tpending-offset\tTXN_OFFSET_COMMIT/v5\tattempt=0\tTxnOffsetCommitResponseData(throttleTimeMs=0, topics=[TxnOffsetCommitResponseTopic(name='kafka44-pending-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a', topicId=AAAAAAAAAAAAAAAAAAAAAA, partitions=[TxnOffsetCommitResponsePartition(partitionIndex=0, errorCode=0)])])\nSCENARIO\tpending-offset\t{NONE=1}\nOBSERVATION\tpending-invisible-before-crash\t7\tstable=false\tattempt=0\nSCENARIO\tpending-invisible-before-crash\tPASS\nPENDING\tkafka44-pending-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a\tkafka44-pending-group-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a\tuJEsycouTpyLPh67MfFgww\tkafka44-pending-txn-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a\t6\t2\n",
+        "stderr": ""
+      },
+      "legacy-abort": {
+        "command": [
+          "timeout",
+          "120",
+          "docker",
+          "exec",
+          "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci",
+          "java",
+          "-cp",
+          "/opt/kafka/libs/*:/opt/kafka/kafka44classes",
+          "PendingTransactionRecovery",
+          "seed",
+          "localhost:9092",
+          "legacy"
+        ],
+        "returncode": 0,
+        "stdout": "WIRE\tpending-group-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-group-1865cf2c-b1d5-40e8-80a3-b24e0fb52446', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\tpending-group-coordinator\t{NONE=1}\nWIRE\tpending-txn-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-txn-1865cf2c-b1d5-40e8-80a3-b24e0fb52446', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\tpending-txn-coordinator\t{NONE=1}\nWIRE\tpending-init\tINIT_PRODUCER_ID/v5\tattempt=0\tInitProducerIdResponseData(throttleTimeMs=0, errorCode=0, producerId=7, producerEpoch=0, ongoingTxnProducerId=-1, ongoingTxnProducerEpoch=-1)\nSCENARIO\tpending-init\t{NONE=1}\nWIRE\tbaseline-offset\tTXN_OFFSET_COMMIT/v5\tattempt=0\tTxnOffsetCommitResponseData(throttleTimeMs=0, topics=[TxnOffsetCommitResponseTopic(name='kafka44-pending-1865cf2c-b1d5-40e8-80a3-b24e0fb52446', topicId=AAAAAAAAAAAAAAAAAAAAAA, partitions=[TxnOffsetCommitResponsePartition(partitionIndex=0, errorCode=0)])])\nSCENARIO\tbaseline-offset\t{NONE=1}\nWIRE\tbaseline-commit\tEND_TXN/v5\tattempt=0\tEndTxnResponseData(throttleTimeMs=0, errorCode=0, producerId=7, producerEpoch=1)\nSCENARIO\tbaseline-commit\t{NONE=1}\nOBSERVATION\tbaseline-visible\t7\tstable=true\tattempt=0\nSCENARIO\tbaseline-visible\tPASS\nWIRE\tpending-init\tINIT_PRODUCER_ID/v5\tattempt=0\tInitProducerIdResponseData(throttleTimeMs=0, errorCode=0, producerId=7, producerEpoch=2, ongoingTxnProducerId=-1, ongoingTxnProducerEpoch=-1)\nSCENARIO\tpending-init\t{NONE=1}\nWIRE\tpending-offset\tTXN_OFFSET_COMMIT/v5\tattempt=0\tTxnOffsetCommitResponseData(throttleTimeMs=0, topics=[TxnOffsetCommitResponseTopic(name='kafka44-pending-1865cf2c-b1d5-40e8-80a3-b24e0fb52446', topicId=AAAAAAAAAAAAAAAAAAAAAA, partitions=[TxnOffsetCommitResponsePartition(partitionIndex=0, errorCode=0)])])\nSCENARIO\tpending-offset\t{NONE=1}\nOBSERVATION\tpending-invisible-before-crash\t7\tstable=false\tattempt=0\nSCENARIO\tpending-invisible-before-crash\tPASS\nPENDING\tkafka44-pending-1865cf2c-b1d5-40e8-80a3-b24e0fb52446\tkafka44-pending-group-1865cf2c-b1d5-40e8-80a3-b24e0fb52446\tlxYKVqpARKOuGfamslsbHw\tkafka44-pending-txn-1865cf2c-b1d5-40e8-80a3-b24e0fb52446\t7\t2\n",
+        "stderr": ""
+      }
+    },
+    "pending_after_crash": {
+      "modern-commit": {
+        "command": [
+          "timeout",
+          "120",
+          "docker",
+          "exec",
+          "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci",
+          "java",
+          "-cp",
+          "/opt/kafka/libs/*:/opt/kafka/kafka44classes",
+          "PendingTransactionRecovery",
+          "resolve",
+          "localhost:9092",
+          "kafka44-pending-82f265a8-1917-454d-afef-a5f6706273bf",
+          "kafka44-pending-group-82f265a8-1917-454d-afef-a5f6706273bf",
+          "7Y8wqeKBSei5tlda7Xk4YQ",
+          "kafka44-pending-txn-82f265a8-1917-454d-afef-a5f6706273bf",
+          "4",
+          "2",
+          "commit"
+        ],
+        "returncode": 0,
+        "stdout": "SCENARIO\tpending-crash-topic-id\tPASS\nOBSERVATION\tpending-invisible-after-crash\t7\tstable=false\tattempt=0\nSCENARIO\tpending-invisible-after-crash\tPASS\nWIRE\trecovered-txn-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-txn-82f265a8-1917-454d-afef-a5f6706273bf', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\trecovered-txn-coordinator\t{NONE=1}\nWIRE\tpending-resolve-commit\tEND_TXN/v5\tattempt=0\tEndTxnResponseData(throttleTimeMs=0, errorCode=0, producerId=4, producerEpoch=3)\nSCENARIO\tpending-resolve-commit\t{NONE=1}\nOBSERVATION\tpending-resolution-visible\tnull\tstable=true\tattempt=0\nOBSERVATION\tpending-resolution-visible\t42\tstable=true\tattempt=1\nSCENARIO\tpending-resolution-visible\tPASS\n",
+        "stderr": ""
+      },
+      "modern-abort": {
+        "command": [
+          "timeout",
+          "120",
+          "docker",
+          "exec",
+          "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci",
+          "java",
+          "-cp",
+          "/opt/kafka/libs/*:/opt/kafka/kafka44classes",
+          "PendingTransactionRecovery",
+          "resolve",
+          "localhost:9092",
+          "kafka44-pending-6d629fe2-293f-4931-9e1d-1ab210cd0887",
+          "kafka44-pending-group-6d629fe2-293f-4931-9e1d-1ab210cd0887",
+          "N55iWGN9Qz6tsUk5X4EOqg",
+          "kafka44-pending-txn-6d629fe2-293f-4931-9e1d-1ab210cd0887",
+          "5",
+          "2",
+          "abort"
+        ],
+        "returncode": 0,
+        "stdout": "SCENARIO\tpending-crash-topic-id\tPASS\nOBSERVATION\tpending-invisible-after-crash\t7\tstable=false\tattempt=0\nSCENARIO\tpending-invisible-after-crash\tPASS\nWIRE\trecovered-txn-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-txn-6d629fe2-293f-4931-9e1d-1ab210cd0887', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\trecovered-txn-coordinator\t{NONE=1}\nWIRE\tpending-resolve-abort\tEND_TXN/v5\tattempt=0\tEndTxnResponseData(throttleTimeMs=0, errorCode=0, producerId=5, producerEpoch=3)\nSCENARIO\tpending-resolve-abort\t{NONE=1}\nOBSERVATION\tpending-resolution-visible\t7\tstable=true\tattempt=0\nSCENARIO\tpending-resolution-visible\tPASS\n",
+        "stderr": ""
+      },
+      "legacy-commit": {
+        "command": [
+          "timeout",
+          "120",
+          "docker",
+          "exec",
+          "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci",
+          "java",
+          "-cp",
+          "/opt/kafka/libs/*:/opt/kafka/kafka44classes",
+          "PendingTransactionRecovery",
+          "resolve",
+          "localhost:9092",
+          "kafka44-pending-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a",
+          "kafka44-pending-group-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a",
+          "uJEsycouTpyLPh67MfFgww",
+          "kafka44-pending-txn-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a",
+          "6",
+          "2",
+          "commit"
+        ],
+        "returncode": 0,
+        "stdout": "SCENARIO\tpending-crash-topic-id\tPASS\nOBSERVATION\tpending-invisible-after-crash\t7\tstable=false\tattempt=0\nSCENARIO\tpending-invisible-after-crash\tPASS\nWIRE\trecovered-txn-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-txn-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\trecovered-txn-coordinator\t{NONE=1}\nWIRE\tpending-resolve-commit\tEND_TXN/v5\tattempt=0\tEndTxnResponseData(throttleTimeMs=0, errorCode=0, producerId=6, producerEpoch=3)\nSCENARIO\tpending-resolve-commit\t{NONE=1}\nOBSERVATION\tpending-resolution-visible\t42\tstable=true\tattempt=0\nSCENARIO\tpending-resolution-visible\tPASS\n",
+        "stderr": ""
+      },
+      "legacy-abort": {
+        "command": [
+          "timeout",
+          "120",
+          "docker",
+          "exec",
+          "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci",
+          "java",
+          "-cp",
+          "/opt/kafka/libs/*:/opt/kafka/kafka44classes",
+          "PendingTransactionRecovery",
+          "resolve",
+          "localhost:9092",
+          "kafka44-pending-1865cf2c-b1d5-40e8-80a3-b24e0fb52446",
+          "kafka44-pending-group-1865cf2c-b1d5-40e8-80a3-b24e0fb52446",
+          "lxYKVqpARKOuGfamslsbHw",
+          "kafka44-pending-txn-1865cf2c-b1d5-40e8-80a3-b24e0fb52446",
+          "7",
+          "2",
+          "abort"
+        ],
+        "returncode": 0,
+        "stdout": "SCENARIO\tpending-crash-topic-id\tPASS\nOBSERVATION\tpending-invisible-after-crash\t7\tstable=false\tattempt=0\nSCENARIO\tpending-invisible-after-crash\tPASS\nWIRE\trecovered-txn-coordinator\tFIND_COORDINATOR/v4\tattempt=0\tFindCoordinatorResponseData(throttleTimeMs=0, errorCode=0, errorMessage='', nodeId=0, host='', port=0, coordinators=[Coordinator(key='kafka44-pending-txn-1865cf2c-b1d5-40e8-80a3-b24e0fb52446', nodeId=1, host='localhost', port=9092, errorCode=0, errorMessage='')])\nSCENARIO\trecovered-txn-coordinator\t{NONE=1}\nWIRE\tpending-resolve-abort\tEND_TXN/v5\tattempt=0\tEndTxnResponseData(throttleTimeMs=0, errorCode=0, producerId=7, producerEpoch=3)\nSCENARIO\tpending-resolve-abort\t{NONE=1}\nOBSERVATION\tpending-resolution-visible\t7\tstable=true\tattempt=0\nSCENARIO\tpending-resolution-visible\tPASS\n",
+        "stderr": ""
+      }
+    },
+    "transaction_oracle_stop": {
+      "command": [
+        "timeout",
+        "60",
+        "docker",
+        "kill",
+        "--signal",
+        "KILL",
+        "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci"
+      ],
+      "returncode": 0,
+      "stdout": "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci\n",
+      "stderr": ""
+    },
+    "transaction_oracle_restart": {
+      "command": [
+        "timeout",
+        "60",
+        "docker",
+        "start",
+        "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci"
+      ],
+      "returncode": 0,
+      "stdout": "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci\n",
+      "stderr": ""
+    },
+    "transaction_restart_readiness": {
+      "command": [
+        "timeout",
+        "10",
+        "docker",
+        "exec",
+        "krabka-kafka44-vate-pending-recovery-20261104-oracle-ci",
+        "/opt/kafka/bin/kafka-topics.sh",
+        "--bootstrap-server",
+        "localhost:9092",
+        "--list"
+      ],
+      "returncode": 0,
+      "stdout": "__consumer_offsets\n__transaction_state\nkafka44-config-050e6194-47ae-4830-9935-59cb4a1044e6\nkafka44-pending-1865cf2c-b1d5-40e8-80a3-b24e0fb52446\nkafka44-pending-6d629fe2-293f-4931-9e1d-1ab210cd0887\nkafka44-pending-82f265a8-1917-454d-afef-a5f6706273bf\nkafka44-pending-93578a8b-3e71-4fb4-8562-5b80ac2f2d2a\nkafka44-txn-2f2c5f2d-84ad-409f-bdb4-987ed81d4978\nkafka44-txn-9b6ddca9-3c6c-4047-9147-6778127b7796\n",
+      "stderr": "[2026-11-04 09:54:06,250] WARN [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available. (org.apache.kafka.clients.NetworkClient)\n[2026-11-04 09:54:06,346] WARN [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available. (org.apache.kafka.clients.NetworkClient)\n[2026-11-04 09:54:06,446] WARN [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available. (org.apache.kafka.clients.NetworkClient)\n[2026-11-04 09:54:06,646] WARN [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available. (org.apache.kafka.clients.NetworkClient)\n[2026-11-04 09:54:07,049] WARN [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available. (org.apache.kafka.clients.NetworkClient)\n"
+    }
+  },
+  "private_artifacts": {
+    "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104/evidence.json": "06f029bf4f83046b9681e00928f2dcbad49f25ee720bf21d9710f5e0d6052847",
+    "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104/evidence.json": "a1e35e9577ae109560f9c0e996c88a583f4fe61724193097738c4860c55ac5b2",
+    "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-20261104/oracle-ci/evidence.json": "bee8f50698a391709fb937e423fe662ab44ea1e68a9c61d594c3e7ef33236e82",
+    "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104/run.py": "079f82b5dbda2fb058cf8c2c89c7f0500e9a405e193d3c0ca52093c3e4593e7d",
+    "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104/run.py": "32c025502b3682eb546c43aa2fe5bb490784a8bcf2fcf5ce51d1b52b2fccceaa",
+    "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-final-20261104/enabled.toml": "11303419644767242e9c5ec34de4ce31f273bc8457bd3a81c42ed0c40efa313e",
+    "/home/matt/.openclaw/workspace/coordinator/.private/pending-recovery-default-20261104/enabled.toml": "08e532a55951f052efe8a4fa70e4b8c127529c78ff599f0c6e915604aa1e2600"
+  },
+  "remaining": [
+    "pending-marker crash",
+    "coordinator movement",
+    "offsets-topic leader failure",
+    "power-loss durability",
+    "other six-surface coverage gaps in COVERAGE.md"
+  ]
+}
