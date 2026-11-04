@@ -97,7 +97,7 @@ def _protocol_setup(ctx, name, output):
     # javac is local; the only linked client codecs come from the pinned oracle.
     results = [_command(ctx, ["mkdir", output + "/libs", output + "/classes"])]
     results.append(_command(ctx, ["docker", "cp", name + ":/opt/kafka/libs/.", output + "/libs/"]))
-    results.append(_command(ctx, ["javac", "--release", "17", "-cp", output + "/libs/*", "-d", output + "/classes", "tools/kafka44/ProtocolScenarios.java", "tools/kafka44/AuthorizationScenarios.java", "tools/kafka44/TransactionScenarios.java", "tools/kafka44/ConfigScenarios.java", "tools/kafka44/ControllerRecovery.java", "tools/kafka44/StreamsPositive.java"]))
+    results.append(_command(ctx, ["javac", "--release", "17", "-cp", output + "/libs/*", "-d", output + "/classes", "tools/kafka44/ProtocolScenarios.java", "tools/kafka44/AuthorizationScenarios.java", "tools/kafka44/TransactionScenarios.java", "tools/kafka44/PendingTransactionRecovery.java", "tools/kafka44/ConfigScenarios.java", "tools/kafka44/ControllerRecovery.java", "tools/kafka44/StreamsPositive.java"]))
     results.append(_command(ctx, ["docker", "cp", output + "/classes", name + ":/opt/kafka/kafka44classes"]))
     return results
 
@@ -310,6 +310,14 @@ def _impl(ctx: TaskContext) -> int:
         evidence["controller_recovery_fixture_sha256"] = text_sha256(ctx.std.fs.read_to_string("tools/kafka44/ControllerRecovery.java"))
         evidence["controller_before_restart"] = _controller_recovery(ctx, name, "prepare")
 
+        if a.oracle_crash_recovery:
+            evidence["pending_fixture_sha256"] = text_sha256(ctx.std.fs.read_to_string("tools/kafka44/PendingTransactionRecovery.java"))
+            evidence["pending_before_crash"] = {}
+            for mode in ["modern", "legacy"]:
+                for resolution in ["commit", "abort"]:
+                    key = mode + "-" + resolution
+                    evidence["pending_before_crash"][key] = _command(ctx, ["docker", "exec", name, "java", "-cp", "/opt/kafka/libs/*:/opt/kafka/kafka44classes", "PendingTransactionRecovery", "seed", "localhost:9092", mode], 120)
+
         # Only restart the isolated oracle owned by this invocation. Candidate
         # lifecycle belongs to its caller and is never inferred from endpoints.
         evidence["transaction_oracle_restart_kind"] = "SIGKILL" if a.oracle_crash_recovery else "clean-SIGTERM"
@@ -328,6 +336,14 @@ def _impl(ctx: TaskContext) -> int:
             "modern": _transaction_recovery(ctx, name, evidence["transaction_scenarios"]["oracle"]),
             "legacy": _transaction_recovery(ctx, name, evidence["legacy_transaction_scenarios"]["oracle"]),
         }
+        if a.oracle_crash_recovery:
+            evidence["pending_after_crash"] = {}
+            for key, seeded in evidence["pending_before_crash"].items():
+                rows = [line.split("\t")[1:] for line in seeded["stdout"].splitlines() if line.startswith("PENDING\t")]
+                if len(rows) != 1 or len(rows[0]) != 6:
+                    evidence["pending_after_crash"][key] = {"returncode": 1, "stdout": "Missing unique pending transaction identity"}
+                else:
+                    evidence["pending_after_crash"][key] = _command(ctx, ["docker", "exec", name, "java", "-cp", "/opt/kafka/libs/*:/opt/kafka/kafka44classes", "PendingTransactionRecovery", "resolve", "localhost:9092"] + rows[0] + [key.split("-")[1]], 120)
     failed = evidence.get("transaction_oracle_stop", {}).get("returncode", 0) != 0
     failed = failed or any([r["returncode"] for probes in evidence["sides"].values() for r in probes.values()])
     if a.streams_scenarios:
@@ -347,6 +363,9 @@ def _impl(ctx: TaskContext) -> int:
         failed = failed or any([r["returncode"] for r in evidence["legacy_transaction_scenarios"].values()]) or any(evidence["legacy_transaction_differences"].values()) or len(scenario_results(evidence["legacy_transaction_scenarios"]["oracle"]["stdout"])) != 15
     if a.streams_scenarios:
         failed = failed or any([r["returncode"] or len(scenario_results(r["stdout"])) != 9 for r in evidence["streams_scenarios"].values()]) or any(evidence["streams_differences"].values())
+    if a.oracle_crash_recovery:
+        failed = failed or any([r["returncode"] or len(scenario_results(r["stdout"])) != 8 for r in evidence["pending_before_crash"].values()])
+        failed = failed or any([r["returncode"] or len(scenario_results(r["stdout"])) != 5 for r in evidence["pending_after_crash"].values()])
     evidence["status"] = "probe-failure" if failed else "collected-not-qualified"
     return 1 if failed else 0
 

@@ -13,11 +13,11 @@ import org.apache.kafka.common.requests.*;
 
 /** Positive transactional-offset state changes using explicit released v6 codecs. */
 public class TransactionScenarios {
-    private static AbstractResponse call(String name, String endpoint, AbstractRequest request) throws Exception {
+    static AbstractResponse call(String name, String endpoint, AbstractRequest request) throws Exception {
         return call(name, endpoint, request, Errors.NONE);
     }
 
-    private static AbstractResponse call(String name, String endpoint, AbstractRequest request, Errors expected) throws Exception {
+    static AbstractResponse call(String name, String endpoint, AbstractRequest request, Errors expected) throws Exception {
         for (int attempt = 0; attempt < 60; attempt++) {
             AbstractResponse response = ProtocolScenarios.exchange(endpoint, request);
             TreeMap<String, Integer> errors = new TreeMap<>();
@@ -39,7 +39,7 @@ public class TransactionScenarios {
         throw new IllegalStateException(name + " coordinator did not become ready");
     }
 
-    private static InitProducerIdResponseData initialize(String endpoint, String id) throws Exception {
+    static InitProducerIdResponseData initialize(String endpoint, String id) throws Exception {
         InitProducerIdRequest request = new InitProducerIdRequest.Builder(new InitProducerIdRequestData()
             .setTransactionalId(id).setTransactionTimeoutMs(60000).setProducerId(-1).setProducerEpoch((short) -1)).build((short) 5);
         return ((InitProducerIdResponse) call(id.endsWith("-abort") ? "abort-init-v5" : "commit-init-v5", endpoint, request)).data();
@@ -55,12 +55,12 @@ public class TransactionScenarios {
             .setGenerationIdOrMemberEpoch(generation).setMemberId("").setTopics(List.of(row)), version);
     }
 
-    private static void offsets(String name, String endpoint, String id, String group, Uuid topic, String topicName, InitProducerIdResponseData producer, long offset, short version) throws Exception {
+    static void offsets(String name, String endpoint, String id, String group, Uuid topic, String topicName, InitProducerIdResponseData producer, long offset, short version) throws Exception {
         TxnOffsetCommitResponse response = (TxnOffsetCommitResponse) call(name, endpoint, offsetRequest(id, group, topic, topicName, producer, offset, version, -1));
         if (version >= 6 && !response.data().topics().get(0).topicId().equals(topic)) throw new IllegalStateException("v6 response did not echo the topic UUID");
     }
 
-    private static String coordinator(String name, String endpoint, String key, byte type) throws Exception {
+    static String coordinator(String name, String endpoint, String key, byte type) throws Exception {
         FindCoordinatorResponse response = (FindCoordinatorResponse) call(name, endpoint, new FindCoordinatorRequest.Builder(new FindCoordinatorRequestData()
             .setKeyType(type).setCoordinatorKeys(List.of(key))).build((short) 4));
         FindCoordinatorResponseData.Coordinator coordinator = response.coordinatorByKey(key).orElseThrow();
@@ -68,7 +68,7 @@ public class TransactionScenarios {
         return coordinator.host() + ":" + coordinator.port();
     }
 
-    private static void finish(String name, String endpoint, String id, InitProducerIdResponseData producer, boolean commit) throws Exception {
+    static void finish(String name, String endpoint, String id, InitProducerIdResponseData producer, boolean commit) throws Exception {
         call(name, endpoint, new EndTxnRequest.Builder(new EndTxnRequestData().setTransactionalId(id)
             .setProducerId(producer.producerId()).setProducerEpoch(producer.producerEpoch()).setCommitted(commit), true).build((short) 5));
     }
@@ -85,7 +85,7 @@ public class TransactionScenarios {
         }
     }
 
-    private static void observed(String name, Admin admin, String group, TopicPartition partition, Long expected, boolean stable) throws Exception {
+    static void observed(String name, Admin admin, String group, TopicPartition partition, Long expected, boolean stable) throws Exception {
         for (int attempt = 0; attempt < 60; attempt++) {
             Long actual = read(admin, group, partition, stable);
             System.out.println("OBSERVATION\t" + name + "\t" + actual + "\tstable=" + stable + "\tattempt=" + attempt);

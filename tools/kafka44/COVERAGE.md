@@ -177,3 +177,20 @@ Fresh released/enabled wire fixtures match **80cases per endpoint**:17protocol,1
 Ten scoped released/enabled copy/failure/data executions pass57.6s, including CRC/record checks and restored archive permissions. Default legacy plus enabled modern/legacy groups preserve six UUID/committed7-not-aborted42 assertions after actual owned SIGKILL/restart; enabled controller removal remains durable after crash. Repeatable released-data upgrade/candidate/old rollback passes5.4s on the exact immutable final executable. Fresh native43integration tests and two targeted library regressions pass, including all7381cleanup actor schedules in3.43s; workspace all-targets Clippy passes4m53s, production build49.57s, AXL568/32, CPD0, scripts27, formatter and diff checks pass.
 
 This closes the final combined-source rerun obligation for this bounded evidence PR, **not** full issue1969 qualification. `qualification_pass=false`; defaults and issue1970 remain unchanged, and broader six-surface/default/minimum/fault obligations above remain open.
+
+## Pending transaction process-crash continuation (2026-11-04)
+
+`PendingTransactionRecovery.java` extends the completed-transaction checks with
+unfinished v5/v6 offsets. It commits baseline7, stages42, requires invisibility,
+then resolves the original producer identity after an owned SIGKILL/restart. Both
+post-crash commit and abort are checked, with unchanged topic UUID and exact stable
+offset assertions. `aspect kafka44 --protocol-scenarios --transaction-scenarios
+--oracle-crash-recovery` runs all four cases against its immutable released oracle
+in the existing crash CI variant. The caller-owned candidate fixture never kills
+arbitrary supplied endpoints. Execution receipt:
+[`qualification/kafka44-pending-crash-20261104.json`](../../qualification/kafka44-pending-crash-20261104.json).
+
+This closes the single-node pending-offset recovery evidence gap only. It does
+not close coordinator movement, offsets-topic leader failure, mid-marker crash,
+power-loss durability, or the remaining six-surface obligations. Keep #1969 open
+and `qualification_pass=false` until those obligations have verifiable evidence.

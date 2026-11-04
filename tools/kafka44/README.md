@@ -140,3 +140,35 @@ This is a single-node RF1 clean data compatibility regression, not a mixed-versi
 `MixedFeatureProbe BOOTSTRAP seed-reject|reject|read|finalize EXPECTED_METADATA TOPIC` supplies released-codec three-node assertions for separately provisioned isolated rolling fixtures. `seed-reject` creates a fresh RF3 topic and exact record; subsequent stages read it. `reject` expects metadata33 to fail without changing the current level; `finalize` expects explicit33 success once all required nodes support it. `local` directly checks the supplied listener's finalized metadata, bypassing Admin controller routing; `controller` reports the active controller. The mixed receipt records actual old-broker intersection rejection, rolling replacement, explicit update, restart and rejected configured rollback; unlike `kafka44-upgrade`, provisioning for this lane is retained separately, not claimed as one-command CI orchestration.
 
 The negative topology wire fixture explicitly resolves `kafka44-negative` coordinator ownership first. Fresh brokers may not yet have initialized their offsets partition: codes14/15/16 are retried with retained `PRECONDITION`/`RETRY` diagnostics (40attempts,250ms). Terminal errors are not normalized. This prevents startup ownership timing from being mislabeled as missing-group semantic parity; the original failed final comparison remains in the final integrated receipt.
+
+### Pending transactional offsets across an abrupt restart
+
+The existing `--transaction-scenarios --protocol-scenarios --oracle-crash-recovery`
+lane now also seeds four **unfinished** transactions using the pinned released
+v5/v6 codecs before killing its owned oracle. Each has a baseline committed offset
+7 and a pending offset 42. After the unchanged container/data restart, the fixture
+requires the same topic UUID, offset 7 while pending, successful resolution with
+the original producer ID/epoch, and stable offset 42 on commit or 7 on abort.
+The four cases are modern/legacy crossed with commit/abort. Missing seed identity,
+missing assertion rows, failed SIGKILL, failed restart, or any fixture failure
+fails the collector. This lane runs in the existing crash-recovery CI variant.
+
+`PendingTransactionRecovery.java` can exercise caller-owned isolated candidates
+without granting the collector permission to restart an arbitrary endpoint:
+compile it together with `ProtocolScenarios.java` and `TransactionScenarios.java`
+using the exported pinned oracle jars. Run
+`PendingTransactionRecovery seed ENDPOINT modern|legacy`; retain the single
+`PENDING` row's six fields (topic, group, UUID, transactional ID, producer ID,
+producer epoch). Abruptly stop **only the broker process/container provisioned by
+that test**, restart its exact binary/config/data, then run
+`PendingTransactionRecovery resolve ENDPOINT TOPIC GROUP UUID TXN PID EPOCH commit|abort`.
+Do not reinitialize the producer between seed and resolution. The pending
+transaction timeout is five minutes; resolving an expired transaction is not the
+same scenario and must fail. Source/config/binary hashes and owned lifecycle
+commands belong in the execution receipt, not inferred from an endpoint.
+
+These are single-node RF1 process-crash tests, not power-loss/fsync durability,
+pending transaction marker failure, or coordinator/partition-leader movement.
+Default production gates support the legacy fixture only; the v6 fixture requires
+explicit API/feature enabling. No result graduates defaults or sets a full
+qualification pass.
