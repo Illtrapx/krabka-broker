@@ -1,0 +1,48 @@
+name: released Kafka 4.4 evidence
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".aspect/kafka44*.axl"
+      - "tools/kafka44/**"
+      - "qualification/**"
+      - ".github/workflows/kafka44-evidence.yml"
+
+concurrency:
+  group: kafka44-evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  oracle:
+    name: oracle (${{ matrix.label }})
+    strategy:
+      matrix:
+        include:
+          - label: plain
+            auth_args: ""
+          - label: authorization
+            auth_args: "--authorization-scenarios"
+          - label: streams
+            auth_args: "--streams-scenarios"
+          - label: transactions
+            auth_args: "--transaction-scenarios"
+          - label: transaction-crash
+            auth_args: "--transaction-scenarios --oracle-crash-recovery"
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: aspect-build/setup-aspect@ebca96eb49ef58c00d4226de8bd3a0813507dd87 # v2026.38.3
+      - name: Collect immutable released oracle evidence (not candidate qualification)
+        run: aspect kafka44 --protocol-scenarios ${{ matrix.auth_args }} --revision "${GITHUB_SHA}" --output kafka44-evidence
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: kafka44-oracle-${{ matrix.label }}
+          path: kafka44-evidence
+          if-no-files-found: error
+          retention-days: 30
