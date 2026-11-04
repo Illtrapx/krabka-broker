@@ -172,3 +172,32 @@ pending transaction marker failure, or coordinator/partition-leader movement.
 Default production gates support the legacy fixture only; the v6 fixture requires
 explicit API/feature enabling. No result graduates defaults or sets a full
 qualification pass.
+
+### Caller-owned multi-broker pending-offset failover
+
+For a fresh three-broker cluster with offsets and transaction-state replication3,
+minimum ISR2, run `PendingTransactionRecovery seed ENDPOINT modern 3` (or
+`legacy 3`). The optional final argument sets the test topic replication factor;
+it does not configure internal-topic replication, which must be set before the
+cluster starts. The fixture prints `OWNERS` with group/offsets coordinator then
+transaction coordinator endpoints, followed by the existing six-field `PENDING`
+identity. Retain both rows.
+
+SIGKILL just the task-owned broker matching the selected `OWNERS` endpoint. Keep
+the other two nodes alive; resolve via a surviving bootstrap endpoint using the
+original identity and `commit` or `abort`. The resolution prints the current
+`OWNERS` too: require the selected owner to differ, rather than assuming the kill
+caused an election. All UUID and exact pending/committed offset assertions still
+apply. Restore the killed node with identical data/configuration, wait for
+replication to recover, and use a fresh seed identity for every case. Run both
+versions, both decisions, and each coordinator target separately on the immutable
+released oracle and the exact candidate executable. Shared ownership can make
+one kill move both roles; record that fact instead of claiming isolated roles.
+
+`InitProducerId` alone permits a bounded retry of `CONCURRENT_TRANSACTIONS` after
+the baseline commit, because marker completion can lag stable offset visibility.
+The fixture retains every wire result; it does not retry that error for offset
+commits or transaction resolution, nor normalize a terminal error into success.
+This caller-provisioned lane is not automatically run by the single-node oracle
+CI task, and process kills do not emulate power loss or a deterministic mid-marker
+cut.

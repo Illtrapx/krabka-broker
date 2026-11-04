@@ -30,7 +30,8 @@ public class TransactionScenarios {
                 System.out.println("SCENARIO\t" + name + "\t" + errors);
                 return response;
             }
-            if (response.errorCounts().keySet().stream().allMatch(error -> error == Errors.NONE || error == Errors.COORDINATOR_LOAD_IN_PROGRESS || error == Errors.COORDINATOR_NOT_AVAILABLE || error == Errors.NOT_COORDINATOR)) {
+            if (response.errorCounts().keySet().stream().allMatch(error -> error == Errors.NONE || error == Errors.COORDINATOR_LOAD_IN_PROGRESS || error == Errors.COORDINATOR_NOT_AVAILABLE || error == Errors.NOT_COORDINATOR ||
+                (request instanceof InitProducerIdRequest && expected == Errors.NONE && error == Errors.CONCURRENT_TRANSACTIONS))) {
                 Thread.sleep(100);
             } else {
                 throw new IllegalStateException(name + " failed " + errors);

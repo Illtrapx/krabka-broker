@@ -365,7 +365,7 @@ def _impl(ctx: TaskContext) -> int:
         failed = failed or any([r["returncode"] or len(scenario_results(r["stdout"])) != 9 for r in evidence["streams_scenarios"].values()]) or any(evidence["streams_differences"].values())
     if a.oracle_crash_recovery:
         failed = failed or any([r["returncode"] or len(scenario_results(r["stdout"])) != 8 for r in evidence["pending_before_crash"].values()])
-        failed = failed or any([r["returncode"] or len(scenario_results(r["stdout"])) != 5 for r in evidence["pending_after_crash"].values()])
+        failed = failed or any([r["returncode"] or len(scenario_results(r["stdout"])) != 6 for r in evidence["pending_after_crash"].values()])
     evidence["status"] = "probe-failure" if failed else "collected-not-qualified"
     return 1 if failed else 0
 

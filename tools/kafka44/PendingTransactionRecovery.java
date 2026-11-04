@@ -17,9 +17,9 @@ public class PendingTransactionRecovery {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 2) throw new IllegalArgumentException("seed ENDPOINT modern|legacy or resolve ENDPOINT TOPIC GROUP UUID TXN PID EPOCH commit|abort");
+        if (args.length < 2) throw new IllegalArgumentException("seed ENDPOINT modern|legacy [REPLICATION] or resolve ENDPOINT TOPIC GROUP UUID TXN PID EPOCH commit|abort");
         boolean seed = args[0].equals("seed");
-        if ((seed && (args.length != 3 || (!args[2].equals("modern") && !args[2].equals("legacy")))) ||
+        if ((seed && ((args.length != 3 && args.length != 4) || (!args[2].equals("modern") && !args[2].equals("legacy")))) ||
             (!seed && (!args[0].equals("resolve") || args.length != 9 || (!args[8].equals("commit") && !args[8].equals("abort")))))
             throw new IllegalArgumentException("invalid fixture mode");
         String endpoint = args[1];
@@ -32,7 +32,7 @@ public class PendingTransactionRecovery {
                 String topic = "kafka44-pending-" + suffix;
                 String group = "kafka44-pending-group-" + suffix;
                 String txn = "kafka44-pending-txn-" + suffix;
-                admin.createTopics(List.of(new NewTopic(topic, 1, (short) 1))).all().get();
+                admin.createTopics(List.of(new NewTopic(topic, 1, args.length == 4 ? Short.parseShort(args[3]) : (short) 1))).all().get();
                 Uuid uuid = admin.describeTopics(List.of(topic)).allTopicNames().get().get(topic).topicId();
                 if (uuid.equals(Uuid.ZERO_UUID)) throw new IllegalStateException("missing topic UUID");
                 String groupEndpoint = TransactionScenarios.coordinator("pending-group-coordinator", endpoint, group, (byte) 0);
@@ -46,6 +46,7 @@ public class PendingTransactionRecovery {
                 producer = initialize(txnEndpoint, txn);
                 TransactionScenarios.offsets("pending-offset", groupEndpoint, txn, group, uuid, topic, producer, 42, version);
                 TransactionScenarios.observed("pending-invisible-before-crash", admin, group, partition, 7L, false);
+                System.out.println("OWNERS\t" + groupEndpoint + "\t" + txnEndpoint);
                 System.out.println("PENDING\t" + topic + "\t" + group + "\t" + uuid + "\t" + txn + "\t" + producer.producerId() + "\t" + producer.producerEpoch());
             } else {
                 String topic = args[2], group = args[3], txn = args[5];
@@ -54,7 +55,9 @@ public class PendingTransactionRecovery {
                 System.out.println("SCENARIO\tpending-crash-topic-id\tPASS");
                 TopicPartition partition = new TopicPartition(topic, 0);
                 TransactionScenarios.observed("pending-invisible-after-crash", admin, group, partition, 7L, false);
+                String groupEndpoint = TransactionScenarios.coordinator("recovered-group-coordinator", endpoint, group, (byte) 0);
                 String txnEndpoint = TransactionScenarios.coordinator("recovered-txn-coordinator", endpoint, txn, (byte) 1);
+                System.out.println("OWNERS\t" + groupEndpoint + "\t" + txnEndpoint);
                 InitProducerIdResponseData producer = new InitProducerIdResponseData().setProducerId(Long.parseLong(args[6])).setProducerEpoch(Short.parseShort(args[7]));
                 boolean commit = args[8].equals("commit");
                 TransactionScenarios.finish("pending-resolve-" + args[8], txnEndpoint, txn, producer, commit);
