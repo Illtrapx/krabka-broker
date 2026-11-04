@@ -2,13 +2,33 @@
 
 This ledger maps acceptance obligations to evidence, not feature inventory. A source file, passing expected-failure test, bounded model, or green CI gate does not establish runtime parity. `qualification_pass` remains false. Paths below are repository-relative unless labeled private. Evidence baseline: `e201a1dfafd26f4ddae193a3cd1f0b340c819aa6`.
 
+## Current bounded evidence index (2026-11-04)
+
+The detailed matrix below began at the stated baseline and retains historical
+obligations. Later receipts supersede its old “pending”/“negative only” labels;
+those labels are not a current claim that executed scenarios never ran.
+
+| Surface | Executed evidence | Still not discharged by these receipts |
+| --- | --- | --- |
+| DLQ | Eight size/header/payload boundaries plus restart; historical three-node ARCHIVING crash/destination failover and lost-confirmation duplicate witnesses | Share-coordinator movement and denied destination; immediate-below/at DLQ minimum now measured1→2 |
+| Delayed uploads | Age/byte/dynamic/retention-derived delay and failure checks; pending-delay crash, natural eviction and48 exact remote reads | Mid-upload interruption remains unmeasured; RF3 leader-loss/new-leader remote reads now pass |
+| Routing | Six identity cases plus auth/preauth;40 explicit two-node before/after crash/restart assertions | Cluster replacement/pipelined rejection are not established by node-preserving restart |
+| Controller removal | Positive register/remove/retry, voter rejection, metadata32/33 boundary and same-data crash durability; native forwarding regression | Further released/native forwarding/failure/authorization-race permutations |
+| Topic-ID transactions | Modern16/legacy15 positive cases, pending single-node crash and RF3 coordinator/offsets-owner movement with commit/abort | Deterministic mid-marker cut and power-loss durability are not claimed |
+| Streams | Positive lifecycle9; durable backend13 strict set/get/delete failure/repair cases and exact-source restart, with measured legacy DeleteGroups correction | RF3 shared-backend owner movement passes; additional authorization/concurrent-write permutations unmeasured |
+
+All candidate identities are pinned in their respective receipts, not silently
+relabelled final-head runs. This index is not a production/default graduation.
+`qualification_pass=false`; #1969 remains open until its acceptance matrix is
+complete or remaining failures are explicitly resolved as linked blockers.
+
 ## Six-surface matrix
 
 | Surface and invariants | Production-linked model coverage | Implementation regressions to execute | Released 4.4 oracle execution | Fault / recovery / multi-broker obligations | Actual execution receipt |
 | --- | --- | --- | --- | --- | --- |
-| Share DLQ: acknowledge source only after durable destination write; retries do not lose records; oversized records follow released outcome; configuration is validated and discoverable | Share membership/partition models exist, but are not by themselves DLQ fan-out durability models. Dedicated DLQ model work is pending integration from #1973/#1974. | `crates/broker/src/share_partition/state_model.rs`; DLQ PRs #1976/#1979 and their behavioral regressions; verify code paths, not only standalone transition abstractions | Dedicated DLQ qualification lane is being developed separately. No pass recorded in this ledger. | Lost destination acknowledgement, source acknowledgement failure, partial append, restart, coordinator move, destination leader move, denied destination, feature level 1 vs 2 | Pending integration; do not infer from #1976's historical green CI |
-| Delayed tiered uploads: no upload before either configured age/byte threshold; remote coverage never skips a hole; leadership loss withdraws unfinished copies; local retention never removes uncovered data | Existing remote-retention model covers retention, not delayed-upload scheduling. New production-linked `copy_delay_model.rs` passed: 540 unique states, 3358 generated, depth 12, two invariants and five witnesses; no remote IO/recovery model. | `crates/broker/src/remote_log_manager/copy.rs` (`CopyDelay::allows`, `copy_eligible_delayed`, leadership fencing and hole-fill tests); `crates/broker/tests/tiered_storage_multi_broker.rs` | Copy-only released RSM/enabled local-archive delay + dynamic-zero smoke passed; no remote-read/recovery parity | Zero/-1/positive limits, effective local-retention derivation, clock skew, dynamic override, failed upload/retry, restart during STARTED, leader movement with misaligned segments, remote-read after local eviction | 46 actual copy-path regressions passed, including model; actual released/candidate copy-only smoke receipt below. Broader remote-storage differential remains incomplete. |
-| Misrouting detection: ApiVersions v5's node identity pair is validated together; correct identity accepts; stale/wrong routing rejects without applying another request | No dedicated routing model receipt; generic replication/failover models do not establish handshake identity validation | `crates/broker/src/handlers/api_versions.rs` and `api_versions/tests.rs`, controller `crates/raft/src/server/api_versions.rs` | Discovery v5 mismatch recorded; six identity-pair behavioral cases executed | Broker and controller listeners, absent/partial/present pair, stale incarnation after restart, two endpoints with wrong routing | `qualification/kafka44-routing-e201a1d.json`: enabled matches all six error maps; defaults reject v5. Authenticated/preauth and two-node routing remain unexecuted |
+| Share DLQ: acknowledge source only after durable destination write; retries do not lose records; oversized records follow released outcome; configuration is validated and discoverable | Share membership/partition models exist, but are not by themselves DLQ fan-out durability models. DLQ bounded recovery/admission model and production proof are retained in `qualification/kafka44-dlq/README.md`; they do not prove arbitrary transport schedules. | `crates/broker/src/share_partition/state_model.rs`; DLQ PRs #1976/#1979 and their behavioral regressions; verify code paths, not only standalone transition abstractions | Paired released/candidate payload, provenance-header and size-boundary assertions plus clean same-data restart pass; see `kafka44-dlq-repeatable-20261104.json`. | Lost destination acknowledgement, source acknowledgement failure, partial append, restart, coordinator move, destination leader move, denied destination, feature level 1 vs 2 | 16 strict assertions per endpoint on immutable candidate7c4e3aa7. Historical three-node ARCHIVING/source-crash plus destination-leader-failover and lost-confirmation duplicate witnesses exist in `qualification/kafka44-dlq/`; share-coordinator movement and denied destination remain open; share1→2 differential is retained below |
+| Delayed tiered uploads: no upload before either configured age/byte threshold; remote coverage never skips a hole; leadership loss withdraws unfinished copies; local retention never removes uncovered data | Existing remote-retention model covers retention, not delayed-upload scheduling. New production-linked `copy_delay_model.rs` passed: 540 unique states, 3358 generated, depth 12, two invariants and five witnesses; no remote IO/recovery model. | `crates/broker/src/remote_log_manager/copy.rs` (`CopyDelay::allows`, `copy_eligible_delayed`, leadership fencing and hole-fill tests); `crates/broker/tests/tiered_storage_multi_broker.rs` | Released RSM/enabled local-archive delay and dynamic-zero checks pass; pending-delay crash, natural eviction and48 exact remote consumer records now pass on both endpoints (receipt below) | Zero/-1/positive limits, effective local-retention derivation, clock skew, dynamic override, failed upload/retry, restart during STARTED, leader movement with misaligned segments, remote-read after local eviction | 46 actual copy-path regressions passed, including model; actual released/candidate copy-only smoke receipt below. Remote recovery/read receipt: `kafka44-copy-recovery-remote-read-20261104.json`; upload-interruption parity remains incomplete; RF3 new-leader remote reads pass (receipt below). |
+| Misrouting detection: ApiVersions v5's node identity pair is validated together; correct identity accepts; stale/wrong routing rejects without applying another request | No dedicated routing model receipt; generic replication/failover models do not establish handshake identity validation | `crates/broker/src/handlers/api_versions.rs` and `api_versions/tests.rs`, controller `crates/raft/src/server/api_versions.rs` | Discovery v5 mismatch recorded; six identity-pair behavioral cases executed | Broker and controller listeners, absent/partial/present pair, stale incarnation after restart, two endpoints with wrong routing | `qualification/kafka44-routing-e201a1d.json`: enabled matches all six error maps; defaults reject v5. Authenticated/preauth cases are retained in the authorization continuation; explicit two-node before/after same-data crash restart now passes40 assertions across both endpoints (receipt below) |
 | Controller unregistration: authorization precedes active-controller/voter/feature/id validation; current voter cannot be removed; successful removal durable and correctly forwarded | No dedicated controller-unregistration model receipt; generic KRaft election safety does not prove registration deletion | `crates/broker/src/handlers/unregister_controller/tests.rs`; `crates/broker/tests/unregister_controller_forward.rs` | Five-scenario fixture includes unknown-id on broker and controller. Enabled raw responses match released oracle; default disconnects. | Nonvoter positive removal, ALTER denial, inactive controller, minimum metadata boundary, metadata commit failure, retry, restart, remote forwarding | `qualification/kafka44-protocol-negative-e201a1d.json`; initial and post-restart negative results only |
 | Topic-ID transactional offset commits: UUID identifies the correct topic; missing group and stale member errors match; offsets visible only after commit; no cross-topic resurrection | Generic transaction decision/EOS/completion models do not model topic UUID lookup, delete/recreate, or v6 group-generation validation. Topic-incarnation kernel proof and 210-state production-linked deletion model executed; pending-name, real-log recovery and lifecycle races remain separate obligations. | `crates/broker/tests/transactions/txn_offset_commit_topic_ids.rs`; `crates/broker/src/txn/handlers/txn_offset_commit/{existence,verification,ordering_tests}.rs`; materialization tests | Unknown UUID v6 returns UNKNOWN_TOPIC_ID in both oracle and enabled candidate, including after restart; default disconnects. Positive commit/abort: enabled matches all 16 v6 and 15 legacy released-codec cases; see continuation below | Delete/recreate same topic name/new UUID, unknown UUID, missing group, stale epoch, authorization, transaction recovery/coordinator movement, offsets-topic leader failure | Commit/abort offset-state comparison plus oracle clean restart; known transaction-completion counterexamples below still block broad EOS claims |
 | Streams topology APIs: selected assignor output is valid/cooperative; plugin updates/deletes obey durable epoch ordering; uncertain failure retries; no metadata loss across coordinator movement | Existing `streams_group_model.rs` covers reconciliation only; assignor and topology lifecycle models pending integration from #1971/#1972 | #1977/#1978 and production paths under `coordinator/unified/streams`; no JVM plugin-loading parity inferred from native SPI | No-plugin topology update and invalid v1 group responses match oracle under enabled candidate initially/after restart; default disconnects | Positive plugin persistence, transient/permanent failures, deletion failure/retry, assignment failure retention, new leader/restart, authorization, shared storage across brokers | Negative fixture only; full plugin/assignor differential coverage pending |
@@ -225,3 +245,145 @@ does not inject a deterministic mid-marker cut or power failure, nor discharge
 the remaining default/minimum-feature/DLQ/Streams/remote-storage obligations.
 The matrix is separately provisioned, not automatically run by the single-node
 oracle CI lane. `qualification_pass=false`; #1969 must remain open.
+
+## Durable Streams SPI differential and legacy deletion correction (2026-11-04)
+
+[`kafka44-streams-durable-20261104.json`](../../qualification/kafka44-streams-durable-20261104.json)
+records actual pinned released Kafka4.4/custom Java filesystem plugin versus a
+fresh native real-broker embedding binary built from `3af529aa6`. Each endpoint
+passes thirteen strict transient/permanent set/get/delete failure and repair
+assertions, followed by exact-source description verification after clean
+same-data restart. The new repository task independently repeats paired
+`faults`, `prepare` and `recover` modes, retaining raw responses and exact source,
+jar, executable and configuration identities. The native side calls the real
+production filesystem backend, not an independent storage simulation.
+
+Importantly, the fresh **before-fix** current-main binary actually failed:
+DeleteGroupsv2 returned134 for backend deletion failure, where released Kafka
+returned−1. That failed raw execution is retained alongside the focused
+version-boundary correction; v0–v2 now map to UNKNOWN_SERVER_ERROR and v3 keeps
+GROUP_DELETION_FAILED. The receipt never relabels the prior privately corrected
+binary as unmodified main. A first durable Java plugin serialization setup failure
+is retained separately from successful corrected runs.
+
+This is external-filesystem SPI/RF1 clean restart evidence, not multi-broker
+coordinator movement, power-loss/fsync durability, arbitrary JVM plugin loading,
+new minimum-level/authorization permutations, or production-default graduation.
+`qualification_pass` remains false; other #1969 obligations remain open.
+## Delayed pending-copy crash, natural eviction and exact remote reads (2026-11-04)
+
+`qualification/kafka44-copy-recovery-remote-read-20261104.json` records actual
+released4.4 / immutable candidate7c4e3aa7 (implementation d4890ecd) RF1 runs.
+Both acknowledge offsets0..47, require no current-topic archive before a30s copy
+age threshold, receive SIGKILL and reopen the exact same data/configuration.
+Natural35s local retention physically removes offset-zero `.log`; the strict
+reader then consumes all48 exact offsets/keys and every deterministic64KiB
+payload byte. Both corrected read executions pass. Candidate `/proc/PID/exe`
+is independently hashed. The released fixture uses the recording RSM SPI and
+native uses its real local backend / topic-backed metadata.
+
+Failed provisioning (static voter/standalone conflict and bind collision), the
+released invalid30s-copy/1s-retention request, incomplete reader arguments, and
+released fetch failure from an absent optional TRANSACTION index are retained.
+The recording fixture now returns the SPI's RemoteResourceNotFoundException for
+missing indexes; after that correction and restart, actual remote reading passes.
+Additional owned reopenings used for corrected reads are retained, not hidden.
+
+This proves pending-delay process-crash recovery and post-eviction consumer data
+integrity on the pinned implementation, not a kill inside an upload, leader
+movement, power-loss durability, production backend parity or current-main/default
+graduation. `qualification_pass` remains false.
+
+## Retained DLQ multi-node evidence reconciliation (2026-11-04)
+
+The earlier matrix understated the already committed #1979 evidence.
+[`qualification/kafka44-dlq/README.md`](../../qualification/kafka44-dlq/README.md)
+and its `fault-{release,candidate}-*` raw state/timeline/verify receipts record
+three-node durable ARCHIVING before source crash, with destination leader failure
+and failover: both recover exactly one intact copy and lag0.
+`append-{release,candidate}-*` additionally witness a readable destination append
+and withheld Produce confirmation before source crash; both recover two intact
+copies and lag0. These are measured duplicate/recovery schedules, not an
+exactly-once or universal-fault claim. Historical candidate/image identities and
+the released/native terminal-prefix state difference remain explicit. Source
+crash plus destination failover does not independently establish share
+coordinator movement. Authorization and minimum-feature permutations remain open.
+
+## Explicit two-node routing across restart (2026-11-04)
+
+[`kafka44-routing-endpoints-20261104.json`](../../qualification/kafka44-routing-endpoints-20261104.json)
+retains40 strict assertions across released4.4 and candidate7c4e3aa7: correct,
+swapped-node, wrong-cluster, partial and absent identities on two explicit
+endpoints, before and after owned node1 SIGKILL/same-data restart. Both clusters
+preserve identity. ApiVersions5 carries no incarnation field: correct persisted
+node identity remains valid after restart; swapped endpoints remain rejected.
+The candidate predates the final Streams fix. Two-voter handshakes with both
+nodes available are not failover-availability, cluster-replacement, pipelined
+request or minimum-feature qualification. See
+[`ROUTING-ENDPOINTS.md`](ROUTING-ENDPOINTS.md) for exact commands and boundaries.
+
+## DLQ immediate-below/at-minimum feature levels (2026-11-04)
+
+[`kafka44-dlq-minimum-20261104.json`](../../qualification/kafka44-dlq-minimum-20261104.json)
+retains fresh isolated released/enabled share.version1 rejection with zero DLQ
+records/lag0, followed by explicit upgrade2 and one exact DLQ payload/lag0.
+A separate default candidate refuses feature2 and retains1. Initial provisioning
+failures and corrected fresh formats are retained, not counted as passes.
+Historical candidate7c4e3aa7 remains pinned; source-start-offset0 versus1 remains
+explicit. The repeatable caller-owned `aspect kafka44-share-minimum` task has
+strict parser negative controls; the retained receipt executes its identical
+Java fixture directly, not the full AXL orchestration. No destination ACL or
+coordinator-movement coverage is inferred. See [SHARE_MINIMUM.md](SHARE_MINIMUM.md).
+
+## Streams immediate-below/at-minimum feature levels (2026-11-04)
+
+[`kafka44-streams-minimum-20261104.json`](../../qualification/kafka44-streams-minimum-20261104.json)
+records paired streams.version0 rejection of Heartbeatv1 and
+TopologyDescriptionUpdatev0 with UNSUPPORTED_VERSION. Explicit upgrade1 then
+passes the nine strict positive lifecycle assertions on both endpoints. Separate
+fresh owned fixtures execute direct Java and the complete
+`aspect kafka44-streams-minimum` task (3.2s); all owned runtimes are stopped.
+The native filesystem SPI binary is pinned to source3af529aa6, not relabelled
+a current-integration build or arbitrary JVM class loading. No new default, ACL,
+coordinator-movement or crash claim follows. See [STREAMS_MINIMUM.md](STREAMS_MINIMUM.md).
+
+## RF3 delayed-copy leader loss and remote reads (2026-11-04)
+
+[`kafka44-copy-leader-movement-20261104.json`](../../qualification/kafka44-copy-leader-movement-20261104.json)
+records real released/candidate RF3/ISR3 remote metadata readiness,48 acknowledged
+records with no early archive, owned data-leader SIGKILL before30s eligibility,
+and a distinct replacement leader. That new leader retains offset0 locally
+before natural eviction, then serves all48 exact keys/offsets/64KiB payloads
+through remote reads. Released leader2→3 and candidate1→2 transitions are
+explicit; configuration/initial setup failures/commands/binary7c4e3aa7 remain
+pinned. This is delayed pending-copy leader loss, not a cut during upload I/O.
+See [COPY-MOVEMENT.md](COPY-MOVEMENT.md) for the deterministic-cut limitation.
+
+## Streams shared-backend coordinator movement (2026-11-04)
+
+[`kafka44-streams-movement-20261104.json`](../../qualification/kafka44-streams-movement-20261104.json)
+records real RF3 original-owner SIGKILL and changed group owners: released1→2,
+native2→3. Both preserve STORED topology/exact source, with independent raw
+before/after topology object equality, then delete successfully on the new owner
+and recreate with no stored description. Released custom plugin nodes share the
+same actual filesystem mount; native nodes share the production filesystem SPI.
+This bounded empty-member topology case does not establish concurrent plugin
+write interruption, active-member reconciliation, fsync/power-loss or arbitrary
+JVM loading. Direct phased Java executions passed; full phased AXL orchestration
+is not claimed. See [STREAMS_MOVEMENT.md](STREAMS_MOVEMENT.md).
+
+## Actual DLQ share-state owner movement discrepancy (2026-11-04)
+
+[`kafka44-share-state-movement-20261104.json`](../../qualification/kafka44-share-state-movement-20261104.json)
+records actual state owner3→1 after source acquisition but before rejection,
+without killing source1/destination2. The killed broker3 is also destination
+follower3 (replicas[2,3], minISR1), so this is a coupled state-owner/follower-loss
+fault, not isolated state ownership. Released finishes with one readable DLQ
+record/lag0/no source redelivery. Candidate7c4e3aa7 yields no source redelivery
+but no consumer-readable DLQ record within15s. Offline logs contain two valid
+DLQ records and terminal source state: physical data loss is not established.
+Independent QA excludes committed-offset skipping and transactional isolation
+as explanations; destination HW/LSO/ISR and Produce outcomes still require
+capture before a causal claim. Visibility/retry/replication remains an active blocker under
+[#1969](https://github.com/krabka-io/krabka-broker/issues/1969), not a pass.
+See [SHARE-STATE-MOVEMENT.md](SHARE-STATE-MOVEMENT.md).

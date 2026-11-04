@@ -201,3 +201,78 @@ commits or transaction resolution, nor normalize a terminal error into success.
 This caller-provisioned lane is not automatically run by the single-node oracle
 CI task, and process kills do not emulate power loss or a deterministic mid-marker
 cut.
+
+## Repeatable released-client DLQ boundaries
+
+`aspect kafka44 --protocol-scenarios --dlq-scenarios --revision <full-sha> --output <fresh-directory>` reuses `qualification/kafka44-dlq/ShareBoundary.java` (not a second implementation). Eight explicit assertions check copied/headers-only destination size boundaries, intact payloads and six provenance headers. Eight recovery assertions verify zero share lag after restarting only the task-owned oracle. Duplicate, missing or misnamed scenario rows fail collection. The optional explicitly enabled candidate executes the same boundary fixture; candidate restart remains caller-owned. Raw source start offsets retain the released/native terminal-prefix difference. This is not authorization, minimum-feature, denied-destination or multibroker-fault coverage, and never changes `qualification_pass=false`.
+
+### Isolated Streams backend faults and persistent restart
+
+`StreamsFault.java` checks thirteen strict set/get/delete failure-and-repair
+outcomes on actual brokers. `FaultTopologyPlugin.java` is a **test-only** released
+Java plugin: flag files `/evidence/{set,get,delete}` select `ok`, `transient` or
+`permanent`; descriptions persist as typed JSON under `/evidence/store`. Its
+constrained deserialization permits only the released Streams records and Java
+collections. This is an external-filesystem test plugin, not a production storage
+implementation or an fsync/power-loss guarantee.
+
+The native embedding example `streams_fault_broker` installs the production
+`FileTopologyDescriptionBackend` behind the same injected-failure wrapper. Build
+with `cargo build -p krabka-broker --example streams_fault_broker`, then launch
+`target/debug/examples/streams_fault_broker DATA FLAGS 127.0.0.1:64664`.
+DATA/FLAGS must be fresh private fixture directories. Controller uses the next
+port. Stop only this owned process with SIGINT; launch the same command with
+`rejoin` appended to reopen the exact data and filesystem backend.
+
+Prepare a pinned released Kafka4.4 oracle using the same settings as the positive
+Streams lane, `streams.version=1`, and
+`group.streams.topology.description.plugin.class=FaultTopologyPlugin`. Compile the
+plugin against its exported jars; add compiled classes and those jars to the
+oracle CLASSPATH, and mount a fresh writable private directory at `/evidence`.
+The native SPI is not JVM class loading and this lane makes no such claim.
+
+On **caller-owned isolated fixtures only**, run:
+
+```
+aspect kafka44-streams-storage --oracle-container OWNED_PINNED_CONTAINER \
+  --oracle-endpoint 127.0.0.1:64662 --oracle-flags /absolute/oracle/evidence \
+  --native-endpoint 127.0.0.1:64664 --native-flags /absolute/native/flags \
+  --libs /absolute/pinned/released/libs --output /fresh/private/fault-receipt
+```
+
+Repeat with `--mode prepare` and a fresh output directory, cleanly stop/reopen
+**both exact owned data directories**, then repeat with `--mode recover` and a
+third fresh output directory. Prepare retains unique group/topic identities in
+the flag directories; recover requires STORED and the exact source topic after
+restart. The task never stops arbitrary candidates. Pin native source revision,
+executable digest, oracle configuration and lifecycle commands alongside receipts.
+Missing/error/duplicate scenario rows fail collection. RF1 clean restart is not
+coordinator movement, abrupt-crash or shared multi-node durability qualification.
+### Delayed-copy process recovery and remote reads
+
+`RemoteRecoveryProbe` is a split-process released-client fixture. Compile it with
+`CopyProbe.java` and the pinned Kafka 4.4 libraries. On a freshly provisioned,
+task-owned remote-storage broker, run:
+
+```
+java -cp "$CLASSES:$KAFKA_LIBS/*" RemoteRecoveryProbe seed "$BOOTSTRAP" "$TOPIC" "$ARCHIVE"
+```
+
+This acknowledges and checks offsets 0..47 with deterministic 64KiB payloads,
+requires no current-topic archive yet, and uses 30s copy lag / 35s local retention.
+SIGKILL and restart the **owned** broker with exactly the same data/configuration.
+Poll for the physical disappearance of its partition's offset-zero `.log` and
+current-topic archive creation; do not remove local files manually. Then run:
+
+```
+java -cp "$CLASSES:$KAFKA_LIBS/*" RemoteRecoveryProbe read "$BOOTSTRAP" "$TOPIC" "$LOCAL_OFFSET_ZERO_LOG" "$ARCHIVE"
+```
+
+The reader requires that eviction witness, reads offset zero without reset, and
+checks every offset, key and payload byte across all 48 acknowledged records.
+Set the broker local-retention sweep and remote-manager intervals low for this
+bounded fixture (1s and 500ms respectively). `RecordingStorage` now reports absent
+optional indexes with the SPI's `RemoteResourceNotFoundException`; a generic
+storage failure incorrectly makes the released remote reader retry indefinitely.
+These checks cover restart while copying is **delayed**, not interruption inside
+an upload, leader movement, power-loss durability or production storage backends.
