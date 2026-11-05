@@ -276,3 +276,55 @@ optional indexes with the SPI's `RemoteResourceNotFoundException`; a generic
 storage failure incorrectly makes the released remote reader retry indefinitely.
 These checks cover restart while copying is **delayed**, not interruption inside
 an upload, leader movement, power-loss durability or production storage backends.
+
+### Inside-copy interruption
+
+See [COPY-INTERRUPTION.md](COPY-INTERRUPTION.md) for process-scoped native and
+released payload-close gates, actual STARTED-only metadata witnesses, owned
+SIGKILL/reopen steps and exact post-eviction reads. The retained receipt records
+a released4.4/retained-native8eab7ff8 paired recovery pass, plus the incomplete
+earlier baseline and temporary startup readiness warnings. The gate is inactive without explicit owned fixture configuration.
+### Denied DLQ destination write
+
+`DlqDeniedDestination AUTH_ENDPOINT PLAINTEXT_ENDPOINT` requires caller-owned
+fresh single-node fixtures finalized at `share.version=2`, SASL/PLAIN synthetic
+`admin` with password `fixture-password` as the only super-user, and PLAINTEXT
+inter-broker principal `User:ANONYMOUS`. Never target a production endpoint.
+The fixture creates unique topics/group, configures DLQ, installs broad anonymous
+fixture-only grants plus an exact destination WRITE DENY, and proves that DENY
+with a real rejected produce before rejecting the source record. It requires
+successful share acknowledgement, zero destination records and zero source lag.
+
+For native bootstrap only, temporarily include ANONYMOUS as a super-user; invoke
+with final argument `prepare` to install ACLs, stop that owned process cleanly,
+remove ANONYMOUS from super-users, and reopen identical data/configuration before
+the actual invocation. The oracle can bootstrap using
+`allow.everyone.if.no.acl.found=true`; explicit DENY still takes precedence.
+Grant visibility and the negative produce control are checked on each actual run.
+The native executable requires `--controller-listen-addr` to match formatted
+controller identity; a root TOML `controller_listen_addr` does not configure it.
+Compile with the pinned exported released4.4 jars like the other Java fixtures.
+
+The measured released/native receipt and raw result rows live in
+`qualification/kafka44-dlq-denied/`. **Released4.4 terminal authorization failure
+archives the source despite no durable destination write**; native matches that
+behavior. This is not a durable-delivery guarantee and must not be described as
+source-acknowledgement-only-after-destination-durability for all failure classes.
+The receipt retains the released/native terminal-prefix difference (0 vs1) while
+both have lag0. No default feature levels or production configuration changed.
+
+## DLQ configuration discovery and validation
+
+`--dlq-scenarios` also executes `DlqConfigScenarios.java` against the owned
+released oracle and optional enabled candidate. Twenty strict rows cover
+`errors.deadletterqueue.group.enable`, group copy-record/name settings, defaults,
+valid booleans, malformed booleans, reserved `__` names, and unchanged state
+after validate-only requests. The existing DLQ oracle CI matrix runs this path.
+Default-gated candidates are not mistaken for enabled config parity.
+
+For a separately provisioned fixture, compile with the pinned4.4 classpath and
+invoke `DlqConfigScenarios ISOLATED_ENDPOINT`. This mutates only newly generated
+fixture resources; do not target production. Released4.4 accepts `bad name` and
+`..` as the group DLQ setting during configuration validation; actual destination
+use has separate checks. The paired [receipt](../../qualification/kafka44-dlq-config-20261105.json)
+retains all forty executed assertion rows, raw errors, and binary/config hashes.
