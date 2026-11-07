@@ -20,6 +20,7 @@ use crate::{
         rstest_bdd_harness_tokio_path,
         scenario::{
             FeaturePath,
+            IgnoreTags,
             ScenarioConfig,
             ScenarioName,
             ScenarioReturnKind,
@@ -48,6 +49,8 @@ pub(super) struct ScenarioTestContext<'a> {
     pub(super) rel_path: &'a Path,
     /// Optional tag expression to filter scenarios before test generation.
     pub(super) tag_filter: Option<&'a TagExpression>,
+    /// Optional policy marking matching scenarios and rows `#[ignore]`.
+    pub(super) ignore_tags: Option<&'a IgnoreTags>,
     /// Fixture specifications to inject as parameters in generated tests.
     pub(super) fixtures: &'a [FixtureSpec],
     /// Runtime mode for test execution (sync or async/Tokio).
@@ -381,6 +384,7 @@ pub(super) fn generate_scenario_test(
         attributes: ctx.attributes,
         resolutions: Some(ctx.resolutions),
         fallback_diagnostics: None,
+        ignore_tags: ctx.ignore_tags,
     };
     generate_scenario_code(
         &config,

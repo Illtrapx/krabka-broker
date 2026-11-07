@@ -104,6 +104,18 @@ is never substituted again. The `validation::placeholder` module and the
 `outline_undefined_placeholder` compile-fail fixture are removed with the
 behaviour they enforced.
 
+## `ignore_tags`
+
+`scenarios!` and `#[scenario]` accept `ignore_tags = "<tag expression>"`.
+Matching scenarios are still generated but carry
+`#[ignore = "tagged <tags>"]` instead of being dropped, so the default run
+skips them and `cargo test -- --ignored` runs them. Matching uses the
+inherited feature, rule, scenario, and Examples tags; an outline marks each
+matching row's case individually. krabka uses this for its lifecycle tags
+`@formulated` and `@inprogress`, which must stay out of the gating run but
+remain runnable. The tag lexer also accepts `:` and `.` in tag names, as
+`gherkin` does.
+
 ## Validation
 
 All upstream proc-macro unit tests pass with Clippy clean (all warnings

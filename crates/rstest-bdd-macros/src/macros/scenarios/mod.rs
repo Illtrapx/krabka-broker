@@ -31,6 +31,7 @@ use self::{
     test_generation::{ScenarioTestContext, generate_scenario_test, resolve_harness_path},
 };
 use crate::{
+    codegen::scenario::IgnoreTags,
     parsing::{
         feature::{extract_scenario_steps, parse_and_load_feature},
         tags::TagExpression,
@@ -59,6 +60,8 @@ struct FeatureProcessingContext<'a> {
     manifest_dir: &'a Path,
     /// Stores the internal `tag_filter` value.
     tag_filter: Option<&'a TagExpression>,
+    /// Optional policy marking matching scenarios and rows `#[ignore]`.
+    ignore_tags: Option<&'a IgnoreTags>,
     /// Stores the internal `fixtures` value.
     fixtures: &'a [FixtureSpec],
     /// Stores the internal `runtime` value.
@@ -139,6 +142,7 @@ fn process_feature_file(
         feature_stem: &feature_stem,
         rel_path: &rel_path,
         tag_filter: ctx.tag_filter,
+        ignore_tags: ctx.ignore_tags,
         fixtures: ctx.fixtures,
         runtime: ctx.runtime,
         harness: ctx.harness,
@@ -315,6 +319,7 @@ pub(crate) fn scenarios(input: TokenStream) -> TokenStream {
     let ScenariosArgs {
         dir: dir_lit,
         tag_filter: tag_lit,
+        ignore_tags,
         fixtures,
         runtime,
         harness,
@@ -327,6 +332,10 @@ pub(crate) fn scenarios(input: TokenStream) -> TokenStream {
     let tag_filter = match parse_tag_filter(tag_lit) {
         Ok(filter) => filter,
         Err(err_tokens) => return err_tokens,
+    };
+    let ignore_tags = match ignore_tags.as_ref().map(IgnoreTags::parse).transpose() {
+        Ok(policy) => policy,
+        Err(err) => return err.into_compile_error().into(),
     };
 
     let manifest_dir = match resolve_manifest_directory() {
@@ -359,6 +368,7 @@ pub(crate) fn scenarios(input: TokenStream) -> TokenStream {
     let ctx = FeatureProcessingContext {
         manifest_dir: &manifest_dir,
         tag_filter: tag_filter.as_ref().map(|f| &f.expr),
+        ignore_tags: ignore_tags.as_ref(),
         fixtures: &fixtures,
         runtime,
         harness: harness.as_ref(),

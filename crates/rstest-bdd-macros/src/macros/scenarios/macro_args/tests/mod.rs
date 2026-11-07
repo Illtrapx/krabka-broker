@@ -178,6 +178,28 @@ fn scenarios_args_rejects_duplicate_dir() {
 }
 
 #[test]
+fn scenarios_args_parses_ignore_tags() {
+    let args: ScenariosArgs = parse_scenarios_args!(parse_quote!(
+        "tests/features",
+        ignore_tags = "@formulated or @inprogress"
+    ));
+    assert_eq!(
+        args.ignore_tags.map(|lit| lit.value()).as_deref(),
+        Some("@formulated or @inprogress")
+    );
+}
+
+#[test]
+fn scenarios_args_rejects_duplicate_ignore_tags() {
+    let result = try_parse_scenarios_args(parse_quote!(
+        "tests/features",
+        ignore_tags = "@a",
+        ignore_tags = "@b"
+    ));
+    assert_parse_error_contains(result, "duplicate");
+}
+
+#[test]
 fn scenarios_args_rejects_duplicate_tags() {
     let result = try_parse_scenarios_args(parse_quote!("tests/features", tags = "@a", tags = "@b"));
     assert_parse_error_contains(result, "duplicate");

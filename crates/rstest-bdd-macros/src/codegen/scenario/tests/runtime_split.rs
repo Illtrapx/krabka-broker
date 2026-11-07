@@ -38,6 +38,7 @@ fn scenario_config_keeps_attribute_runtime_separate_from_execution_runtime() {
         attributes: None,
         resolutions: None,
         fallback_diagnostics: None,
+        ignore_tags: None,
     };
 
     let attrs = generate_test_attrs(
@@ -96,6 +97,7 @@ fn aliased_harness_scenario_output() -> String {
         attributes: None,
         resolutions: Some(&resolutions),
         fallback_diagnostics: Some(&fallback_diagnostics),
+        ignore_tags: None,
     };
 
     generate_scenario_code(
@@ -137,6 +139,7 @@ fn local_adapter_resolution_does_not_emit_stable_fallback_diagnostics() {
         attributes: None,
         resolutions: None,
         fallback_diagnostics: None,
+        ignore_tags: None,
     };
 
     let output = generate_scenario_code(

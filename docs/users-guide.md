@@ -940,16 +940,17 @@ For migrations from a cucumber `World`, map the concepts as follows:
 ## Binding tests to scenarios
 
 The `#[scenario]` macro is the entry point that ties a Rust test function to a
-scenario defined in a `.feature` file. It accepts six arguments:
+scenario defined in a `.feature` file. It accepts seven arguments:
 
-| Argument           | Purpose                                                                | Status                                                                                                  |
-| ------------------ | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `path: &str`       | Relative path to the feature file (required).                          | **Implemented**: resolved and parsed at macro-expansion time.                                           |
-| `index: usize`     | Optional zero-based scenario index (defaults to `0`).                  | **Implemented**: selects the scenario by position.                                                      |
-| `name: &str`       | Optional scenario title; resolves when unique.                         | **Implemented**: errors when missing and directs duplicates to `index`.                                 |
-| `tags: &str`       | Optional tag-expression filter applied at expansion.                   | **Implemented**: filters scenarios and outline example rows; errors when nothing matches.               |
-| `harness: Path`    | Optional harness adapter type implementing `HarnessAdapter + Default`. | **Implemented**: emits trait-bound assertions and delegates execution when specified.                   |
-| `attributes: Path` | Optional attribute policy type implementing `AttributePolicy`.         | **Implemented**: emits a compile-time trait-bound assertion and resolves policy-backed test attributes. |
+| Argument            | Purpose                                                                | Status                                                                                                  |
+| ------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `path: &str`        | Relative path to the feature file (required).                          | **Implemented**: resolved and parsed at macro-expansion time.                                           |
+| `index: usize`      | Optional zero-based scenario index (defaults to `0`).                  | **Implemented**: selects the scenario by position.                                                      |
+| `name: &str`        | Optional scenario title; resolves when unique.                         | **Implemented**: errors when missing and directs duplicates to `index`.                                 |
+| `tags: &str`        | Optional tag-expression filter applied at expansion.                   | **Implemented**: filters scenarios and outline example rows; errors when nothing matches.               |
+| `ignore_tags: &str` | Optional tag expression for tests to generate as ignored.              | **Implemented**: marks a matching scenario, or each matching outline row, `#[ignore]`.                  |
+| `harness: Path`     | Optional harness adapter type implementing `HarnessAdapter + Default`. | **Implemented**: emits trait-bound assertions and delegates execution when specified.                   |
+| `attributes: Path`  | Optional attribute policy type implementing `AttributePolicy`.         | **Implemented**: emits a compile-time trait-bound assertion and resolves policy-backed test attributes. |
 
 Tag filters run at macro-expansion time against the union of tags on the
 feature, the matched scenario, and—when dealing with `Scenario Outline`—the
@@ -959,6 +960,27 @@ operators `and`, `or`, and `not` (case-insensitive) and respect the precedence
 include the leading `@`. When the filter is combined with `index` or `name`,
 the macro emits a compile error if the selected scenario does not satisfy the
 expression.
+
+### Ignoring scenarios by tag
+
+`ignore_tags` accepts the same expression syntax as `tags`, but matching
+scenarios are still generated: each carries `#[ignore = "tagged <tags>"]`, so
+the default test run skips it and `cargo test -- --ignored` runs it on demand.
+Matching uses the inherited feature, rule, scenario, and Examples tags, so an
+outline marks only the rows whose tags match. Both `#[scenario]` and
+`scenarios!` accept it:
+
+```rust,no_run
+# use rstest_bdd_macros::scenarios;
+// Lifecycle tags keep unfinished scenarios out of the gating run.
+scenarios!(
+    "tests/features",
+    ignore_tags = "@formulated or @inprogress",
+);
+```
+
+Tag names may contain ASCII letters, digits, `_`, `-`, `:`, and `.`, so
+expressions such as `@lifecycle:draft` or `@v1.2` are accepted.
 
 ### Harness adapter and attribute policy
 

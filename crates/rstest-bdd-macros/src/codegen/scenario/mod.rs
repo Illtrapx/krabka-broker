@@ -1,13 +1,14 @@
 //! Code generation for scenario tests.
 //!
 //! This module coordinates code generation for a BDD scenario or outline across
-//! eight focused sub-modules:
+//! nine focused sub-modules:
 //!
 //! - [`adapters`] — resolves adapter APIs and fallback diagnostics once per expansion boundary.
 //! - [`boundary`] — applies shared adapter decisions at the macro-expansion boundary.
 //! - [`cases`] — named rstest case attributes for Scenario Outline rows.
 //! - [`domain`] — shared types for steps, examples, and docstrings.
 //! - [`helpers`] — step-processing and placeholder-substitution utilities.
+//! - [`ignore`] — `ignore_tags` policy emitting `#[ignore]` on matching scenarios and rows.
 //! - [`metadata`] — feature-path and scenario-name wrappers for generated code.
 //! - [`runtime`] — async wrapper and harness-orchestrated runtime tokens.
 //! - [`test_attrs`] — ADR-008 attribute-policy resolution, translating harness and runtime-mode
@@ -28,6 +29,7 @@ mod boundary;
 mod cases;
 mod domain;
 mod helpers;
+mod ignore;
 mod metadata;
 mod runtime;
 mod test_attrs;
@@ -38,6 +40,8 @@ use cases::generate_indexed_case_attrs;
 pub(crate) use domain::*;
 pub(crate) use helpers::process_steps;
 use helpers::process_steps_substituted;
+pub(crate) use ignore::IgnoreTags;
+use ignore::ignore_attribute;
 pub(crate) use metadata::{FeaturePath, ScenarioName};
 use runtime::{
     ContextIterators,
@@ -103,6 +107,8 @@ pub(crate) struct ScenarioConfig<'a> {
     pub(crate) resolutions: Option<&'a crate::codegen::SharedAdapterResolutions>,
     /// Boundary tokens for `#[scenario]`; `scenarios!` emits around its module.
     pub(crate) fallback_diagnostics: Option<&'a TokenStream2>,
+    /// Optional `ignore_tags` policy marking matching scenarios or rows ignored.
+    pub(crate) ignore_tags: Option<&'a IgnoreTags>,
 }
 
 /// Configuration for context iterators in scenario code generation.
@@ -215,10 +221,12 @@ where
         body,
     );
     let fallback_diagnostics = config.fallback_diagnostics;
+    let ignore = ignore_attribute(config.ignore_tags, config.tags);
     quote! {
         #fallback_diagnostics
         #trait_assertions
         #test_attrs
+        #ignore
         #(#attrs)*
         #underscore_expect
         #vis #signature { #body }
@@ -278,7 +286,7 @@ where
         metadata,
     };
 
-    let case_attrs = generate_indexed_case_attrs(examples);
+    let case_attrs = generate_indexed_case_attrs(examples, config.ignore_tags);
     let body = generate_test_tokens(
         &outline_config,
         ContextIterators::new(ctx.prelude, ctx.inserts, ctx.postlude),

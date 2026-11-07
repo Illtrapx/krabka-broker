@@ -84,3 +84,18 @@ fn reports_parse_errors(#[case] input: &str, #[case] expected: &str) {
     let err = parse_error_message(input);
     assert!(err.contains(expected), "unexpected error message: {err}");
 }
+
+#[rstest]
+#[case::colon("@lifecycle:formulated", "@lifecycle:formulated")]
+#[case::full_stop("@v1.2", "@v1.2")]
+fn parses_tags_with_colons_and_full_stops(#[case] input: &str, #[case] tag: &str) {
+    let expr = parse_expression(input);
+    assert!(expr.evaluate([tag]));
+    assert!(!expr.evaluate(["@lifecycle"]));
+}
+
+#[test]
+fn lists_referenced_tags_once_in_source_order() {
+    let expr = parse_expression("@a or (not @b and @a)");
+    assert_eq!(expr.referenced_tags(), ["@a", "@b"]);
+}

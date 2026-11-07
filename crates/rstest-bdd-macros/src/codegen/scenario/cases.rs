@@ -8,7 +8,10 @@
 use proc_macro2::TokenStream as TokenStream2;
 use quote::{format_ident, quote};
 
-use super::helpers::cell_to_lit;
+use super::{
+    helpers::cell_to_lit,
+    ignore::{IgnoreTags, ignore_attribute},
+};
 use crate::parsing::examples::ExampleTable;
 
 /// Generate one named case attribute per row, prepending the row's index.
@@ -25,17 +28,26 @@ use crate::parsing::examples::ExampleTable;
 /// #[case::v_5(0usize, "5", "apples")]
 /// #[case::v_10(1usize, "10", "oranges")]
 /// ```
-pub(crate) fn generate_indexed_case_attrs(examples: &ExampleTable) -> Vec<TokenStream2> {
+///
+/// rstest applies attributes written before a `#[case]` to that case only, so
+/// a row matching the `ignore_tags` policy gets its `#[ignore]` immediately
+/// before its own case attribute.
+pub(crate) fn generate_indexed_case_attrs(
+    examples: &ExampleTable,
+    ignore: Option<&IgnoreTags>,
+) -> Vec<TokenStream2> {
     examples
         .rows
         .iter()
         .zip(&examples.case_names)
+        .zip(&examples.row_tags)
         .enumerate()
-        .map(|(idx, (row, case_name))| {
+        .map(|(idx, ((row, case_name), row_tags))| {
+            let ignore = ignore_attribute(ignore, row_tags);
             let case_ident = format_ident!("{}", case_name);
             let idx_lit = syn::LitInt::new(&format!("{idx}usize"), proc_macro2::Span::call_site());
             let cells = row.iter().map(|value| cell_to_lit(value));
-            quote! { #[case::#case_ident( #idx_lit, #(#cells),* )] }
+            quote! { #ignore #[case::#case_ident( #idx_lit, #(#cells),* )] }
         })
         .collect()
 }
@@ -63,11 +75,26 @@ mod tests {
     fn all_empty_rows_become_cases_with_aligned_indexes() {
         let examples = table(&["a", "", "b"], &["a", "row", "b"]);
         assert_eq!(
-            rendered(&generate_indexed_case_attrs(&examples)),
+            rendered(&generate_indexed_case_attrs(&examples, None)),
             [
                 "# [case :: a (0usize , \"a\")]",
                 "# [case :: row (1usize , \"\")]",
                 "# [case :: b (2usize , \"b\")]",
+            ]
+        );
+    }
+
+    #[test]
+    fn ignored_rows_get_their_own_ignore_attribute() {
+        let mut examples = table(&["a", "b"], &["a", "b"]);
+        examples.row_tags = vec![vec!["@ready".to_owned()], vec!["@formulated".to_owned()]];
+        let lit = syn::LitStr::new("@formulated", proc_macro2::Span::call_site());
+        let ignore = IgnoreTags::parse(&lit).expect("expression should parse");
+        assert_eq!(
+            rendered(&generate_indexed_case_attrs(&examples, Some(&ignore))),
+            [
+                "# [case :: a (0usize , \"a\")]",
+                "# [ignore = \"tagged @formulated\"] # [case :: b (1usize , \"b\")]",
             ]
         );
     }

@@ -19,6 +19,9 @@
 //! )]
 //! fn fast_stable_cases() {}
 //! ```
+//!
+//! `ignore_tags = "…"` takes the same expression syntax but keeps matching
+//! scenarios (and outline rows), marking them `#[ignore]` instead.
 
 mod args;
 pub(super) mod paths;
@@ -32,7 +35,7 @@ use proc_macro2::Span;
 
 #[rustfmt::skip]
 use crate::codegen::scenario::{
-    generate_scenario_code, FeaturePath, RuntimeMode, ScenarioConfig, ScenarioName,
+    generate_scenario_code, FeaturePath, IgnoreTags, RuntimeMode, ScenarioConfig, ScenarioName,
 };
 #[rustfmt::skip]
 use crate::parsing::feature::{
@@ -87,6 +90,7 @@ fn try_scenario(
         path,
         selector,
         tag_filter,
+        ignore_tags,
         harness,
         attributes,
     }: ScenarioArgs,
@@ -111,6 +115,11 @@ fn try_scenario(
     // Retrieve cached feature to avoid repeated parsing.
     let feature = parse_and_load_feature(&path).map_err(proc_macro::TokenStream::from)?;
     let tag_filter = parse_tag_filter(tag_filter)?;
+    let ignore_tags = ignore_tags
+        .as_ref()
+        .map(IgnoreTags::parse)
+        .transpose()
+        .map_err(|err| proc_macro::TokenStream::from(err.into_compile_error()))?;
     ensure_feature_not_empty(&path_lit, &feature)?;
     let candidate_indices = resolve_candidate_indices(selector.as_ref(), &feature, &path_lit)?;
     let scenario_data = select_scenario(
@@ -186,6 +195,7 @@ fn try_scenario(
         attributes: attributes.as_ref(),
         resolutions: Some(&resolutions),
         fallback_diagnostics: Some(&fallback_diagnostics),
+        ignore_tags: ignore_tags.as_ref(),
     };
 
     let generated = generate_scenario_code(

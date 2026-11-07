@@ -96,7 +96,40 @@ impl TagExpression {
     }
 }
 
+impl TagExpression {
+    /// Return the tags the expression mentions, in source order, without
+    /// duplicates.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// let expr = TagExpression::parse("@a or (not @b and @a)")?;
+    /// assert_eq!(expr.referenced_tags(), ["@a", "@b"]);
+    /// ```
+    pub(crate) fn referenced_tags(&self) -> Vec<&str> {
+        let mut tags = Vec::new();
+        self.root.collect_tags(&mut tags);
+        tags
+    }
+}
+
 impl Expr {
+    /// Append the tags under this node to `tags`, skipping repeats.
+    fn collect_tags<'a>(&'a self, tags: &mut Vec<&'a str>) {
+        match self {
+            Self::Tag(tag) => {
+                if !tags.contains(&tag.as_str()) {
+                    tags.push(tag);
+                }
+            }
+            Self::Not(inner) => inner.collect_tags(tags),
+            Self::And(lhs, rhs) | Self::Or(lhs, rhs) => {
+                lhs.collect_tags(tags);
+                rhs.collect_tags(tags);
+            }
+        }
+    }
+
     /// Provides the internal `eval` operation.
     pub(super) fn eval(&self, tags: &TagSet<'_>) -> bool {
         match self {

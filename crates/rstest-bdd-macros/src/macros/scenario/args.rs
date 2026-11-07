@@ -1,5 +1,6 @@
 //! Argument parsing for `#[scenario]` covering required `path`, mutually
-//! exclusive `index`/`name` selectors, optional tag filters, and optional
+//! exclusive `index`/`name` selectors, optional tag filters, an optional
+//! `ignore_tags` expression, and optional
 //! harness adapter and attribute policy paths. Reports duplicates and
 //! conflicts with combined `syn::Error`s.
 
@@ -20,6 +21,8 @@ pub(super) struct ScenarioArgs {
     pub(super) selector: Option<ScenarioSelector>,
     /// Stores the internal `tag_filter` value.
     pub(super) tag_filter: Option<LitStr>,
+    /// Tag expression that marks the selected scenario or rows `#[ignore]`.
+    pub(super) ignore_tags: Option<LitStr>,
     /// Stores the internal `harness` value.
     pub(super) harness: Option<syn::Path>,
     /// Stores the internal `attributes` value.
@@ -54,6 +57,8 @@ enum ScenarioArg {
     Name(LitStr),
     /// Represents the internal validation outcome.
     Tags(LitStr),
+    /// The `ignore_tags = "..."` expression.
+    IgnoreTags(LitStr),
     /// Represents the internal validation outcome.
     Harness(syn::Path),
     /// Represents the internal validation outcome.
@@ -76,13 +81,17 @@ impl Parse for ScenarioArg {
                 Ok(Self::Name(input.parse()?))
             } else if ident == "tags" {
                 Ok(Self::Tags(input.parse()?))
+            } else if ident == "ignore_tags" {
+                Ok(Self::IgnoreTags(input.parse()?))
             } else if ident == "harness" {
                 Ok(Self::Harness(input.parse()?))
             } else if ident == "attributes" {
                 Ok(Self::Attributes(input.parse()?))
             } else {
-                Err(input
-                    .error("expected `path`, `index`, `name`, `tags`, `harness`, or `attributes`"))
+                Err(input.error(concat!(
+                    "expected `path`, `index`, `name`, `tags`, `ignore_tags`, `harness`, or ",
+                    "`attributes`",
+                )))
             }
         }
     }
@@ -94,6 +103,7 @@ impl Parse for ScenarioArgs {
         let mut path = None;
         let mut selector = None;
         let mut tag_filter = None;
+        let mut ignore_tags = None;
         let mut harness = None;
         let mut attributes = None;
 
@@ -103,6 +113,9 @@ impl Parse for ScenarioArgs {
                 ScenarioArg::Index(i) => set_selector_index(&mut selector, &i)?,
                 ScenarioArg::Name(lit) => set_selector_name(&mut selector, &lit)?,
                 ScenarioArg::Tags(lit) => set_unique_field(&mut tag_filter, lit, "tags", input)?,
+                ScenarioArg::IgnoreTags(lit) => {
+                    set_unique_field(&mut ignore_tags, lit, "ignore_tags", input)?;
+                }
                 ScenarioArg::Harness(p) => {
                     set_unique_field(&mut harness, p, "harness", input)?;
                 }
@@ -118,6 +131,7 @@ impl Parse for ScenarioArgs {
             path,
             selector,
             tag_filter,
+            ignore_tags,
             harness,
             attributes,
         })
@@ -327,6 +341,29 @@ mod tests {
             path = "test.feature",
             attributes = a::P,
             attributes = b::P
+        ));
+        assert_parse_error_contains(result, "duplicate");
+    }
+
+    #[test]
+    fn parses_ignore_tags_argument() {
+        let args = parse_scenario_args(quote!(
+            path = "test.feature",
+            ignore_tags = "@formulated or @inprogress"
+        ))
+        .expect("scenario args should parse");
+        assert_eq!(
+            args.ignore_tags.map(|lit| lit.value()).as_deref(),
+            Some("@formulated or @inprogress")
+        );
+    }
+
+    #[test]
+    fn rejects_duplicate_ignore_tags() {
+        let result = parse_scenario_args(quote!(
+            path = "test.feature",
+            ignore_tags = "@a",
+            ignore_tags = "@b"
         ));
         assert_parse_error_contains(result, "duplicate");
     }

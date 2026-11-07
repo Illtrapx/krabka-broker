@@ -70,6 +70,7 @@ fn scenario_output_with_shared_resolutions(
         attributes: None,
         resolutions: Some(resolutions),
         fallback_diagnostics: None,
+        ignore_tags: None,
     };
 
     generate_scenario_code(
