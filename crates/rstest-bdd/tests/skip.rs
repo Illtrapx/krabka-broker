@@ -130,11 +130,24 @@ fn feature_tag_allows_skip(fail_on_enabled: FailOnSkippedGuard) {
 
 #[scenario(
     path = "tests/features/skip_allowance/example_tag.feature",
-    name = "example tag ignored"
+    tags = "@allow_skipped"
+)]
+#[serial]
+fn example_tag_allows_skip_for_its_rows(fail_on_enabled: FailOnSkippedGuard, case: String) {
+    let _ = &fail_on_enabled;
+    panic!("scenario body should not execute when the {case} row allows skipping");
+}
+
+#[scenario(
+    path = "tests/features/skip_allowance/example_tag.feature",
+    tags = "not @allow_skipped"
 )]
 #[serial]
 #[should_panic(expected = "Scenario skipped with fail_on_skipped enabled")]
-fn example_tag_does_not_allow_skip(fail_on_enabled: FailOnSkippedGuard, case: String) {
+fn example_tag_does_not_allow_skip_for_other_rows(
+    fail_on_enabled: FailOnSkippedGuard,
+    case: String,
+) {
     let _ = case;
     let _ = &fail_on_enabled;
 }

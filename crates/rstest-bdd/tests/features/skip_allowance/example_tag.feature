@@ -1,8 +1,12 @@
-Feature: Example tags do not allow skipping
-  Scenario Outline: example tag ignored
+Feature: Example tags control skipping per row
+  Scenario Outline: example tag scopes skip allowance
     Given a scenario will be skipped
 
     @allow_skipped
-    Examples:
-      | case |
-      | row  |
+    Examples: allowed
+      | case    |
+      | allowed |
+
+    Examples: disallowed
+      | case       |
+      | disallowed |

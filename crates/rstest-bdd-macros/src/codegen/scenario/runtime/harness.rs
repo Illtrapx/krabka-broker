@@ -18,19 +18,20 @@ use super::types::{CodeComponents, ScenarioLiterals, TokenAssemblyContext};
 fn generate_metadata_constants(
     literals: &ScenarioLiterals,
     components: &CodeComponents,
-    path: &TokenStream2,
 ) -> TokenStream2 {
     // Deliberately exhaustive (no `..` rest): a future field addition to
     // `ScenarioLiterals` must be a hard error here, not a silent omission
-    // (ExecPlan Milestone 6). `allow_literal` is unused by this assembler —
-    // the harness accepts the scenario's skip policy from its request —
-    // so it is bound as `_allow_literal` to satisfy that contract.
+    // (ExecPlan Milestone 6). The value expressions are consumed by the
+    // runner closure and the harness metadata, not by these item
+    // declarations, so they are bound with leading underscores.
     let ScenarioLiterals {
         feature_literal,
         scenario_literal,
         scenario_line_literal,
-        tag_literals,
-        allow_literal: _allow_literal,
+        tag_items,
+        tags_value: _tags_value,
+        tags_vec: _tags_vec,
+        allow_value: _allow_value,
     } = literals;
     let CodeComponents {
         step_executor,
@@ -43,10 +44,7 @@ fn generate_metadata_constants(
         const __RSTEST_BDD_FEATURE_PATH: &str = #feature_literal;
         const __RSTEST_BDD_SCENARIO_NAME: &str = #scenario_literal;
         const __RSTEST_BDD_SCENARIO_LINE: u32 = #scenario_line_literal;
-        static __RSTEST_BDD_SCENARIO_TAGS: std::sync::LazyLock<#path::reporting::ScenarioTags> =
-            std::sync::LazyLock::new(|| {
-                std::sync::Arc::<[String]>::from(vec![#(#tag_literals.to_string()),*])
-            });
+        #tag_items
 
         #step_executor
         #skip_extractor
@@ -57,8 +55,10 @@ fn generate_metadata_constants(
 /// Parameters for generating the runner closure body.
 #[derive(Clone, Copy)]
 struct RunnerClosureParams<'a> {
-    /// Stores the internal `allow_literal` value.
-    allow_literal: &'a syn::LitBool,
+    /// Expression yielding whether the scenario may be skipped.
+    allow_value: &'a TokenStream2,
+    /// Expression yielding the scenario's `ScenarioTags`.
+    tags_value: &'a TokenStream2,
     /// Stores the internal `ctx_prelude` value.
     ctx_prelude: &'a [TokenStream2],
     /// Stores the internal `ctx_inserts` value.
@@ -81,7 +81,8 @@ struct RunnerClosureParams<'a> {
 /// execution loop, skip handling, postlude, and the user block.
 fn generate_runner_closure_body(params: RunnerClosureParams<'_>) -> TokenStream2 {
     let RunnerClosureParams {
-        allow_literal,
+        allow_value,
+        tags_value,
         ctx_prelude,
         ctx_inserts,
         ctx_postlude,
@@ -93,7 +94,7 @@ fn generate_runner_closure_body(params: RunnerClosureParams<'_>) -> TokenStream2
     } = params;
 
     quote! {
-        let __rstest_bdd_allow_skipped: bool = #allow_literal;
+        let __rstest_bdd_allow_skipped: bool = #allow_value;
         #(#ctx_prelude)*
         let __rstest_bdd_harness_context_cell =
             #path::StepContext::owned_cell(__rstest_bdd_harness_context);
@@ -110,7 +111,7 @@ fn generate_runner_closure_body(params: RunnerClosureParams<'_>) -> TokenStream2
             __RSTEST_BDD_FEATURE_PATH,
             __RSTEST_BDD_SCENARIO_NAME,
             __RSTEST_BDD_SCENARIO_LINE,
-            __RSTEST_BDD_SCENARIO_TAGS.clone(),
+            #tags_value,
         );
         let mut __rstest_bdd_skipped: Option<Option<String>> = None;
         let mut __rstest_bdd_skipped_at: Option<usize> = None;
@@ -150,9 +151,10 @@ pub(super) fn assemble_test_tokens_with_harness(
         <#harness_path as #harness_crate::HarnessAdapter>::Context
     };
 
-    let constants = generate_metadata_constants(literals, components, &path);
+    let constants = generate_metadata_constants(literals, components);
     let closure_body = generate_runner_closure_body(RunnerClosureParams {
-        allow_literal: &literals.allow_literal,
+        allow_value: &literals.allow_value,
+        tags_value: &literals.tags_value,
         ctx_prelude: context.ctx_prelude,
         ctx_inserts: context.ctx_inserts,
         ctx_postlude: context.ctx_postlude,
@@ -163,7 +165,7 @@ pub(super) fn assemble_test_tokens_with_harness(
         harness_context_ty: &harness_context_ty,
     });
 
-    let tag_literals = &literals.tag_literals;
+    let tags_vec = &literals.tags_vec;
 
     quote! {
         #constants
@@ -172,7 +174,7 @@ pub(super) fn assemble_test_tokens_with_harness(
             __RSTEST_BDD_FEATURE_PATH,
             __RSTEST_BDD_SCENARIO_NAME,
             __RSTEST_BDD_SCENARIO_LINE,
-            vec![#(#tag_literals.to_string()),*],
+            #tags_vec,
         );
 
         let __rstest_bdd_runner = #harness_crate::ScenarioRunner::new(

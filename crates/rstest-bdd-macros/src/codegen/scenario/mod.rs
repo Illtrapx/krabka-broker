@@ -34,7 +34,7 @@ mod test_attrs;
 
 use adapters::resolve_scenario_adapters;
 use boundary::finalize_scenario_signature;
-use cases::{generate_case_attrs, generate_indexed_case_attrs};
+use cases::generate_indexed_case_attrs;
 pub(crate) use domain::*;
 pub(crate) use helpers::process_steps;
 use helpers::process_steps_substituted;
@@ -49,10 +49,7 @@ use runtime::{
 };
 
 pub(crate) use crate::macros::scenarios::ScenariosRuntimeMode as RuntimeMode;
-use crate::{
-    macros::scenarios::ScenariosTestAttributeHint as TestAttributeHint,
-    parsing::placeholder::contains_placeholders,
-};
+use crate::macros::scenarios::ScenariosTestAttributeHint as TestAttributeHint;
 
 /// Return kinds supported by scenario bodies.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -123,21 +120,6 @@ pub(crate) fn scenario_allows_skip(tags: &[String]) -> bool {
     tags.iter().any(|tag| tag == "@allow_skipped")
 }
 
-/// Checks if any step in the scenario contains placeholder tokens.
-fn steps_contain_placeholders(steps: &[crate::parsing::feature::ParsedStep]) -> bool {
-    steps.iter().any(|step| {
-        contains_placeholders(&step.text)
-            || step
-                .docstring
-                .as_ref()
-                .is_some_and(|d| contains_placeholders(d))
-            || step.table.as_ref().is_some_and(|t| {
-                t.iter()
-                    .any(|row| row.iter().any(|cell| contains_placeholders(cell)))
-            })
-    })
-}
-
 /// Generate the runtime test for a single scenario.
 pub(crate) fn generate_scenario_code(
     config: &ScenarioConfig<'_>,
@@ -145,16 +127,16 @@ pub(crate) fn generate_scenario_code(
     ctx_inserts: impl Iterator<Item = TokenStream2>,
     ctx_postlude: impl Iterator<Item = TokenStream2>,
 ) -> TokenStream2 {
-    // Check if this is a scenario outline with placeholders in steps
-    let is_outline_with_placeholders =
-        config.examples.is_some() && steps_contain_placeholders(&config.steps);
+    // Every outline takes the indexed path, even without placeholders: the
+    // hidden case index also selects each row's tags and skip policy.
+    let is_outline = config.examples.is_some();
     let ctx = ContextConfig {
         prelude: ctx_prelude,
         inserts: ctx_inserts,
         postlude: ctx_postlude,
     };
 
-    if is_outline_with_placeholders {
+    if is_outline {
         generate_outline_scenario_code(config, ctx)
     } else {
         generate_regular_scenario_code(config, ctx)
@@ -212,15 +194,12 @@ where
         return_kind: config.return_kind,
         harness: config.harness,
         harness_api_path: harness_resolution.map(|resolution| resolution.api_path.clone()),
+        row_tags: None,
     };
     let test_config = TestTokensConfig {
         processed_steps,
         metadata,
     };
-    let case_attrs = config
-        .examples
-        .as_ref()
-        .map_or_else(Vec::new, generate_case_attrs);
     let body = generate_test_tokens(
         &test_config,
         ContextIterators::new(ctx.prelude, ctx.inserts, ctx.postlude),
@@ -240,7 +219,6 @@ where
         #fallback_diagnostics
         #trait_assertions
         #test_attrs
-        #(#case_attrs)*
         #(#attrs)*
         #underscore_expect
         #vis #signature { #body }
@@ -298,6 +276,7 @@ where
         return_kind: config.return_kind,
         harness: config.harness,
         harness_api_path: harness_resolution.map(|resolution| resolution.api_path.clone()),
+        row_tags: Some(&examples.row_tags),
     };
     let outline_config = OutlineTestTokensConfig {
         all_rows_steps,

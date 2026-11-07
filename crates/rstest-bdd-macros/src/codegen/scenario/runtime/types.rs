@@ -45,6 +45,8 @@ pub(crate) struct ScenarioMetadata<'a> {
     pub(crate) harness: Option<&'a syn::Path>,
     /// Base harness API path selected once at the expansion boundary.
     pub(crate) harness_api_path: Option<TokenStream2>,
+    /// Per-row tags of a Scenario Outline, aligned with its generated cases.
+    pub(crate) row_tags: Option<&'a [Vec<String>]>,
 }
 
 impl<'a> ScenarioMetadata<'a> {
@@ -56,6 +58,7 @@ impl<'a> ScenarioMetadata<'a> {
             scenario_line: self.scenario_line,
             tags: self.tags,
             allow_skipped: self.allow_skipped,
+            row_tags: self.row_tags,
         }
     }
 }
@@ -81,16 +84,20 @@ pub(crate) struct OutlineTestTokensConfig<'a> {
 #[derive(Debug)]
 /// Internal data used by the macros implementation.
 pub(super) struct ScenarioLiterals {
-    /// Stores the internal `allow_literal` value.
-    pub(super) allow_literal: syn::LitBool,
     /// Stores the internal `feature_literal` value.
     pub(super) feature_literal: syn::LitStr,
     /// Stores the internal `scenario_literal` value.
     pub(super) scenario_literal: syn::LitStr,
     /// Stores the internal `scenario_line_literal` value.
     pub(super) scenario_line_literal: syn::LitInt,
-    /// Stores the internal `tag_literals` value.
-    pub(super) tag_literals: Vec<syn::LitStr>,
+    /// Item declarations backing the tag and skip-policy expressions.
+    pub(super) tag_items: TokenStream2,
+    /// Expression yielding this test's `ScenarioTags`.
+    pub(super) tags_value: TokenStream2,
+    /// Expression yielding this test's tags as `Vec<String>`.
+    pub(super) tags_vec: TokenStream2,
+    /// Expression yielding whether this test may be skipped.
+    pub(super) allow_value: TokenStream2,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -106,6 +113,9 @@ pub(crate) struct ScenarioLiteralsInput<'a> {
     pub(super) tags: &'a [String],
     /// Stores the internal `allow_skipped` value.
     pub(super) allow_skipped: bool,
+    /// Per-row outline tags; when present they replace `tags` and
+    /// `allow_skipped` for each generated case.
+    pub(super) row_tags: Option<&'a [Vec<String>]>,
 }
 
 #[derive(Debug)]

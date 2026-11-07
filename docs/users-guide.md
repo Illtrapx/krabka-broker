@@ -167,6 +167,11 @@ These rows run as `withdrawals::case_1_v_10` and
 `v_` prefix, Rust keywords gain a trailing underscore, empty values are named
 `row`, and repeated names gain `_2`, `_3`, and so on.
 
+Each case also carries the tags of its own row: the feature, rule, and
+scenario tags plus those of the `Examples:` block that declared it. These
+tags drive tag filters, `@allow_skipped`, the scenario tags recorded for
+reporting, and the metadata handed to a harness adapter.
+
 ### Internationalized scenarios
 
 `rstest-bdd` reads the optional `# language: <code>` directive that appears at
@@ -1984,8 +1989,10 @@ Pass an optional string to describe the reason, and use the standard `format!`
 syntax to interpolate values when needed. Set the `RSTEST_BDD_FAIL_ON_SKIPPED`
 environment variable to `1`, or call
 `rstest_bdd::config::set_fail_on_skipped(true)`, to escalate skipped scenarios
-into test failures unless the feature or scenario carries an `@allow_skipped`
-tag. (Example-level tags are not yet evaluated.)
+into test failures unless the feature, rule, or scenario carries an
+`@allow_skipped` tag. In a `Scenario Outline`, tags on an `Examples:` block
+apply to that block's rows only, so `@allow_skipped` there allows those rows
+to skip while rows from other blocks still fail.
 
 The macro captures the current execution scope internally, so helper functions
 may freely call `skip!` as long as they eventually run within a step or hook.

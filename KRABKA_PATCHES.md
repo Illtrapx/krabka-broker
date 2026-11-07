@@ -74,6 +74,17 @@ underscore, because `case_1__5` would trip `non_snake_case` in crates that
 deny warnings: digit-leading values gain a `v_` prefix (`5` becomes `v_5`),
 keywords gain a trailing underscore, and empty values become `row`.
 
+## Per-row Examples tags
+
+Examples-block tags were used only to filter rows; at run time every case
+reported the scenario's tags and applied the scenario's `@allow_skipped`
+decision. Each outline case now reports the tags of its own row (feature,
+rule, scenario, and Examples block) through runtime `ScenarioTags` and the
+harness metadata, and applies its own `@allow_skipped` policy. The tags and
+skip flags are emitted as per-row tables selected by the hidden case index,
+so every outline now takes the indexed code path, with or without
+placeholders.
+
 ## Validation
 
 All upstream proc-macro unit tests pass with Clippy clean (all warnings

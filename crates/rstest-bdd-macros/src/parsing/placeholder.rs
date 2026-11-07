@@ -95,11 +95,6 @@ pub fn substitute_placeholders(
     Ok(result)
 }
 
-/// Checks if a text contains any placeholder tokens.
-///
-/// Returns `true` if the text contains at least one `<placeholder>` pattern.
-pub fn contains_placeholders(text: &str) -> bool { PLACEHOLDER_RE.is_match(text) }
-
 /// Extracts all placeholder names from a text.
 ///
 /// Returns a vector of placeholder names (without angle brackets) found in the
@@ -198,19 +193,6 @@ mod tests {
             panic!("placeholder substitution should succeed");
         };
         assert_eq!(result, "The 3 includes apples");
-    }
-
-    #[test]
-    fn contains_placeholders_returns_true() {
-        assert!(contains_placeholders("I have <count> items"));
-        assert!(contains_placeholders("<a> and <b>"));
-    }
-
-    #[test]
-    fn contains_placeholders_returns_false() {
-        assert!(!contains_placeholders("I have 5 items"));
-        assert!(!contains_placeholders("No placeholders here"));
-        assert!(!contains_placeholders("Angle brackets < > without names"));
     }
 
     #[test]

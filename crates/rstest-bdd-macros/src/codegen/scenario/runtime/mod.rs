@@ -3,6 +3,7 @@
 mod body;
 mod generators;
 mod harness;
+mod literals;
 #[cfg(test)]
 mod tests;
 mod types;
@@ -20,6 +21,7 @@ use generators::{
     generate_step_executor_loop_outline,
 };
 use harness::{HarnessAssemblyPaths, assemble_test_tokens_with_harness};
+use literals::create_scenario_literals;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use types::{CodeComponents, ScenarioLiterals, ScenarioLiteralsInput, TokenAssemblyContext};
@@ -115,32 +117,6 @@ where
     }
 }
 
-/// Convert scenario metadata into literals embedded in generated test tokens.
-fn create_scenario_literals(input: ScenarioLiteralsInput<'_>) -> ScenarioLiterals {
-    let allow_literal = syn::LitBool::new(input.allow_skipped, proc_macro2::Span::call_site());
-    let feature_literal =
-        syn::LitStr::new(input.feature_path.as_str(), proc_macro2::Span::call_site());
-    let scenario_literal =
-        syn::LitStr::new(input.scenario_name.as_str(), proc_macro2::Span::call_site());
-    let scenario_line_literal = syn::LitInt::new(
-        &input.scenario_line.to_string(),
-        proc_macro2::Span::call_site(),
-    );
-    let tag_literals = input
-        .tags
-        .iter()
-        .map(|tag| syn::LitStr::new(tag, proc_macro2::Span::call_site()))
-        .collect();
-
-    ScenarioLiterals {
-        allow_literal,
-        feature_literal,
-        scenario_literal,
-        scenario_line_literal,
-        tag_literals,
-    }
-}
-
 /// Returns the common runtime components shared by regular and outline scenarios.
 ///
 /// Extracts `step_executor`, `skip_extractor`, `scenario_guard`, and `skip_handler` to avoid
@@ -207,11 +183,13 @@ fn assemble_test_tokens(
         block,
     } = context;
     let ScenarioLiterals {
-        allow_literal,
         feature_literal,
         scenario_literal,
         scenario_line_literal,
-        tag_literals,
+        tag_items,
+        tags_value,
+        tags_vec: _tags_vec,
+        allow_value,
     } = literals;
 
     let CodeComponents {
@@ -227,15 +205,12 @@ fn assemble_test_tokens(
         const __RSTEST_BDD_FEATURE_PATH: &str = #feature_literal;
         const __RSTEST_BDD_SCENARIO_NAME: &str = #scenario_literal;
         const __RSTEST_BDD_SCENARIO_LINE: u32 = #scenario_line_literal;
-        static __RSTEST_BDD_SCENARIO_TAGS: std::sync::LazyLock<#path::reporting::ScenarioTags> =
-            std::sync::LazyLock::new(|| {
-                std::sync::Arc::<[String]>::from(vec![#(#tag_literals.to_string()),*])
-            });
+        #tag_items
         #step_executor
         #skip_extractor
         #scenario_guard
 
-        let __rstest_bdd_allow_skipped: bool = #allow_literal;
+        let __rstest_bdd_allow_skipped: bool = #allow_value;
         #(#ctx_prelude)*
         let mut ctx = {
             let mut ctx = #path::StepContext::default();
@@ -247,7 +222,7 @@ fn assemble_test_tokens(
             __RSTEST_BDD_FEATURE_PATH,
             __RSTEST_BDD_SCENARIO_NAME,
             __RSTEST_BDD_SCENARIO_LINE,
-            __RSTEST_BDD_SCENARIO_TAGS.clone(),
+            #tags_value,
         );
         let mut __rstest_bdd_skipped: Option<Option<String>> = None;
         let mut __rstest_bdd_skipped_at: Option<usize> = None;
