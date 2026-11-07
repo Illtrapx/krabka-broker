@@ -53,6 +53,15 @@ patch those scenarios never ran.
 keyword, as an `And` does and as Cucumber specifies. A bullet that precedes
 every primary keyword has nothing to continue, so it stays a `Given`.
 
+## All-empty Examples rows
+
+Upstream dropped Examples rows whose cells were all empty, but it filtered
+them after numbering the cases and again when building the substituted step
+table. Every later row then ran another row's steps. Such rows are now real
+cases, as in Cucumber, because empty strings are legitimate boundary inputs.
+Case indexes and the substituted step table both enumerate every row, so
+they stay aligned.
+
 ## Validation
 
 All upstream proc-macro unit tests pass with Clippy clean (all warnings

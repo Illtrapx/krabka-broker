@@ -138,6 +138,12 @@ keyword, exactly like `And`, so `* another outcome` after a `Then` step looks
 up a `#[then]` definition. A bullet that precedes every `Given`, `When`, or
 `Then` in the scenario (including its backgrounds) is treated as `Given`.
 
+### Scenario outline rows
+
+Every Examples row becomes one generated test case, in table order. A row
+whose cells are all empty is a case too: empty strings are legitimate boundary
+inputs, so the row runs with each placeholder replaced by an empty string.
+
 ### Internationalized scenarios
 
 `rstest-bdd` reads the optional `# language: <code>` directive that appears at

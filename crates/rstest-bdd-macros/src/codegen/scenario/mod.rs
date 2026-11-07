@@ -35,12 +35,7 @@ use adapters::resolve_scenario_adapters;
 use boundary::finalize_scenario_signature;
 pub(crate) use domain::*;
 pub(crate) use helpers::process_steps;
-use helpers::{
-    generate_case_attrs,
-    generate_indexed_case_attrs,
-    process_steps_substituted,
-    row_has_values,
-};
+use helpers::{generate_case_attrs, generate_indexed_case_attrs, process_steps_substituted};
 pub(crate) use metadata::{FeaturePath, ScenarioName};
 use runtime::{
     ContextIterators,
@@ -276,7 +271,6 @@ where
     let all_rows_steps: Result<Vec<_>, _> = examples
         .rows
         .iter()
-        .filter(|row| row_has_values(row))
         .map(|row| {
             let row = ExampleRow::new(row.clone());
             process_steps_substituted(&config.steps, &headers, &row)
