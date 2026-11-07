@@ -85,7 +85,7 @@ use super::{
         "doc",
         vec![
             StepBuilder::new(StepType::Given, "text")
-                .with_docstring("line1\nline2")
+                .with_docstring("first line\nline2")
                 .build(),
         ],
     ),
@@ -93,7 +93,7 @@ use super::{
         keyword: crate::StepKeyword::Given,
         source: crate::parsing::feature::StepSource::default(),
         text: "text".to_owned(),
-        docstring: Some("line1\nline2".to_owned()),
+        docstring: Some("first line\nline2".to_owned()),
         table: None,
         #[cfg(feature = "compile-time-validation")]
         span: proc_macro2::Span::call_site(),
