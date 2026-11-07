@@ -6,6 +6,7 @@ use crate::codegen::scenario::{
     FeaturePath,
     ScenarioName,
     ScenarioReturnKind,
+    TagPolicy,
     helpers::ProcessedStepTokens,
 };
 
@@ -47,6 +48,8 @@ pub(crate) struct ScenarioMetadata<'a> {
     pub(crate) harness_api_path: Option<TokenStream2>,
     /// Per-row tags of a Scenario Outline, aligned with its generated cases.
     pub(crate) row_tags: Option<&'a [Vec<String>]>,
+    /// Optional policy running matching scenarios or rows as expected failures.
+    pub(crate) expect_failure_tags: Option<&'a TagPolicy>,
 }
 
 impl<'a> ScenarioMetadata<'a> {
@@ -59,6 +62,7 @@ impl<'a> ScenarioMetadata<'a> {
             tags: self.tags,
             allow_skipped: self.allow_skipped,
             row_tags: self.row_tags,
+            expect_failure_tags: self.expect_failure_tags,
         }
     }
 }
@@ -102,6 +106,8 @@ pub(super) struct ScenarioLiterals {
     pub(super) tags_vec: TokenStream2,
     /// Expression yielding whether this test may be skipped.
     pub(super) allow_value: TokenStream2,
+    /// Expression yielding `Some(reason)` when this test is an expected failure.
+    pub(super) expected_failure_value: TokenStream2,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -120,6 +126,8 @@ pub(crate) struct ScenarioLiteralsInput<'a> {
     /// Per-row outline tags; when present they replace `tags` and
     /// `allow_skipped` for each generated case.
     pub(super) row_tags: Option<&'a [Vec<String>]>,
+    /// Optional policy running matching scenarios or rows as expected failures.
+    pub(super) expect_failure_tags: Option<&'a TagPolicy>,
 }
 
 #[derive(Debug)]
@@ -135,6 +143,10 @@ pub(crate) struct CodeComponents {
     pub(super) step_executor_loop: TokenStream2,
     /// Stores the internal `skip_handler` value.
     pub(super) skip_handler: TokenStream2,
+    /// Handles a failed step: panics, or returns for an expected failure.
+    pub(super) failure_handler: TokenStream2,
+    /// Fails an expected-failure test whose steps all passed.
+    pub(super) expected_failure_check: TokenStream2,
 }
 
 #[derive(Debug, Clone, Copy)]

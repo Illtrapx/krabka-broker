@@ -151,6 +151,20 @@ exactly, including its leading and trailing newlines that existing steps rely
 on. No krabka feature on `main` used a media type when this was introduced
 (774 docstrings, all with bare delimiters).
 
+## `expect_failure_tags`
+
+`scenarios!` and `#[scenario]` accept `expect_failure_tags = "<tag
+expression>"` beside `ignore_tags`, with the same feature, rule, scenario, and
+Examples tag inheritance. A matching scenario or outline row runs as an
+expected failure: the test passes when a step fails (a step error, a panic,
+or an undefined step), and fails with `scenario tagged <tags> now passes:
+remove the tag` once every step passes. The failure is caught in the
+generated body rather than with `#[should_panic]`, so that message is
+explicit; the scenario body does not run in that case. A tag set matching
+both `ignore_tags` and `expect_failure_tags` is a compile error. krabka maps
+`@inprogress` to this and `@formulated` to `ignore_tags`, giving the BDD
+"see it fail first, then make it pass" loop.
+
 ## Validation
 
 All upstream proc-macro unit tests pass with Clippy clean (all warnings

@@ -1,6 +1,6 @@
 //! Argument parsing for `#[scenario]` covering required `path`, mutually
 //! exclusive `index`/`name` selectors, optional tag filters, an optional
-//! `ignore_tags` expression, and optional
+//! `ignore_tags` and `expect_failure_tags` expressions, and optional
 //! harness adapter and attribute policy paths. Reports duplicates and
 //! conflicts with combined `syn::Error`s.
 
@@ -23,6 +23,8 @@ pub(super) struct ScenarioArgs {
     pub(super) tag_filter: Option<LitStr>,
     /// Tag expression that marks the selected scenario or rows `#[ignore]`.
     pub(super) ignore_tags: Option<LitStr>,
+    /// Tag expression that runs the selected scenario or rows as expected failures.
+    pub(super) expect_failure_tags: Option<LitStr>,
     /// Stores the internal `harness` value.
     pub(super) harness: Option<syn::Path>,
     /// Stores the internal `attributes` value.
@@ -59,6 +61,8 @@ enum ScenarioArg {
     Tags(LitStr),
     /// The `ignore_tags = "..."` expression.
     IgnoreTags(LitStr),
+    /// The `expect_failure_tags = "..."` expression.
+    ExpectFailureTags(LitStr),
     /// Represents the internal validation outcome.
     Harness(syn::Path),
     /// Represents the internal validation outcome.
@@ -83,13 +87,16 @@ impl Parse for ScenarioArg {
                 Ok(Self::Tags(input.parse()?))
             } else if ident == "ignore_tags" {
                 Ok(Self::IgnoreTags(input.parse()?))
+            } else if ident == "expect_failure_tags" {
+                Ok(Self::ExpectFailureTags(input.parse()?))
             } else if ident == "harness" {
                 Ok(Self::Harness(input.parse()?))
             } else if ident == "attributes" {
                 Ok(Self::Attributes(input.parse()?))
             } else {
                 Err(input.error(concat!(
-                    "expected `path`, `index`, `name`, `tags`, `ignore_tags`, `harness`, or ",
+                    "expected `path`, `index`, `name`, `tags`, `ignore_tags`, ",
+                    "`expect_failure_tags`, `harness`, or ",
                     "`attributes`",
                 )))
             }
@@ -104,6 +111,7 @@ impl Parse for ScenarioArgs {
         let mut selector = None;
         let mut tag_filter = None;
         let mut ignore_tags = None;
+        let mut expect_failure_tags = None;
         let mut harness = None;
         let mut attributes = None;
 
@@ -115,6 +123,10 @@ impl Parse for ScenarioArgs {
                 ScenarioArg::Tags(lit) => set_unique_field(&mut tag_filter, lit, "tags", input)?,
                 ScenarioArg::IgnoreTags(lit) => {
                     set_unique_field(&mut ignore_tags, lit, "ignore_tags", input)?;
+                }
+                ScenarioArg::ExpectFailureTags(lit) => {
+                    let label = "expect_failure_tags";
+                    set_unique_field(&mut expect_failure_tags, lit, label, input)?;
                 }
                 ScenarioArg::Harness(p) => {
                     set_unique_field(&mut harness, p, "harness", input)?;
@@ -132,6 +144,7 @@ impl Parse for ScenarioArgs {
             selector,
             tag_filter,
             ignore_tags,
+            expect_failure_tags,
             harness,
             attributes,
         })
@@ -233,144 +246,5 @@ fn selector_conflict_error(
 }
 
 #[cfg(test)]
-mod tests {
-    //! Unit tests for `#[scenario]` attribute argument parsing.
-
-    use quote::quote;
-
-    use super::ScenarioArgs;
-
-    fn parse_scenario_args(tokens: proc_macro2::TokenStream) -> syn::Result<ScenarioArgs> {
-        syn::parse2(tokens)
-    }
-
-    fn assert_parse_error_contains(result: syn::Result<ScenarioArgs>, expected_keyword: &str) {
-        match result {
-            Ok(_) => panic!("parsing should fail"),
-            Err(err) => {
-                let msg = err.to_string();
-                assert!(
-                    msg.contains(expected_keyword),
-                    "error should contain '{expected_keyword}': {msg}"
-                );
-            }
-        }
-    }
-
-    #[test]
-    fn parses_harness_argument() {
-        let args = parse_scenario_args(quote!(
-            path = "test.feature",
-            harness = rstest_bdd_harness::StdHarness
-        ))
-        .expect("scenario args should parse");
-        assert_eq!(args.path.value(), "test.feature");
-        let harness = args.harness.expect("harness should be set");
-        let harness_str = quote!(#harness).to_string();
-        assert!(
-            harness_str.contains("StdHarness"),
-            "should contain StdHarness: {harness_str}"
-        );
-    }
-
-    #[test]
-    fn parses_attributes_argument() {
-        let args = parse_scenario_args(quote!(
-            path = "test.feature",
-            attributes = rstest_bdd_harness::DefaultAttributePolicy
-        ))
-        .expect("scenario args should parse");
-        let attr_policy = args.attributes.expect("attributes should be set");
-        let attr_str = quote!(#attr_policy).to_string();
-        assert!(
-            attr_str.contains("DefaultAttributePolicy"),
-            "should contain DefaultAttributePolicy: {attr_str}"
-        );
-    }
-
-    #[test]
-    fn parses_harness_and_attributes_together() {
-        let args = parse_scenario_args(quote!(
-            path = "test.feature",
-            harness = my::Harness,
-            attributes = my::Policy
-        ))
-        .expect("scenario args should parse");
-        assert!(args.harness.is_some());
-        assert!(args.attributes.is_some());
-    }
-
-    #[test]
-    fn parses_harness_with_all_other_arguments() {
-        let args = parse_scenario_args(quote!(
-            path = "test.feature",
-            name = "My scenario",
-            tags = "@fast",
-            harness = my::Harness,
-            attributes = my::Policy
-        ))
-        .expect("scenario args should parse");
-        assert_eq!(args.path.value(), "test.feature");
-        assert!(args.selector.is_some());
-        assert!(args.tag_filter.is_some());
-        assert!(args.harness.is_some());
-        assert!(args.attributes.is_some());
-    }
-
-    #[test]
-    fn defaults_harness_and_attributes_to_none() {
-        let args =
-            parse_scenario_args(quote!(path = "test.feature")).expect("scenario args should parse");
-        assert!(args.harness.is_none());
-        assert!(args.attributes.is_none());
-    }
-
-    #[test]
-    fn rejects_duplicate_harness() {
-        let result = parse_scenario_args(quote!(
-            path = "test.feature",
-            harness = a::H,
-            harness = b::H
-        ));
-        assert_parse_error_contains(result, "duplicate");
-    }
-
-    #[test]
-    fn rejects_duplicate_attributes() {
-        let result = parse_scenario_args(quote!(
-            path = "test.feature",
-            attributes = a::P,
-            attributes = b::P
-        ));
-        assert_parse_error_contains(result, "duplicate");
-    }
-
-    #[test]
-    fn parses_ignore_tags_argument() {
-        let args = parse_scenario_args(quote!(
-            path = "test.feature",
-            ignore_tags = "@formulated or @inprogress"
-        ))
-        .expect("scenario args should parse");
-        assert_eq!(
-            args.ignore_tags.map(|lit| lit.value()).as_deref(),
-            Some("@formulated or @inprogress")
-        );
-    }
-
-    #[test]
-    fn rejects_duplicate_ignore_tags() {
-        let result = parse_scenario_args(quote!(
-            path = "test.feature",
-            ignore_tags = "@a",
-            ignore_tags = "@b"
-        ));
-        assert_parse_error_contains(result, "duplicate");
-    }
-
-    #[test]
-    fn rejects_unknown_argument() {
-        let result = parse_scenario_args(quote!(path = "test.feature", unknown = "value"));
-        assert!(result.is_err());
-    }
-}
+#[path = "args/tests.rs"]
+mod tests;

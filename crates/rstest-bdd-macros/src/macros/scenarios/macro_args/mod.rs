@@ -2,8 +2,8 @@
 //!
 //! Accepts either a positional directory literal or the `dir = "..."` and
 //! `path = "..."` named arguments alongside an optional `tags = "..."` filter,
-//! an optional `ignore_tags = "..."` expression, an optional `fixtures = [name: Type, ...]` list,
-//! and an optional `runtime = "..."` mode selection.
+//! optional `ignore_tags = "..."` and `expect_failure_tags = "..."` expressions, an optional
+//! `fixtures = [name: Type, ...]` list, and an optional `runtime = "..."` mode selection.
 //! The parser enforces that each input appears at most once, mirroring both
 //! accepted spellings in duplicate and missing-argument diagnostics so users
 //! immediately see which synonym needs adjusting.
@@ -65,6 +65,8 @@ pub(super) struct ScenariosArgs {
     /// Tag expression whose matching scenarios and rows are generated with
     /// `#[ignore]` instead of being dropped.
     pub(super) ignore_tags: Option<LitStr>,
+    /// Tag expression whose matching scenarios and rows run as expected failures.
+    pub(super) expect_failure_tags: Option<LitStr>,
     /// Stores the internal `fixtures` value.
     pub(super) fixtures: Vec<FixtureSpec>,
     /// Stores the internal `runtime` value.
@@ -83,6 +85,8 @@ enum ScenariosArg {
     Tags(LitStr),
     /// The `ignore_tags = "..."` expression.
     IgnoreTags(LitStr),
+    /// The `expect_failure_tags = "..."` expression.
+    ExpectFailureTags(LitStr),
     /// Represents the internal validation outcome.
     Fixtures(Vec<FixtureSpec>),
     /// Represents the internal validation outcome.
@@ -111,12 +115,14 @@ fn parse_named_arg(ident: &syn::Ident, input: ParseStream<'_>) -> syn::Result<Sc
         "dir" | "path" => Ok(ScenariosArg::Dir(input.parse()?)),
         "tags" => Ok(ScenariosArg::Tags(input.parse()?)),
         "ignore_tags" => Ok(ScenariosArg::IgnoreTags(input.parse()?)),
+        "expect_failure_tags" => Ok(ScenariosArg::ExpectFailureTags(input.parse()?)),
         "fixtures" => parse_fixtures_arg(input),
         "runtime" => parse_runtime_arg(input),
         "harness" => Ok(ScenariosArg::Harness(input.parse()?)),
         "attributes" => Ok(ScenariosArg::Attributes(input.parse()?)),
         _ => Err(input.error(concat!(
-            "expected `dir`, `path`, `tags`, `ignore_tags`, `fixtures`, `runtime`, `harness`, ",
+            "expected `dir`, `path`, `tags`, `ignore_tags`, `expect_failure_tags`, `fixtures`, ",
+            "`runtime`, `harness`, ",
             "or `attributes`",
         ))),
     }
@@ -171,6 +177,8 @@ struct ArgSlots {
     tag_filter: Option<LitStr>,
     /// The `ignore_tags` argument.
     ignore_tags: Option<LitStr>,
+    /// The `expect_failure_tags` argument.
+    expect_failure_tags: Option<LitStr>,
     /// The `fixtures` argument.
     fixtures: Option<Vec<FixtureSpec>>,
     /// The `runtime` argument.
@@ -193,6 +201,10 @@ fn process_args(
             ScenariosArg::Tags(lit) => set_once(&mut slots.tag_filter, lit, "tags", input)?,
             ScenariosArg::IgnoreTags(lit) => {
                 set_once(&mut slots.ignore_tags, lit, "ignore_tags", input)?;
+            }
+            ScenariosArg::ExpectFailureTags(lit) => {
+                let label = "expect_failure_tags";
+                set_once(&mut slots.expect_failure_tags, lit, label, input)?;
             }
             ScenariosArg::Fixtures(specs) => {
                 set_once(&mut slots.fixtures, specs, "fixtures", input)?;
@@ -219,6 +231,7 @@ impl Parse for ScenariosArgs {
             dir,
             tag_filter: slots.tag_filter,
             ignore_tags: slots.ignore_tags,
+            expect_failure_tags: slots.expect_failure_tags,
             fixtures: slots.fixtures.unwrap_or_default(),
             runtime: slots.runtime.unwrap_or_default(),
             harness: slots.harness,

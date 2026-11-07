@@ -9,9 +9,9 @@
 //! - [`domain`] — shared types for steps, examples, and docstrings.
 //! - [`failure_context`] — source-location context appended to step failure messages.
 //! - [`helpers`] — step-processing and placeholder-substitution utilities.
-//! - [`ignore`] — `ignore_tags` policy emitting `#[ignore]` on matching scenarios and rows.
 //! - [`metadata`] — feature-path and scenario-name wrappers for generated code.
 //! - [`runtime`] — async wrapper and harness-orchestrated runtime tokens.
+//! - [`tag_policy`] — `ignore_tags` and `expect_failure_tags` policies for matching tests.
 //! - [`test_attrs`] — ADR-008 attribute-policy resolution, translating harness and runtime-mode
 //!   hints into the correct set of test attributes (`#[rstest::rstest]`, `#[tokio::test]`,
 //!   `#[gpui::test]`).
@@ -31,9 +31,9 @@ mod cases;
 mod domain;
 mod failure_context;
 mod helpers;
-mod ignore;
 mod metadata;
 mod runtime;
+mod tag_policy;
 mod test_attrs;
 
 use adapters::resolve_scenario_adapters;
@@ -43,8 +43,6 @@ pub(crate) use domain::*;
 use failure_context::{FailureScope, outline_row_step_contexts, scenario_step_contexts};
 pub(crate) use helpers::process_steps;
 use helpers::process_steps_substituted;
-pub(crate) use ignore::IgnoreTags;
-use ignore::ignore_attribute;
 pub(crate) use metadata::{FeaturePath, ScenarioName};
 use runtime::{
     ContextIterators,
@@ -54,6 +52,8 @@ use runtime::{
     TestTokensConfig,
     generate_test_tokens,
 };
+pub(crate) use tag_policy::TagPolicy;
+use tag_policy::{ignore_attribute, reject_conflicting_policies};
 
 pub(crate) use crate::macros::scenarios::ScenariosRuntimeMode as RuntimeMode;
 use crate::macros::scenarios::ScenariosTestAttributeHint as TestAttributeHint;
@@ -113,7 +113,10 @@ pub(crate) struct ScenarioConfig<'a> {
     /// Boundary tokens for `#[scenario]`; `scenarios!` emits around its module.
     pub(crate) fallback_diagnostics: Option<&'a TokenStream2>,
     /// Optional `ignore_tags` policy marking matching scenarios or rows ignored.
-    pub(crate) ignore_tags: Option<&'a IgnoreTags>,
+    pub(crate) ignore_tags: Option<&'a TagPolicy>,
+    /// Optional `expect_failure_tags` policy running matching scenarios or
+    /// rows as expected failures.
+    pub(crate) expect_failure_tags: Option<&'a TagPolicy>,
 }
 
 /// Configuration for context iterators in scenario code generation.
@@ -150,6 +153,18 @@ pub(crate) fn generate_scenario_code(
     // Every outline takes the indexed path, even without placeholders: the
     // hidden case index also selects each row's tags and skip policy.
     let is_outline = config.examples.is_some();
+    let tag_sets: Vec<&[String]> = config.examples.as_ref().map_or_else(
+        || vec![config.tags],
+        |examples| examples.row_tags.iter().map(Vec::as_slice).collect(),
+    );
+    if let Some(conflict) = reject_conflicting_policies(
+        config.ignore_tags,
+        config.expect_failure_tags,
+        config.scenario_name.as_str(),
+        tag_sets,
+    ) {
+        return conflict;
+    }
     let ctx = ContextConfig {
         prelude: ctx_prelude,
         inserts: ctx_inserts,
@@ -215,6 +230,7 @@ where
         harness: config.harness,
         harness_api_path: harness_resolution.map(|resolution| resolution.api_path.clone()),
         row_tags: None,
+        expect_failure_tags: config.expect_failure_tags,
     };
     let test_config = TestTokensConfig {
         processed_steps,
@@ -300,6 +316,7 @@ where
         harness: config.harness,
         harness_api_path: harness_resolution.map(|resolution| resolution.api_path.clone()),
         row_tags: Some(&examples.row_tags),
+        expect_failure_tags: config.expect_failure_tags,
     };
     let outline_config = OutlineTestTokensConfig {
         all_rows_steps,

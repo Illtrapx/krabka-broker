@@ -17,7 +17,12 @@ pub(super) use outline::{
     generate_async_step_executor_loop_outline,
     generate_step_executor_loop_outline,
 };
-pub(super) use scenario::{generate_scenario_guard, generate_skip_handler};
+pub(super) use scenario::{
+    generate_expected_failure_check,
+    generate_failure_handler,
+    generate_scenario_guard,
+    generate_skip_handler,
+};
 pub(super) use step::{
     generate_async_step_executor,
     generate_skip_extractor,

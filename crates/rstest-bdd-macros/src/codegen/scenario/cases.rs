@@ -10,7 +10,7 @@ use quote::{format_ident, quote};
 
 use super::{
     helpers::cell_to_lit,
-    ignore::{IgnoreTags, ignore_attribute},
+    tag_policy::{TagPolicy, ignore_attribute},
 };
 use crate::parsing::examples::ExampleTable;
 
@@ -34,7 +34,7 @@ use crate::parsing::examples::ExampleTable;
 /// before its own case attribute.
 pub(crate) fn generate_indexed_case_attrs(
     examples: &ExampleTable,
-    ignore: Option<&IgnoreTags>,
+    ignore: Option<&TagPolicy>,
 ) -> Vec<TokenStream2> {
     examples
         .rows
@@ -89,7 +89,7 @@ mod tests {
         let mut examples = table(&["a", "b"], &["a", "b"]);
         examples.row_tags = vec![vec!["@ready".to_owned()], vec!["@formulated".to_owned()]];
         let lit = syn::LitStr::new("@formulated", proc_macro2::Span::call_site());
-        let ignore = IgnoreTags::parse(&lit).expect("expression should parse");
+        let ignore = TagPolicy::parse(&lit, "ignore_tags").expect("expression should parse");
         assert_eq!(
             rendered(&generate_indexed_case_attrs(&examples, Some(&ignore))),
             [

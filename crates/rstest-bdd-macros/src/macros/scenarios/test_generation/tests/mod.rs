@@ -68,6 +68,7 @@ fn generated_scenario_metadata_uses_portable_feature_separators() {
         rel_path,
         tag_filter: None,
         ignore_tags: None,
+        expect_failure_tags: None,
         fixtures: &[],
         runtime: RuntimeMode::Sync,
         harness: None,

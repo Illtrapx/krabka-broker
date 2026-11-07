@@ -172,3 +172,55 @@ pub(in crate::codegen::scenario::runtime) fn generate_skip_handler(
         }
     }
 }
+
+/// Generates the handler for a failed step, emitted after the step loop.
+///
+/// An ordinary test panics with the stored failure. A test matched by
+/// `expect_failure_tags` has met its expectation, so it returns instead and
+/// passes.
+///
+/// # Generated code
+///
+/// ```text
+/// if let Some(failure) = __rstest_bdd_failed {
+///     if __rstest_bdd_expected_failure.is_some() {
+///         return;
+///     }
+///     panic!("{}", failure);
+/// }
+/// ```
+pub(in crate::codegen::scenario::runtime) fn generate_failure_handler(
+    return_kind: ScenarioReturnKind,
+) -> TokenStream2 {
+    let return_tokens = if return_kind.is_fallible() {
+        quote! { return Ok(()); }
+    } else {
+        quote! { return; }
+    };
+    quote! {
+        if let Some(__rstest_bdd_failure) = __rstest_bdd_failed {
+            if __rstest_bdd_expected_failure.is_some() {
+                #return_tokens
+            }
+            panic!("{}", __rstest_bdd_failure);
+        }
+    }
+}
+
+/// Generates the check that fails an expected-failure test whose steps all
+/// passed, emitted after the skip handler.
+///
+/// The scenario body does not run in that case: the steps passing is the
+/// signal that the tag should be removed.
+pub(in crate::codegen::scenario::runtime) fn generate_expected_failure_check() -> TokenStream2 {
+    quote! {
+        if let Some(__rstest_bdd_tagged) = __rstest_bdd_expected_failure {
+            panic!(
+                "scenario {} now passes: remove the tag\n(feature: {}, scenario: {})",
+                __rstest_bdd_tagged,
+                __RSTEST_BDD_FEATURE_PATH,
+                __RSTEST_BDD_SCENARIO_NAME
+            );
+        }
+    }
+}

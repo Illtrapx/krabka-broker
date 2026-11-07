@@ -15,7 +15,7 @@ use crate::codegen::scenario::helpers::ProcessedStepTokens;
 ///
 /// This shared implementation accepts a `TokenStream2` callee for consistency with
 /// `generate_step_executor_loop_impl`. It initializes tracking variables for both skip
-/// and failure states, executes the step loop, and defers any panic until after the
+/// and failure states, executes the step loop, and leaves any failure to the handler after the
 /// loop completes.
 fn generate_step_executor_loop_outline_impl(
     callee: &TokenStream2,
@@ -42,9 +42,6 @@ fn generate_step_executor_loop_outline_impl(
         let __rstest_bdd_steps = __RSTEST_BDD_ALL_STEPS[__rstest_bdd_case_idx];
         for (__rstest_bdd_index, (__rstest_bdd_keyword, __rstest_bdd_text, __rstest_bdd_docstring, __rstest_bdd_table)) in __rstest_bdd_steps.iter().copied().enumerate() {
             #result_handler
-        }
-        if let Some(error_msg) = __rstest_bdd_failed {
-            panic!("{}", error_msg);
         }
     }
 }
@@ -74,9 +71,6 @@ fn generate_step_executor_loop_outline_impl(
 ///         Ok(value) => { /* insert value into context */ }
 ///         Err(error) => { /* extract skip or store error, break */ }
 ///     }
-/// }
-/// if let Some(error_msg) = __rstest_bdd_failed {
-///     panic!("{}", error_msg);
 /// }
 /// ```
 pub(in crate::codegen::scenario::runtime) fn generate_step_executor_loop_outline(
@@ -111,9 +105,6 @@ pub(in crate::codegen::scenario::runtime) fn generate_step_executor_loop_outline
 ///         Ok(value) => { /* insert value into context */ }
 ///         Err(error) => { /* extract skip or store error, break */ }
 ///     }
-/// }
-/// if let Some(error_msg) = __rstest_bdd_failed {
-///     panic!("{}", error_msg);
 /// }
 /// ```
 ///

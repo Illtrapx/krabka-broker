@@ -33,7 +33,7 @@ use self::{
     test_generation::{ScenarioTestContext, generate_scenario_test, resolve_harness_path},
 };
 use crate::{
-    codegen::scenario::IgnoreTags,
+    codegen::scenario::TagPolicy,
     parsing::{
         feature::{extract_scenario_steps, parse_and_load_feature},
         tags::TagExpression,
@@ -53,7 +53,9 @@ struct FeatureProcessingContext<'a> {
     /// Stores the internal `tag_filter` value.
     tag_filter: Option<&'a TagExpression>,
     /// Optional policy marking matching scenarios and rows `#[ignore]`.
-    ignore_tags: Option<&'a IgnoreTags>,
+    ignore_tags: Option<&'a TagPolicy>,
+    /// Optional policy running matching scenarios and rows as expected failures.
+    expect_failure_tags: Option<&'a TagPolicy>,
     /// Stores the internal `fixtures` value.
     fixtures: &'a [FixtureSpec],
     /// Stores the internal `runtime` value.
@@ -135,6 +137,7 @@ fn process_feature_file(
         rel_path: &rel_path,
         tag_filter: ctx.tag_filter,
         ignore_tags: ctx.ignore_tags,
+        expect_failure_tags: ctx.expect_failure_tags,
         fixtures: ctx.fixtures,
         runtime: ctx.runtime,
         harness: ctx.harness,
@@ -261,6 +264,7 @@ pub(crate) fn scenarios(input: TokenStream) -> TokenStream {
         dir: dir_lit,
         tag_filter: tag_lit,
         ignore_tags,
+        expect_failure_tags,
         fixtures,
         runtime,
         harness,
@@ -274,8 +278,12 @@ pub(crate) fn scenarios(input: TokenStream) -> TokenStream {
         Ok(filter) => filter,
         Err(err_tokens) => return err_tokens,
     };
-    let ignore_tags = match ignore_tags.as_ref().map(IgnoreTags::parse).transpose() {
-        Ok(policy) => policy,
+    let policies = TagPolicy::parse_optional(ignore_tags.as_ref(), "ignore_tags").and_then(|i| {
+        TagPolicy::parse_optional(expect_failure_tags.as_ref(), "expect_failure_tags")
+            .map(|e| (i, e))
+    });
+    let (ignore_tags, expect_failure_tags) = match policies {
+        Ok(policies) => policies,
         Err(err) => return err.into_compile_error().into(),
     };
 
@@ -310,6 +318,7 @@ pub(crate) fn scenarios(input: TokenStream) -> TokenStream {
         manifest_dir: &manifest_dir,
         tag_filter: tag_filter.as_ref().map(|f| &f.expr),
         ignore_tags: ignore_tags.as_ref(),
+        expect_failure_tags: expect_failure_tags.as_ref(),
         fixtures: &fixtures,
         runtime,
         harness: harness.as_ref(),

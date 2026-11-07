@@ -32,6 +32,7 @@ fn generate_metadata_constants(
         tags_value: _tags_value,
         tags_vec: _tags_vec,
         allow_value: _allow_value,
+        expected_failure_value: _expected_failure_value,
     } = literals;
     let CodeComponents {
         step_executor,
@@ -71,6 +72,12 @@ struct RunnerClosureParams<'a> {
     step_executor_loop: &'a TokenStream2,
     /// Stores the internal `skip_handler` value.
     skip_handler: &'a TokenStream2,
+    /// Expression yielding the expected-failure reason, if any.
+    expected_failure_value: &'a TokenStream2,
+    /// Panics or returns after a failed step.
+    failure_handler: &'a TokenStream2,
+    /// Fails an expected-failure scenario whose steps all passed.
+    expected_failure_check: &'a TokenStream2,
     /// Stores the internal `path` value.
     path: &'a TokenStream2,
     /// Stores the internal `harness_context_ty` value.
@@ -89,12 +96,16 @@ fn generate_runner_closure_body(params: RunnerClosureParams<'_>) -> TokenStream2
         block,
         step_executor_loop,
         skip_handler,
+        expected_failure_value,
+        failure_handler,
+        expected_failure_check,
         path,
         harness_context_ty,
     } = params;
 
     quote! {
         let __rstest_bdd_allow_skipped: bool = #allow_value;
+        let __rstest_bdd_expected_failure: Option<&str> = #expected_failure_value;
         #(#ctx_prelude)*
         let __rstest_bdd_harness_context_cell =
             #path::StepContext::owned_cell(__rstest_bdd_harness_context);
@@ -116,7 +127,9 @@ fn generate_runner_closure_body(params: RunnerClosureParams<'_>) -> TokenStream2
         let mut __rstest_bdd_skipped: Option<Option<String>> = None;
         let mut __rstest_bdd_skipped_at: Option<usize> = None;
         #step_executor_loop
+        #failure_handler
         #skip_handler
+        #expected_failure_check
         #(#ctx_postlude)*
         #block
     }
@@ -161,6 +174,9 @@ pub(super) fn assemble_test_tokens_with_harness(
         block: context.block,
         step_executor_loop: &components.step_executor_loop,
         skip_handler: &components.skip_handler,
+        expected_failure_value: &literals.expected_failure_value,
+        failure_handler: &components.failure_handler,
+        expected_failure_check: &components.expected_failure_check,
         path: &path,
         harness_context_ty: &harness_context_ty,
     });

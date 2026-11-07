@@ -1,0 +1,11 @@
+error: scenario "Both ignored and expected to fail" matches both `ignore_tags` (`@formulated`) and `expect_failure_tags` (`@inprogress`) through tags [@formulated, @inprogress]; a test cannot be both ignored and expected to fail
+  --> tests/fixtures_macros/scenario_expect_failure_conflict.rs:6:1
+   |
+ 6 | / #[scenario(
+ 7 | |     path = "expect_failure_conflict.feature",
+ 8 | |     ignore_tags = "@formulated",
+ 9 | |     expect_failure_tags = "@inprogress"
+10 | | )]
+   | |__^
+   |
+   = note: this error originates in the attribute macro `scenario` (in Nightly builds, run with -Z macro-backtrace for more info)

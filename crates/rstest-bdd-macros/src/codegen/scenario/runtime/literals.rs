@@ -5,13 +5,15 @@
 //! declared it, so each generated case must report its own tags and apply
 //! its own skip policy. For outlines the tags and skip flags are therefore
 //! emitted as per-row tables, selected at run time by the hidden
-//! `__rstest_bdd_case_idx` case parameter.
+//! `__rstest_bdd_case_idx` case parameter. The same holds for the
+//! `expect_failure_tags` decision, which is emitted as an optional reason per
+//! scenario or per row.
 
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 
 use super::types::{ScenarioLiterals, ScenarioLiteralsInput};
-use crate::codegen::scenario::scenario_allows_skip;
+use crate::codegen::scenario::{scenario_allows_skip, tag_policy::expected_failure_reason};
 
 /// Convert scenario metadata into literals embedded in generated test tokens.
 pub(super) fn create_scenario_literals(input: ScenarioLiteralsInput<'_>) -> ScenarioLiterals {
@@ -20,15 +22,49 @@ pub(super) fn create_scenario_literals(input: ScenarioLiteralsInput<'_>) -> Scen
         || scenario_tags(input.tags, input.allow_skipped),
         outline_row_tags,
     );
+    let (failure_items, expected_failure_value) = expected_failure_tokens(input);
+    let tag_items = tags.items;
     ScenarioLiterals {
         feature_literal: syn::LitStr::new(input.feature_path.as_str(), span),
         scenario_literal: syn::LitStr::new(input.scenario_name.as_str(), span),
         scenario_line_literal: syn::LitInt::new(&input.scenario_line.to_string(), span),
-        tag_items: tags.items,
+        tag_items: quote! { #tag_items #failure_items },
         tags_value: tags.value,
         tags_vec: tags.vec,
         allow_value: tags.allow,
+        expected_failure_value,
     }
+}
+
+/// Render an optional expected-failure reason as an `Option<&str>` expression.
+fn reason_tokens(reason: Option<String>) -> TokenStream2 {
+    reason.map_or_else(|| quote! { None }, |reason| quote! { Some(#reason) })
+}
+
+/// Item declarations and the expression yielding this test's expected-failure
+/// reason, selected per row for outlines.
+fn expected_failure_tokens(input: ScenarioLiteralsInput<'_>) -> (TokenStream2, TokenStream2) {
+    let policy = input.expect_failure_tags;
+    let Some(row_tags) = input.row_tags else {
+        return (
+            TokenStream2::new(),
+            reason_tokens(expected_failure_reason(policy, input.tags)),
+        );
+    };
+    let reasons = row_tags
+        .iter()
+        .map(|tags| reason_tokens(expected_failure_reason(policy, tags)));
+    (
+        quote! {
+            const __RSTEST_BDD_EXPECTED_FAILURE_ROWS: &[Option<&str>] = &[#(#reasons),*];
+        },
+        quote! {
+            __RSTEST_BDD_EXPECTED_FAILURE_ROWS
+                .get(__rstest_bdd_case_idx)
+                .copied()
+                .flatten()
+        },
+    )
 }
 
 /// Tag-related tokens for one generated test function.

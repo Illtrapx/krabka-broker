@@ -13,6 +13,8 @@ use generators::{
     generate_async_step_executor,
     generate_async_step_executor_loop,
     generate_async_step_executor_loop_outline,
+    generate_expected_failure_check,
+    generate_failure_handler,
     generate_outline_step_contexts,
     generate_scenario_guard,
     generate_skip_extractor,
@@ -174,6 +176,8 @@ fn generate_code_components(
         scenario_guard,
         step_executor_loop,
         skip_handler,
+        failure_handler: generate_failure_handler(return_kind),
+        expected_failure_check: generate_expected_failure_check(),
     }
 }
 
@@ -197,6 +201,7 @@ fn assemble_test_tokens(
         tags_value,
         tags_vec: _tags_vec,
         allow_value,
+        expected_failure_value,
     } = literals;
 
     let CodeComponents {
@@ -205,6 +210,8 @@ fn assemble_test_tokens(
         scenario_guard,
         step_executor_loop,
         skip_handler,
+        failure_handler,
+        expected_failure_check,
     } = components;
 
     let path = crate::codegen::rstest_bdd_path();
@@ -218,6 +225,7 @@ fn assemble_test_tokens(
         #scenario_guard
 
         let __rstest_bdd_allow_skipped: bool = #allow_value;
+        let __rstest_bdd_expected_failure: Option<&str> = #expected_failure_value;
         #(#ctx_prelude)*
         let mut ctx = {
             let mut ctx = #path::StepContext::default();
@@ -234,7 +242,9 @@ fn assemble_test_tokens(
         let mut __rstest_bdd_skipped: Option<Option<String>> = None;
         let mut __rstest_bdd_skipped_at: Option<usize> = None;
         #step_executor_loop
+        #failure_handler
         #skip_handler
+        #expected_failure_check
         #(#ctx_postlude)*
         #block
     }
@@ -330,5 +340,7 @@ fn generate_code_components_outline(
         scenario_guard,
         step_executor_loop,
         skip_handler,
+        failure_handler: generate_failure_handler(return_kind),
+        expected_failure_check: generate_expected_failure_check(),
     }
 }

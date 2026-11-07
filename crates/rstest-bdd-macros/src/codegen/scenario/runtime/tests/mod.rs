@@ -273,6 +273,7 @@ fn feature_path_literal_is_manifest_relative_in_the_generated_metadata() {
         allow_skipped: false,
         tags: &[],
         row_tags: None,
+        expect_failure_tags: None,
     };
     let literals = create_scenario_literals(input);
     assert_eq!(

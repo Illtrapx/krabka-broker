@@ -57,8 +57,9 @@ pub(in crate::codegen::scenario::runtime) fn generate_outline_step_contexts(
 ///
 /// This shared implementation is used by both regular and outline executor loops to
 /// handle step execution results: value insertion on success, skip propagation on skip,
-/// and deferred panic on actual errors. Errors are stored and the loop breaks, with
-/// the panic occurring after the loop completes to mirror the skip-handling pattern.
+/// and deferred failure on actual errors. Errors are stored and the loop breaks;
+/// the failure handler emitted after the loop then panics, or returns for an
+/// expected failure, mirroring the skip-handling pattern.
 pub(super) fn generate_step_result_handler(callee: &TokenStream2, is_async: bool) -> TokenStream2 {
     let call = if is_async {
         quote! {
@@ -106,7 +107,7 @@ pub(super) fn generate_step_result_handler(callee: &TokenStream2, is_async: bool
                     __rstest_bdd_skipped_at = Some(__rstest_bdd_index);
                     break;
                 } else {
-                    // Store non-skip errors for deferred panic after loop,
+                    // Store non-skip errors for the failure handler after the loop,
                     // followed by the failing step's source location context.
                     let __rstest_bdd_context = __rstest_bdd_step_contexts
                         .get(__rstest_bdd_index)
@@ -130,7 +131,7 @@ pub(super) fn generate_step_result_handler(callee: &TokenStream2, is_async: bool
 /// The `callee` parameter is a token stream containing the executor function identifier.
 ///
 /// The generated code initializes tracking variables for both skip and failure states,
-/// executes the step loop, and defers any panic until after the loop completes. This
+/// executes the step loop, and leaves any failure to the handler after the loop. This
 /// mirrors the skip-handling pattern and allows for future enhancement of error context.
 fn generate_step_executor_loop_impl(
     callee: &TokenStream2,
@@ -150,9 +151,6 @@ fn generate_step_executor_loop_impl(
         let __rstest_bdd_steps = [#((#keyword_tokens, #values, #docstrings, #tables)),*];
         for (__rstest_bdd_index, (__rstest_bdd_keyword, __rstest_bdd_text, __rstest_bdd_docstring, __rstest_bdd_table)) in __rstest_bdd_steps.iter().copied().enumerate() {
             #result_handler
-        }
-        if let Some(error_msg) = __rstest_bdd_failed {
-            panic!("{}", error_msg);
         }
     }
 }
@@ -208,9 +206,6 @@ generate_step_executor_loop_fn! {
     ///         Ok(value) => { /* insert value into context */ }
     ///         Err(error) => { /* extract skip or store error, break */ }
     ///     }
-    /// }
-    /// if let Some(error_msg) = __rstest_bdd_failed {
-    ///     panic!("{}", error_msg);
     /// }
     /// ```
     pub(in crate::codegen::scenario::runtime) fn generate_step_executor_loop => __rstest_bdd_execute_single_step

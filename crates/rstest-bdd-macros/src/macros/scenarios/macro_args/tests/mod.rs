@@ -190,6 +190,18 @@ fn scenarios_args_parses_ignore_tags() {
 }
 
 #[test]
+fn scenarios_args_parses_expect_failure_tags() {
+    let args: ScenariosArgs = parse_scenarios_args!(parse_quote!(
+        "tests/features",
+        expect_failure_tags = "@inprogress"
+    ));
+    assert_eq!(
+        args.expect_failure_tags.map(|lit| lit.value()).as_deref(),
+        Some("@inprogress")
+    );
+}
+
+#[test]
 fn scenarios_args_rejects_duplicate_ignore_tags() {
     let result = try_parse_scenarios_args(parse_quote!(
         "tests/features",
