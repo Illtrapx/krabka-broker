@@ -9,6 +9,7 @@ use std::{collections::HashSet, path::Path};
 use proc_macro2::TokenStream as TokenStream2;
 use quote::{format_ident, quote};
 
+use self::naming::{dedupe_name, scenario_test_base_name};
 use super::macro_args::{
     FixtureSpec,
     RuntimeCompatibilityAlias,
@@ -125,45 +126,6 @@ fn resolve_effective_runtime(
     } else {
         runtime
     }
-}
-
-/// Provides the internal `dedupe_name` operation.
-pub(super) fn dedupe_name(base: &str, used: &mut HashSet<String>) -> String {
-    let mut name = base.to_owned();
-    let mut counter = 1usize;
-    while used.contains(&name) {
-        name = format!("{base}_{counter}");
-        counter += 1;
-    }
-    used.insert(name.clone());
-    name
-}
-
-/// Derive the undeduplicated test function name for a scenario.
-///
-/// Scenarios declared under a `Rule:` include the sanitized rule name so
-/// that equally named scenarios in different rules stay distinguishable;
-/// names of scenarios outside any rule are unchanged.
-///
-/// # Examples
-///
-/// ```rust,ignore
-/// assert_eq!(scenario_test_base_name("billing", None, "Pay"), "billing_pay");
-/// assert_eq!(
-///     scenario_test_base_name("billing", Some("Refunds"), "Pay"),
-///     "billing_refunds_pay",
-/// );
-/// ```
-pub(super) fn scenario_test_base_name(
-    feature_stem: &str,
-    rule: Option<&str>,
-    scenario: &str,
-) -> String {
-    let scenario = sanitize_ident(scenario);
-    rule.map_or_else(
-        || format!("{feature_stem}_{scenario}"),
-        |rule| format!("{feature_stem}_{}_{scenario}", sanitize_ident(rule)),
-    )
 }
 
 /// Builds lint suppression attributes when fixtures are present.
@@ -394,6 +356,8 @@ pub(super) fn generate_scenario_test(
         fixture_setup.postlude.into_iter(),
     )
 }
+
+mod naming;
 
 #[cfg(test)]
 #[expect(
