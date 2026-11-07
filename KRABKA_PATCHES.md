@@ -93,6 +93,17 @@ compile error naming the path (`no scenarios found in `<path>``), so a wrong
 path or an unparsed construct cannot quietly disable a suite. Scenarios under
 `Rule:` count, because rules are flattened first.
 
+## Unknown placeholders stay literal
+
+A `<placeholder>` in outline step text, a docstring, or a table cell that
+named no Examples column was a hard compile error. Cucumber leaves such text
+verbatim, and text like `<none>` or `<br>` is legitimate in steps and
+docstrings, so unknown placeholders are now kept as literal text. Known
+placeholders are still substituted, in a single pass, so a substituted value
+is never substituted again. The `validation::placeholder` module and the
+`outline_undefined_placeholder` compile-fail fixture are removed with the
+behaviour they enforced.
+
 ## Validation
 
 All upstream proc-macro unit tests pass with Clippy clean (all warnings

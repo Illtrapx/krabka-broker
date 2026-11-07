@@ -30,6 +30,11 @@ impl<'a> SubstitutionContext<'a> {
     pub(crate) fn new(headers: &'a ExampleHeaders, row: &'a ExampleRow) -> Self {
         Self { headers, row }
     }
+
+    /// Substitute this row's values into `text`.
+    fn substitute(&self, text: &str) -> String {
+        substitute_placeholders(text, self.headers.as_slice(), self.row.as_slice())
+    }
 }
 
 /// Create a `LitStr` from an examples table cell.
@@ -183,59 +188,38 @@ pub(crate) fn process_steps(
     (keyword_tokens, values, docstrings, tables)
 }
 
-/// Provides the internal `substitute_table_placeholders` operation.
+/// Substitutes placeholders in every cell of a step data table.
 fn substitute_table_placeholders(
     table: &[Vec<String>],
     context: &SubstitutionContext<'_>,
-) -> Result<Vec<Vec<String>>, crate::parsing::placeholder::PlaceholderError> {
+) -> Vec<Vec<String>> {
     table
         .iter()
         .map(|table_row| {
             table_row
                 .iter()
-                .map(|cell| {
-                    substitute_placeholders(
-                        cell,
-                        context.headers.as_slice(),
-                        context.row.as_slice(),
-                    )
-                })
-                .collect::<Result<Vec<_>, _>>()
+                .map(|cell| context.substitute(cell))
+                .collect()
         })
-        .collect::<Result<Vec<_>, _>>()
+        .collect()
 }
 
 /// Substitutes placeholders in step text, docstring, and table cells.
 ///
 /// Returns the substituted text, docstring, and table for a single step given
 /// the substitution context containing Examples table headers and row values.
+/// Placeholders that name no column are left verbatim.
 fn substitute_step_content(
     text: &StepText,
     docstring: Option<&Docstring>,
     table: Option<&[Vec<String>]>,
     context: &SubstitutionContext<'_>,
-) -> Result<SubstitutedStepContent, crate::parsing::placeholder::PlaceholderError> {
-    let substituted_text = substitute_placeholders(
-        text.as_str(),
-        context.headers.as_slice(),
-        context.row.as_slice(),
-    )?;
-
-    let substituted_docstring = docstring
-        .map(|d| {
-            substitute_placeholders(
-                d.as_str(),
-                context.headers.as_slice(),
-                context.row.as_slice(),
-            )
-        })
-        .transpose()?;
-
-    let substituted_table = table
-        .map(|t| substitute_table_placeholders(t, context))
-        .transpose()?;
-
-    Ok((substituted_text, substituted_docstring, substituted_table))
+) -> SubstitutedStepContent {
+    (
+        context.substitute(text.as_str()),
+        docstring.map(|d| context.substitute(d.as_str())),
+        table.map(|t| substitute_table_placeholders(t, context)),
+    )
 }
 
 /// Process steps with placeholder substitution for one Examples row.
@@ -252,12 +236,12 @@ fn substitute_step_content(
 /// # Returns
 ///
 /// A tuple of token stream vectors for keywords, values, docstrings, and tables
-/// with all placeholders substituted.
+/// with every known placeholder substituted.
 pub(crate) fn process_steps_substituted(
     steps: &[crate::parsing::feature::ParsedStep],
     headers: &ExampleHeaders,
     row: &ExampleRow,
-) -> Result<ProcessedStepTokens, proc_macro2::TokenStream> {
+) -> ProcessedStepTokens {
     let context = SubstitutionContext::new(headers, row);
 
     let keyword_tokens = resolve_keyword_tokens(steps);
@@ -277,11 +261,7 @@ pub(crate) fn process_steps_substituted(
             step_docstring.as_ref(),
             step.table.as_deref(),
             &context,
-        )
-        .map_err(|e| {
-            let err = syn::Error::new(proc_macro2::Span::call_site(), e.to_string());
-            err.into_compile_error()
-        })?;
+        );
 
         let text_lit = cell_to_lit(&sub_text);
         values.push(quote! { #text_lit });
@@ -298,7 +278,7 @@ pub(crate) fn process_steps_substituted(
         tables.push(generate_table_tokens(sub_table.as_deref()));
     }
 
-    Ok((keyword_tokens, values, docstrings, tables))
+    (keyword_tokens, values, docstrings, tables)
 }
 
 #[cfg(test)]

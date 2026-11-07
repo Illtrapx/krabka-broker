@@ -107,7 +107,6 @@ fn run_failing_macro_tests(t: &trybuild::TestCases) {
         MacroFixtureCase::from("scenarios_fixtures_malformed.rs"),
         MacroFixtureCase::from("scenarios_autodiscovery_invalid_path.rs"),
         MacroFixtureCase::from("scenarios_empty_dir.rs"),
-        MacroFixtureCase::from("outline_undefined_placeholder.rs"),
         MacroFixtureCase::from("scenario_harness_invalid.rs"),
         MacroFixtureCase::from("scenario_attributes_invalid.rs"),
         MacroFixtureCase::from("scenarios_harness_invalid.rs"),

@@ -167,6 +167,10 @@ These rows run as `withdrawals::case_1_v_10` and
 `v_` prefix, Rust keywords gain a trailing underscore, empty values are named
 `row`, and repeated names gain `_2`, `_3`, and so on.
 
+Placeholders are replaced in step text, docstrings, and data-table cells. A
+`<placeholder>` that names no Examples column is left as literal text, so
+steps may contain angle-bracketed text such as `<none>`.
+
 Each case also carries the tags of its own row: the feature, rule, and
 scenario tags plus those of the `Examples:` block that declared it. These
 tags drive tag filters, `@allow_skipped`, the scenario tags recorded for

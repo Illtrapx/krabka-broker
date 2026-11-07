@@ -47,10 +47,7 @@ use self::{
 use crate::{
     parsing::tags::TagExpression,
     utils::fixtures::extract_function_fixtures,
-    validation::{
-        parameters::process_scenario_outline_examples,
-        placeholder::{ExampleHeaders, validate_step_placeholders},
-    },
+    validation::parameters::process_scenario_outline_examples,
 };
 
 /// Internal data used by the macros implementation.
@@ -138,12 +135,6 @@ fn try_scenario(
         rule: _,
     } = scenario_data;
     let allow_skipped = crate::codegen::scenario::scenario_allows_skip(&tags);
-
-    // Validate placeholder references in scenario outline steps
-    if let Some(ref ex) = examples {
-        validate_step_placeholders(&steps, ExampleHeaders::new(&ex.headers))
-            .map_err(|e| proc_macro::TokenStream::from(e.into_compile_error()))?;
-    }
 
     if let Some(err) = validate_steps_compile_time(&steps) {
         return Err(err);

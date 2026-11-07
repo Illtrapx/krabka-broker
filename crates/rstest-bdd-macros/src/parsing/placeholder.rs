@@ -8,7 +8,6 @@
 use std::sync::LazyLock;
 
 use regex::Regex;
-use thiserror::Error;
 
 /// Regex pattern matching `<placeholder>` tokens in step text.
 ///
@@ -22,25 +21,13 @@ pub(crate) static PLACEHOLDER_RE: LazyLock<Regex> = LazyLock::new(|| {
     regex
 });
 
-/// Error returned when a placeholder references a non-existent column.
-#[derive(Debug, Clone, PartialEq, Eq, Error)]
-#[error(
-    "Placeholder '<{placeholder}>' not found in Examples table. Available columns: \
-     [{available_columns_display}]"
-)]
-pub struct PlaceholderError {
-    /// The placeholder name that was not found.
-    pub placeholder: String,
-    /// The available column headers in the Examples table.
-    pub available_columns: Vec<String>,
-    /// Stores the internal `available_columns_display` value.
-    available_columns_display: String,
-}
-
 /// Substitutes `<placeholder>` tokens in text with values from an Examples row.
 ///
 /// Each placeholder token (e.g., `<count>`) is replaced with the corresponding
-/// value from the row, matched by column header name.
+/// value from the row, matched by column header name. A placeholder that names
+/// no column is left verbatim, as Cucumber does, so text such as `<br>` or
+/// `<none>` in a step, docstring, or table cell survives substitution. The
+/// text is scanned once, so a substituted value is never itself substituted.
 ///
 /// # Arguments
 ///
@@ -48,51 +35,28 @@ pub struct PlaceholderError {
 /// * `headers` - Column headers from the Examples table
 /// * `row` - Values for the current row, aligned with headers
 ///
-/// # Returns
-///
-/// The text with all placeholders substituted, or an error if any placeholder
-/// references a column that doesn't exist in the headers.
-///
 /// # Examples
 ///
 /// ```ignore
-/// let text = "I have <count> <item>";
 /// let headers = vec!["count".to_string(), "item".to_string()];
 /// let row = vec!["5".to_string(), "apples".to_string()];
-/// let result = substitute_placeholders(text, &headers, &row);
-/// assert_eq!(result.unwrap(), "I have 5 apples");
+/// assert_eq!(substitute_placeholders("I have <count> <item>", &headers, &row), "I have 5 apples");
+/// assert_eq!(substitute_placeholders("keep <other>", &headers, &row), "keep <other>");
 /// ```
-pub fn substitute_placeholders(
-    text: &str,
-    headers: &[String],
-    row: &[String],
-) -> Result<String, PlaceholderError> {
-    let mut result = text.to_owned();
-
-    for cap in PLACEHOLDER_RE.captures_iter(text) {
-        // Safe: capture group 0 always exists for a successful match.
-        let Some(full_match) = cap.get(0) else {
-            continue;
-        };
-        let placeholder = &cap[1];
-
-        let idx = headers
-            .iter()
-            .position(|h| h == placeholder)
-            .ok_or_else(|| PlaceholderError {
-                placeholder: placeholder.to_owned(),
-                available_columns: headers.to_vec(),
-                available_columns_display: headers.join(", "),
-            })?;
-
-        // Invariant: headers and row must have equal length; panic if violated.
-        let Some(value) = row.get(idx) else {
-            panic!("row length must match headers length; this indicates a parsing bug");
-        };
-        result = result.replace(full_match.as_str(), value);
-    }
-
-    Ok(result)
+pub fn substitute_placeholders(text: &str, headers: &[String], row: &[String]) -> String {
+    PLACEHOLDER_RE
+        .replace_all(text, |caps: &regex::Captures<'_>| {
+            let placeholder = caps.get(1).map_or("", |name| name.as_str());
+            headers
+                .iter()
+                .position(|header| header == placeholder)
+                .and_then(|idx| row.get(idx))
+                .map_or_else(
+                    || caps.get(0).map_or("", |whole| whole.as_str()).to_owned(),
+                    Clone::clone,
+                )
+        })
+        .into_owned()
 }
 
 /// Extracts all placeholder names from a text.
@@ -152,23 +116,25 @@ mod tests {
         #[case] row: Vec<String>,
         #[case] expected: &str,
     ) {
-        let Ok(result) = substitute_placeholders(text, &headers, &row) else {
-            panic!("placeholder substitution should succeed");
-        };
+        let result = substitute_placeholders(text, &headers, &row);
         assert_eq!(result, expected);
     }
 
-    #[test]
-    fn error_on_undefined_placeholder() {
-        let text = "I have <undefined> items";
+    #[rstest]
+    #[case::unknown("I have <undefined> items", "I have <undefined> items")]
+    #[case::mixed("<count> of <unknown>", "5 of <unknown>")]
+    #[case::markup("line<br>break", "line<br>break")]
+    fn unknown_placeholders_stay_verbatim(#[case] text: &str, #[case] expected: &str) {
         let headers = vec!["count".to_owned()];
         let row = vec!["5".to_owned()];
+        assert_eq!(substitute_placeholders(text, &headers, &row), expected);
+    }
 
-        let Err(err) = substitute_placeholders(text, &headers, &row) else {
-            panic!("undefined placeholder should fail substitution");
-        };
-        assert_eq!(err.placeholder, "undefined");
-        assert_eq!(err.available_columns, vec!["count".to_owned()]);
+    #[test]
+    fn substituted_values_are_not_substituted_again() {
+        let headers = vec!["a".to_owned(), "b".to_owned()];
+        let row = vec!["<b>".to_owned(), "x".to_owned()];
+        assert_eq!(substitute_placeholders("<a> <b>", &headers, &row), "<b> x");
     }
 
     #[test]
@@ -177,9 +143,7 @@ mod tests {
         let headers = vec!["user_name".to_owned(), "item_count".to_owned()];
         let row = vec!["Alice".to_owned(), "42".to_owned()];
 
-        let Ok(result) = substitute_placeholders(text, &headers, &row) else {
-            panic!("placeholder substitution should succeed");
-        };
+        let result = substitute_placeholders(text, &headers, &row);
         assert_eq!(result, "The Alice has 42 items");
     }
 
@@ -189,9 +153,7 @@ mod tests {
         let headers = vec!["start count".to_owned(), "item-id".to_owned()];
         let row = vec!["3".to_owned(), "apples".to_owned()];
 
-        let Ok(result) = substitute_placeholders(text, &headers, &row) else {
-            panic!("placeholder substitution should succeed");
-        };
+        let result = substitute_placeholders(text, &headers, &row);
         assert_eq!(result, "The 3 includes apples");
     }
 

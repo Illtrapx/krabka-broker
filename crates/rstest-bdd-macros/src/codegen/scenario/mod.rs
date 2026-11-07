@@ -248,7 +248,7 @@ where
         return err.into_compile_error();
     };
     let headers = ExampleHeaders::new(examples.headers.clone());
-    let all_rows_steps: Result<Vec<_>, _> = examples
+    let all_rows_steps: Vec<_> = examples
         .rows
         .iter()
         .map(|row| {
@@ -256,11 +256,6 @@ where
             process_steps_substituted(&config.steps, &headers, &row)
         })
         .collect();
-
-    let all_rows_steps = match all_rows_steps {
-        Ok(steps) => steps,
-        Err(err) => return err,
-    };
 
     let adapters = resolve_scenario_adapters(config);
     let harness_resolution = adapters.resolutions.harness.as_ref();
