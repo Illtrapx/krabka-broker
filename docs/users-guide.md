@@ -2127,6 +2127,11 @@ union of feature, scenario, and example tags described above. Scenarios that do
 not match simply do not generate a test, and outline examples drop unmatched
 rows.
 
+An expansion that generates no tests at all is a compile error. Without a tag
+filter the error reads ``no scenarios found in `<dir>` ``; with one it reports
+that no scenarios matched the expression. Scenarios declared under `Rule:`
+count towards the total.
+
 ### Fixture injection with `scenarios!`
 
 The `fixtures = [name: Type, ...]` parameter injects fixtures into all

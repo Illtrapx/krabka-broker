@@ -186,20 +186,37 @@ fn parse_tag_filter(tag_lit: Option<syn::LitStr>) -> Result<Option<TagFilter>, T
     )
 }
 
-/// Provides the internal `check_empty_results` operation.
+/// Report a compile error when an expansion generated no tests at all.
+///
+/// An empty result almost always means a wrong path or a feature whose
+/// scenarios the macros cannot see, so it fails loudly rather than emitting an
+/// empty module. Scenarios declared under a `Rule:` count, because rule
+/// scenarios are flattened into the feature before tests are generated.
 fn check_empty_results(
     tests: &[TokenStream2],
     errors: &mut Vec<TokenStream2>,
     tag_filter: Option<&TagFilter>,
+    dir_lit: &syn::LitStr,
 ) {
     let is_nothing_emitted = tests.is_empty() && errors.is_empty();
-    if is_nothing_emitted && let Some(filter) = tag_filter {
-        let err = syn::Error::new(
-            filter.span,
-            format!("no scenarios matched tag expression `{}`", filter.raw),
-        );
-        errors.push(error_to_tokens(&err));
+    if !is_nothing_emitted {
+        return;
     }
+    let err = tag_filter.map_or_else(
+        || {
+            syn::Error::new(
+                dir_lit.span(),
+                format!("no scenarios found in `{}`", dir_lit.value()),
+            )
+        },
+        |filter| {
+            syn::Error::new(
+                filter.span,
+                format!("no scenarios matched tag expression `{}`", filter.raw),
+            )
+        },
+    );
+    errors.push(error_to_tokens(&err));
 }
 
 /// Provides the internal `emit_runtime_deprecation_warning` operation.
@@ -351,7 +368,7 @@ pub(crate) fn scenarios(input: TokenStream) -> TokenStream {
     };
     let (tests, mut errors) = generate_tests_from_features(&feature_paths, &ctx);
 
-    check_empty_results(&tests, &mut errors, tag_filter.as_ref());
+    check_empty_results(&tests, &mut errors, tag_filter.as_ref(), &dir_lit);
 
     emit_scenarios_module(ScenariosModuleEmission {
         dir: &dir,

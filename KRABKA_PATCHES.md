@@ -85,6 +85,14 @@ skip flags are emitted as per-row tables selected by the hidden case index,
 so every outline now takes the indexed code path, with or without
 placeholders.
 
+## Empty `scenarios!` expansions
+
+`scenarios!` over a path whose features declare no scenarios silently emitted
+an empty module; only an unmatched tag filter was an error. It is now a
+compile error naming the path (`no scenarios found in `<path>``), so a wrong
+path or an unparsed construct cannot quietly disable a suite. Scenarios under
+`Rule:` count, because rules are flattened first.
+
 ## Validation
 
 All upstream proc-macro unit tests pass with Clippy clean (all warnings
