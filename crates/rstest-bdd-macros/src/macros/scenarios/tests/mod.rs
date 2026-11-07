@@ -50,7 +50,7 @@ mod empty_results {
     use proc_macro2::{Span, TokenStream as TokenStream2};
     use quote::quote;
 
-    use super::super::{TagFilter, check_empty_results};
+    use super::super::filters::{TagFilter, check_empty_results};
     use crate::parsing::tags::TagExpression;
 
     fn dir() -> syn::LitStr { syn::LitStr::new("tests/features/empty", Span::call_site()) }

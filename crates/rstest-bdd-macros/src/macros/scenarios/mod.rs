@@ -8,6 +8,7 @@
 //! filters and generating the rstest-backed test functions.
 
 mod feature_discovery;
+mod filters;
 mod macro_args;
 mod path_resolution;
 mod test_generation;
@@ -27,6 +28,7 @@ pub(crate) use self::macro_args::{
 };
 use self::{
     feature_discovery::collect_feature_files,
+    filters::{check_empty_results, parse_tag_filter},
     macro_args::{FixtureSpec, RuntimeMode, ScenariosArgs, runtime_compatibility_alias},
     test_generation::{ScenarioTestContext, generate_scenario_test, resolve_harness_path},
 };
@@ -42,16 +44,6 @@ use crate::{
         warnings::emit_warning,
     },
 };
-
-/// Internal data used by the macros implementation.
-struct TagFilter {
-    /// Stores the internal `expr` value.
-    expr: TagExpression,
-    /// Stores the internal `span` value.
-    span: Span,
-    /// Stores the internal `raw` value.
-    raw: String,
-}
 
 /// Context for processing feature files, bundling configuration
 /// that remains constant across multiple feature file operations.
@@ -170,57 +162,6 @@ fn generate_tests_from_features(
     }
 
     (tests, errors)
-}
-
-/// Provides the internal `parse_tag_filter` operation.
-fn parse_tag_filter(tag_lit: Option<syn::LitStr>) -> Result<Option<TagFilter>, TokenStream> {
-    tag_lit.map_or_else(
-        || Ok(None),
-        |lit| match TagExpression::parse(&lit.value()) {
-            Ok(expr) => Ok(Some(TagFilter {
-                expr,
-                span: lit.span(),
-                raw: lit.value(),
-            })),
-            Err(err) => {
-                let syn_err = syn::Error::new(lit.span(), err.to_string());
-                Err(error_to_tokens(&syn_err).into())
-            }
-        },
-    )
-}
-
-/// Report a compile error when an expansion generated no tests at all.
-///
-/// An empty result almost always means a wrong path or a feature whose
-/// scenarios the macros cannot see, so it fails loudly rather than emitting an
-/// empty module. Scenarios declared under a `Rule:` count, because rule
-/// scenarios are flattened into the feature before tests are generated.
-fn check_empty_results(
-    tests: &[TokenStream2],
-    errors: &mut Vec<TokenStream2>,
-    tag_filter: Option<&TagFilter>,
-    dir_lit: &syn::LitStr,
-) {
-    let is_nothing_emitted = tests.is_empty() && errors.is_empty();
-    if !is_nothing_emitted {
-        return;
-    }
-    let err = tag_filter.map_or_else(
-        || {
-            syn::Error::new(
-                dir_lit.span(),
-                format!("no scenarios found in `{}`", dir_lit.value()),
-            )
-        },
-        |filter| {
-            syn::Error::new(
-                filter.span,
-                format!("no scenarios matched tag expression `{}`", filter.raw),
-            )
-        },
-    );
-    errors.push(error_to_tokens(&err));
 }
 
 /// Provides the internal `emit_runtime_deprecation_warning` operation.
