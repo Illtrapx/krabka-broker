@@ -176,6 +176,13 @@ scenario tags plus those of the `Examples:` block that declared it. These
 tags drive tag filters, `@allow_skipped`, the scenario tags recorded for
 reporting, and the metadata handed to a harness adapter.
 
+### Docstring media types
+
+A docstring may name its media type after the opening delimiter, as in
+`"""json`. The annotation is not part of the text the step receives: an
+annotated docstring yields exactly the same string as the same docstring with
+a bare delimiter, including its leading and trailing newlines.
+
 ### Step failure messages
 
 When a step fails, or no step definition matches it, the test panics with the

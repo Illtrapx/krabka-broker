@@ -135,6 +135,17 @@ The `rule:` and `example:` lines appear only when they apply, and the step
 line shows the keyword as written (`And`, `*`) with the substituted text.
 `ParsedStep` gains a `source` field (keyword as written and line) for this.
 
+## Docstring media types
+
+`gherkin` 0.16 keeps a media type written after the opening delimiter
+(`"""json`) as the first content line, and because that token sits at column
+zero it then dedents nothing. Steps received `json` followed by the body with
+its source indentation. A first line that is a single media-type token is now
+stripped and the rest re-dedented, which reproduces the bare-delimiter result
+exactly, including its leading and trailing newlines that existing steps rely
+on. No krabka feature on `main` used a media type when this was introduced
+(774 docstrings, all with bare delimiters).
+
 ## Validation
 
 All upstream proc-macro unit tests pass with Clippy clean (all warnings
