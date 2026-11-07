@@ -147,7 +147,7 @@ scenarios!(
 // generate none, which is exactly the case a body-scoped tracking binding
 // would miss. The executable regression tests are the `scenarios!`-generated
 // tests in `filtered_scenarios` (`fast_fast_macro_scenario` and
-// `mixed_outline_example::case_1`): each delegates to
+// `mixed_outline_example::case_1_fast_1`): each delegates to
 // `ScenariosMetadataCaptureHarness`, which reads the `ScenarioRecord` the
 // executed generated code recorded and asserts the exact manifest-relative
 // path with `/` separators.

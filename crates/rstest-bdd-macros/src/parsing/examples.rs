@@ -3,6 +3,7 @@
 use proc_macro2::TokenStream;
 
 use crate::{
+    parsing::case_names::CaseNamer,
     utils::errors::error_to_tokens,
     validation::examples::{
         extract_and_validate_headers,
@@ -27,6 +28,28 @@ pub(crate) struct ExampleTable {
     /// Guaranteed to match `rows` in length so callers can zip the sequences
     /// safely without additional bounds checks.
     pub(crate) row_tags: Vec<Vec<String>>,
+    /// Unique rstest case name for each row, aligned with `rows`.
+    pub(crate) case_names: Vec<String>,
+}
+
+impl ExampleTable {
+    /// Keep only the rows whose tags satisfy `keep`, preserving the alignment
+    /// of rows, tags, and case names.
+    ///
+    /// Case names are assigned before filtering, so a row keeps its name
+    /// whichever other rows a filter removes.
+    pub(crate) fn retain_rows_by_tags(&mut self, keep: impl Fn(&[String]) -> bool) {
+        let kept: Vec<bool> = self.row_tags.iter().map(|tags| keep(tags)).collect();
+        retain_flagged(&mut self.rows, &kept);
+        retain_flagged(&mut self.case_names, &kept);
+        retain_flagged(&mut self.row_tags, &kept);
+    }
+}
+
+/// Keep the items whose positional flag is set; items without a flag are dropped.
+fn retain_flagged<T>(items: &mut Vec<T>, kept: &[bool]) {
+    let mut flags = kept.iter().copied();
+    items.retain(|_| flags.next().unwrap_or(false));
 }
 
 /// Provides the internal `should_process_outline` operation.
@@ -66,13 +89,17 @@ pub(crate) fn extract_examples(
     let rows = flatten_and_validate_rows(scenario, headers.len())?;
 
     let mut row_tags = Vec::with_capacity(rows.len());
+    let mut case_names = Vec::with_capacity(rows.len());
+    let mut namer = CaseNamer::default();
     for ex in &scenario.examples {
         let Some(table) = ex.table.as_ref() else {
             continue;
         };
         let examples_tags = crate::parsing::tags::merge_tag_sets(base_tags, &ex.tags);
-        for _ in table.rows.iter().skip(1) {
+        let examples_name = ex.name.as_deref().map(str::trim).filter(|n| !n.is_empty());
+        for row in table.rows.iter().skip(1) {
             row_tags.push(examples_tags.clone());
+            case_names.push(namer.name(examples_name, row));
         }
     }
 
@@ -86,6 +113,7 @@ pub(crate) fn extract_examples(
         headers,
         rows,
         row_tags,
+        case_names,
     }))
 }
 

@@ -62,6 +62,18 @@ cases, as in Cucumber, because empty strings are legitimate boundary inputs.
 Case indexes and the substituted step table both enumerate every row, so
 they stay aligned.
 
+## Outline case names
+
+Upstream emitted anonymous `#[case(..)]` attributes, so outline tests were
+named `case_1` to `case_N`, which says nothing about the failing row. Each
+row now uses rstest's named form `#[case::<name>(..)]`, so rstest reports
+`case_<n>_<name>`. The name is the sanitized first-column value, prefixed
+with the sanitized Examples block name when the block has one, and
+deduplicated with `_2`, `_3`, and so on. Names never start with an
+underscore, because `case_1__5` would trip `non_snake_case` in crates that
+deny warnings: digit-leading values gain a `v_` prefix (`5` becomes `v_5`),
+keywords gain a trailing underscore, and empty values become `row`.
+
 ## Validation
 
 All upstream proc-macro unit tests pass with Clippy clean (all warnings

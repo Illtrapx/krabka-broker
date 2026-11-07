@@ -144,6 +144,29 @@ Every Examples row becomes one generated test case, in table order. A row
 whose cells are all empty is a case too: empty strings are legitimate boundary
 inputs, so the row runs with each placeholder replaced by an empty string.
 
+Each case is named after the sanitized value in the row's first column,
+prefixed with the Examples block name when the block has one. rstest reports
+the case as `case_<n>_<name>`:
+
+```gherkin
+  Scenario Outline: Withdrawals
+    When <amount> is withdrawn
+    Then the balance is <balance>
+
+    Examples:
+      | amount | balance |
+      | 10     | 90      |
+
+    Examples: Overdrafts
+      | amount | balance |
+      | 150    | -50     |
+```
+
+These rows run as `withdrawals::case_1_v_10` and
+`withdrawals::case_2_overdrafts_150`. Values that start with a digit gain a
+`v_` prefix, Rust keywords gain a trailing underscore, empty values are named
+`row`, and repeated names gain `_2`, `_3`, and so on.
+
 ### Internationalized scenarios
 
 `rstest-bdd` reads the optional `# language: <code>` directive that appears at

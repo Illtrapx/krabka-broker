@@ -33,7 +33,7 @@ impl<'a> SubstitutionContext<'a> {
 }
 
 /// Create a `LitStr` from an examples table cell.
-fn cell_to_lit(value: &str) -> syn::LitStr {
+pub(super) fn cell_to_lit(value: &str) -> syn::LitStr {
     syn::LitStr::new(value, proc_macro2::Span::call_site())
 }
 
@@ -105,43 +105,6 @@ fn resolve_keyword_tokens(steps: &[crate::parsing::feature::ParsedStep]) -> Vec<
         .iter()
         .map(move |s| s.keyword.resolve(&mut prev))
         .map(|kw| kw.to_token_stream())
-        .collect()
-}
-
-/// Generate attributes for rstest cases based on examples.
-pub(crate) fn generate_case_attrs(
-    examples: &crate::parsing::examples::ExampleTable,
-) -> Vec<TokenStream2> {
-    generate_case_attrs_internal(examples, false)
-}
-
-/// Internal helper for generating case attributes with optional index prepending.
-///
-/// Every row becomes a case, including rows whose cells are all empty: empty
-/// strings are legitimate boundary inputs, and Cucumber runs such rows. The
-/// prepended index is the row's position in `examples.rows`, which is also its
-/// position in the substituted step table, so the two stay aligned.
-fn generate_case_attrs_internal(
-    examples: &crate::parsing::examples::ExampleTable,
-    prepend_index: bool,
-) -> Vec<TokenStream2> {
-    examples
-        .rows
-        .iter()
-        .enumerate()
-        .map(|(idx, row)| {
-            let cells = row.iter().map(|v| {
-                let lit = cell_to_lit(v);
-                quote! { #lit }
-            });
-            if prepend_index {
-                let idx_lit =
-                    syn::LitInt::new(&format!("{idx}usize"), proc_macro2::Span::call_site());
-                quote! { #[case( #idx_lit, #(#cells),* )] }
-            } else {
-                quote! { #[case( #(#cells),* )] }
-            }
-        })
         .collect()
 }
 
@@ -218,24 +181,6 @@ pub(crate) fn process_steps(
         .map(|s| generate_table_tokens(s.table.as_deref()))
         .collect();
     (keyword_tokens, values, docstrings, tables)
-}
-
-/// Generate case attributes with a prepended case index for scenario outlines.
-///
-/// Each `#[case(...)]` attribute includes the row index as its first argument,
-/// enabling the generated test to select the correct substituted step array.
-///
-/// # Examples
-///
-/// For an Examples table with rows `["5", "apples"]` and `["10", "oranges"]`:
-/// ```text
-/// #[case(0usize, "5", "apples")]
-/// #[case(1usize, "10", "oranges")]
-/// ```
-pub(crate) fn generate_indexed_case_attrs(
-    examples: &crate::parsing::examples::ExampleTable,
-) -> Vec<TokenStream2> {
-    generate_case_attrs_internal(examples, true)
 }
 
 /// Provides the internal `substitute_table_placeholders` operation.
@@ -373,30 +318,5 @@ mod tests {
     #[case(parse_quote! { fn test() }, false)]
     fn detects_underscore_prefixed_params(#[case] sig: syn::Signature, #[case] expected: bool) {
         assert_eq!(has_underscore_prefixed_params(&sig), expected);
-    }
-
-    #[test]
-    fn all_empty_rows_become_cases_with_aligned_indexes() {
-        let examples = crate::parsing::examples::ExampleTable {
-            headers: vec!["value".to_owned()],
-            rows: vec![
-                vec!["a".to_owned()],
-                vec![String::new()],
-                vec!["b".to_owned()],
-            ],
-            row_tags: vec![Vec::new(); 3],
-        };
-        let attrs: Vec<String> = generate_indexed_case_attrs(&examples)
-            .iter()
-            .map(ToString::to_string)
-            .collect();
-        assert_eq!(
-            attrs,
-            [
-                "# [case (0usize , \"a\")]",
-                "# [case (1usize , \"\")]",
-                "# [case (2usize , \"b\")]",
-            ]
-        );
     }
 }

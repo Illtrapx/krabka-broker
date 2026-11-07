@@ -1,13 +1,13 @@
 //! Code generation for scenario tests.
 //!
 //! This module coordinates code generation for a BDD scenario or outline across
-//! seven focused sub-modules:
+//! eight focused sub-modules:
 //!
 //! - [`adapters`] — resolves adapter APIs and fallback diagnostics once per expansion boundary.
 //! - [`boundary`] — applies shared adapter decisions at the macro-expansion boundary.
-//!
+//! - [`cases`] — named rstest case attributes for Scenario Outline rows.
 //! - [`domain`] — shared types for steps, examples, and docstrings.
-//! - [`helpers`] — step-processing utilities and case-attribute generators.
+//! - [`helpers`] — step-processing and placeholder-substitution utilities.
 //! - [`metadata`] — feature-path and scenario-name wrappers for generated code.
 //! - [`runtime`] — async wrapper and harness-orchestrated runtime tokens.
 //! - [`test_attrs`] — ADR-008 attribute-policy resolution, translating harness and runtime-mode
@@ -25,6 +25,7 @@ use quote::quote;
 
 mod adapters;
 mod boundary;
+mod cases;
 mod domain;
 mod helpers;
 mod metadata;
@@ -33,9 +34,10 @@ mod test_attrs;
 
 use adapters::resolve_scenario_adapters;
 use boundary::finalize_scenario_signature;
+use cases::{generate_case_attrs, generate_indexed_case_attrs};
 pub(crate) use domain::*;
 pub(crate) use helpers::process_steps;
-use helpers::{generate_case_attrs, generate_indexed_case_attrs, process_steps_substituted};
+use helpers::process_steps_substituted;
 pub(crate) use metadata::{FeaturePath, ScenarioName};
 use runtime::{
     ContextIterators,

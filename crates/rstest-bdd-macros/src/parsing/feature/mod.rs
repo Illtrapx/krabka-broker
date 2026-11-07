@@ -300,27 +300,8 @@ impl ScenarioData {
     pub(crate) fn filter_by_tags(&mut self, expr: &TagExpression) -> bool {
         match &mut self.examples {
             Some(examples) => {
-                let mut retained_rows = Vec::new();
-                let mut retained_tags = Vec::new();
-                for (row, tags) in examples
-                    .rows
-                    .iter()
-                    .cloned()
-                    .zip(examples.row_tags.iter().cloned())
-                {
-                    if expr.evaluate(tags.iter().map(String::as_str)) {
-                        retained_rows.push(row);
-                        retained_tags.push(tags);
-                    }
-                }
-
-                if retained_rows.is_empty() {
-                    false
-                } else {
-                    examples.rows = retained_rows;
-                    examples.row_tags = retained_tags;
-                    true
-                }
+                examples.retain_rows_by_tags(|tags| expr.evaluate(tags.iter().map(String::as_str)));
+                !examples.rows.is_empty()
             }
             None => expr.evaluate(self.tags.iter().map(String::as_str)),
         }
