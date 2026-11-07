@@ -269,6 +269,7 @@ mod tests {
         extracted.push(Arg::Step {
             pat: Ident::new("value", Span::call_site()),
             ty: parse_quote!(String),
+            placeholder: "value".to_owned(),
         });
     }
 

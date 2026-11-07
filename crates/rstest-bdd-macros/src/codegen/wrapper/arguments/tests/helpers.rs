@@ -29,6 +29,7 @@ pub fn generate_step_parse_with_hint(ty: syn::Type, hint: Option<String>) -> Str
     let arg = Arg::Step {
         pat: parse_quote!(name),
         ty,
+        placeholder: "name".to_owned(),
     };
     let bindings = build_bindings(1);
     let args = bind_args(&[&arg], &bindings);
@@ -54,6 +55,7 @@ pub fn build_arguments() -> Vec<Arg> {
         Arg::Step {
             pat: parse_quote!(count),
             ty: parse_quote!(usize),
+            placeholder: "count".to_owned(),
         },
         Arg::DataTable {
             pat: parse_quote!(table),

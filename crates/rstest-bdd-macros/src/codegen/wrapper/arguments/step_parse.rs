@@ -180,7 +180,7 @@ pub(super) fn gen_single_step_parse(ctx: ArgParseContext<'_>, meta: StepMeta<'_>
         hint,
     } = ctx;
     let StepMeta { pattern, ident } = meta;
-    let StepArg { pat, ty } = arg;
+    let StepArg { pat, ty, .. } = arg;
     let raw_ident = format_ident!("__raw{}", idx);
     let missing_cap_err = step_error_tokens(
         &format_ident!("ExecutionError"),

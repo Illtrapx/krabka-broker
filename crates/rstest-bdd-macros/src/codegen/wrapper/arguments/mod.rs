@@ -2,11 +2,11 @@
 
 use proc_macro2::TokenStream as TokenStream2;
 use quote::{format_ident, quote};
-use rstest_bdd_patterns::requires_quote_stripping;
 
 use super::args::{Arg, DataTableArg, FixtureArg, StepArg, StepStructArg};
 
 mod bindings;
+mod capture_binding;
 mod declarations;
 
 mod datatable;
@@ -22,6 +22,7 @@ use bindings::{
     BoundStepStructArg,
     wrapper_binding_idents,
 };
+use capture_binding::{StepArgParseInputs, StepArgParseResult, build_step_arg_parses};
 use datatable::{CacheIdents, gen_datatable_decl};
 pub(super) use declarations::{PreparedArgs, StepMeta};
 use fixtures::gen_fixture_decls;
@@ -152,87 +153,6 @@ pub(super) fn gen_step_parses(
         .collect()
 }
 
-/// Generated step argument parses and quote-stripping indicator.
-struct StepArgParseResult {
-    /// Stores the internal `step_arg_parses` value.
-    step_arg_parses: Vec<TokenStream2>,
-    /// Stores the internal `has_step_arg_quote_strip` value.
-    has_step_arg_quote_strip: bool,
-}
-
-/// Input data for building step argument parse expressions.
-#[derive(Copy, Clone)]
-struct StepArgParseInputs<'a> {
-    /// Stores the internal `step_args` value.
-    step_args: &'a [BoundStepArg<'a>],
-    /// Stores the internal `all_captures` value.
-    all_captures: &'a [TokenStream2],
-    /// Stores the internal `placeholder_hints` value.
-    placeholder_hints: &'a [Option<String>],
-}
-
-/// Build parsers for step arguments from `StepArgParseInputs` and `StepMeta`.
-///
-/// When `step_struct_present` is true, the step struct handles argument parsing,
-/// so this returns an empty `StepArgParseResult` with no quote-stripping.
-fn build_step_arg_parses(
-    inputs: StepArgParseInputs<'_>,
-    step_meta: StepMeta<'_>,
-    step_struct_present: bool,
-) -> StepArgParseResult {
-    let StepArgParseInputs {
-        step_args,
-        all_captures,
-        placeholder_hints,
-    } = inputs;
-    if step_struct_present {
-        return StepArgParseResult {
-            step_arg_parses: Vec::new(),
-            has_step_arg_quote_strip: false,
-        };
-    }
-
-    let Some(capture_slice) = all_captures.get(..step_args.len()) else {
-        let error = syn::Error::new(
-            step_meta.pattern.span(),
-            format!(
-                "step arguments ({}) cannot exceed capture count ({})",
-                step_args.len(),
-                all_captures.len()
-            ),
-        )
-        .to_compile_error();
-        return StepArgParseResult {
-            step_arg_parses: vec![error],
-            has_step_arg_quote_strip: false,
-        };
-    };
-    let Some(hint_slice) = placeholder_hints.get(..step_args.len()) else {
-        let error = syn::Error::new(
-            step_meta.pattern.span(),
-            format!(
-                "placeholder hints ({}) must match or exceed step argument count ({})",
-                placeholder_hints.len(),
-                step_args.len()
-            ),
-        )
-        .to_compile_error();
-        return StepArgParseResult {
-            step_arg_parses: vec![error],
-            has_step_arg_quote_strip: false,
-        };
-    };
-    let has_step_arg_quote_strip = hint_slice
-        .iter()
-        .any(|hint| requires_quote_stripping(hint.as_deref()));
-    let step_arg_parses = gen_step_parses(step_args, capture_slice, hint_slice, step_meta);
-
-    StepArgParseResult {
-        step_arg_parses,
-        has_step_arg_quote_strip,
-    }
-}
-
 /// Placeholder metadata and generated identifiers a wrapper needs.
 #[derive(Copy, Clone)]
 pub(super) struct ArgumentProcessingInputs<'a> {
@@ -277,8 +197,16 @@ fn bind_arguments<'a>(args: &'a [Arg], binding_idents: &'a [syn::Ident]) -> Boun
                 arg: FixtureArg { name, ty },
                 binding,
             }),
-            Arg::Step { pat, ty } => bound.step_args.push(BoundStepArg {
-                arg: StepArg { pat, ty },
+            Arg::Step {
+                pat,
+                ty,
+                placeholder,
+            } => bound.step_args.push(BoundStepArg {
+                arg: StepArg {
+                    pat,
+                    ty,
+                    placeholder: placeholder.as_str(),
+                },
                 binding,
             }),
             Arg::StepStruct { pat, ty } => {
@@ -350,9 +278,11 @@ pub(super) fn prepare_argument_processing(
     } = bind_arguments(args, &binding_idents);
 
     let declares = gen_fixture_decls(&fixtures, ident, ctx_ident);
-    let fixture_guards = fixtures.iter().rev().map(|fixture| {
-        format_ident!("__rstest_bdd_guard_{}", fixture.binding)
-    }).collect();
+    let fixture_guards = fixtures
+        .iter()
+        .rev()
+        .map(|fixture| format_ident!("__rstest_bdd_guard_{}", fixture.binding))
+        .collect();
     let all_captures = capture_accessors(placeholder_names.len());
     let step_struct_present = step_struct.is_some();
     let StepArgParseResult {
@@ -362,6 +292,7 @@ pub(super) fn prepare_argument_processing(
         StepArgParseInputs {
             step_args: &step_args,
             all_captures: &all_captures,
+            placeholder_names,
             placeholder_hints,
         },
         step_meta,

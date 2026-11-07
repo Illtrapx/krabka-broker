@@ -48,6 +48,7 @@ fn argument_at(kind: ArgKind, index: usize) -> Arg {
         ArgKind::Step => Arg::Step {
             pat: ident("step"),
             ty: parse_quote!(usize),
+            placeholder: "step".to_owned(),
         },
         ArgKind::StepStruct => Arg::StepStruct {
             pat: ident("step_struct"),

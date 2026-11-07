@@ -165,6 +165,16 @@ both `ignore_tags` and `expect_failure_tags` is a compile error. krabka maps
 `@inprogress` to this and `@formulated` to `ignore_tags`, giving the BDD
 "see it fail first, then make it pass" loop.
 
+## Placeholders bind by name
+
+Step-function parameters were paired with pattern captures by position, so
+declaring `fn step(b: i32, a: i32)` for the pattern `"{a} then {b}"`
+silently swapped the values. Each parameter now takes the capture, and the
+type hint, of the placeholder it claimed during classification: its
+`#[from(...)]` name, or its own name without one leading underscore.
+Position remains only as the fallback for a parameter whose name matches no
+remaining placeholder; `#[step_args]` structs already bound fields by name.
+
 ## Validation
 
 All upstream proc-macro unit tests pass with Clippy clean (all warnings

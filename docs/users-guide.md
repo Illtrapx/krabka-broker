@@ -257,6 +257,20 @@ a global registry. The wrapper captures the step keyword, pattern string and
 associated fixtures and uses the `inventory` crate to publish them for later
 lookup.
 
+### Binding placeholders to parameters
+
+Each placeholder value is passed to the parameter named after it, whatever
+order the parameters are declared in; a leading underscore is ignored, and
+`#[from(name)]` binds a parameter to the placeholder `name`. The following
+step receives `first = "alpha"`, `second = 2` and `third = "gamma"` for
+`Given the order "alpha" then 2 then gamma`:
+
+```rust,no_run
+# use rstest_bdd_macros::given;
+#[given("the order {first:string} then {second:u32} then {third}")]
+fn reordered(third: String, second: u32, first: String) {}
+```
+
 ### Fixtures and implicit injection
 
 `rstest‑bdd` builds on `rstest`’s fixture system rather than using a monolithic

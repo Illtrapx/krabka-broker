@@ -212,7 +212,11 @@ fn classify_by_placeholder_match(
     // from diverging — the shape that previously let `_foo` skip the guard.
     validate_no_step_struct_conflict(ctx, &lookup, &pat)?;
     if ctx.placeholders.remove(&lookup) {
-        ctx.extracted.push(Arg::Step { pat, ty });
+        ctx.extracted.push(Arg::Step {
+            pat,
+            ty,
+            placeholder: lookup,
+        });
     } else {
         let name = resolve_fixture_name(from_name, &pat, &lookup)?;
         ctx.extracted.push(Arg::Fixture { pat, name, ty });

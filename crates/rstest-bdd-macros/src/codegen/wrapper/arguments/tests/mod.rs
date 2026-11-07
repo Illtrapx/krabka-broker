@@ -223,10 +223,12 @@ fn gen_step_parses_handles_mixed_str_and_parsed_types() {
     let str_arg = Arg::Step {
         pat: parse_quote!(tag),
         ty: parse_quote!(&str),
+        placeholder: "tag".to_owned(),
     };
     let usize_arg = Arg::Step {
         pat: parse_quote!(count),
         ty: parse_quote!(usize),
+        placeholder: "count".to_owned(),
     };
     let bindings = build_bindings(2);
     let args = bind_args(&[&str_arg, &usize_arg], &bindings);
@@ -298,10 +300,12 @@ fn gen_step_parses_applies_hints_only_to_matching_arguments() {
     let name_arg = Arg::Step {
         pat: parse_quote!(name),
         ty: parse_quote!(&str),
+        placeholder: "name".to_owned(),
     };
     let count_arg = Arg::Step {
         pat: parse_quote!(count),
         ty: parse_quote!(usize),
+        placeholder: "count".to_owned(),
     };
     let bindings = build_bindings(2);
     let args = bind_args(&[&name_arg, &count_arg], &bindings);

@@ -38,6 +38,10 @@ pub enum Arg {
         pat: syn::Ident,
         /// Stores the internal `ty` value.
         ty: syn::Type,
+        /// Pattern placeholder this argument claimed during classification:
+        /// the explicit `#[from(...)]` name, or the parameter name with one
+        /// leading underscore stripped. Captures are bound by this name.
+        placeholder: String,
     },
     /// Represents the internal validation outcome.
     StepStruct {
@@ -76,6 +80,8 @@ pub struct StepArg<'a> {
     pub pat: &'a syn::Ident,
     /// Stores the internal `ty` value.
     pub ty: &'a syn::Type,
+    /// Pattern placeholder the argument is bound to.
+    pub placeholder: &'a str,
 }
 
 #[derive(Clone, Copy)]
@@ -106,7 +112,15 @@ impl Arg {
     /// Provides the internal `fn` operation.
     pub const fn as_step(&self) -> Option<StepArg<'_>> {
         match self {
-            Self::Step { pat, ty } => Some(StepArg { pat, ty }),
+            Self::Step {
+                pat,
+                ty,
+                placeholder,
+            } => Some(StepArg {
+                pat,
+                ty,
+                placeholder: placeholder.as_str(),
+            }),
             _ => None,
         }
     }
@@ -137,7 +151,7 @@ impl fmt::Debug for Arg {
                 .field("name", name)
                 .field("ty", ty)
                 .finish(),
-            Self::Step { pat, ty } => f
+            Self::Step { pat, ty, .. } => f
                 .debug_struct("Step")
                 .field("pat", pat)
                 .field("ty", ty)
