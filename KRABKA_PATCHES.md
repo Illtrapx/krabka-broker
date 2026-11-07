@@ -46,6 +46,13 @@ scenario list before caching the feature:
 krabka's Gherkin house style groups scenarios under `Rule:`, so without this
 patch those scenarios never ran.
 
+## `*` bullet steps
+
+`gherkin` types every `*` step as `Given`, so a bullet after a `When` or
+`Then` failed step lookup. A `*` bullet now continues the previous primary
+keyword, as an `And` does and as Cucumber specifies. A bullet that precedes
+every primary keyword has nothing to continue, so it stays a `Given`.
+
 ## Validation
 
 All upstream proc-macro unit tests pass with Clippy clean (all warnings

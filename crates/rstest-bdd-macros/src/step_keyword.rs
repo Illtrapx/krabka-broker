@@ -96,13 +96,19 @@ impl TryFrom<gherkin::StepType> for StepKeyword {
     }
 }
 
+/// Return whether a step keyword is Gherkin's language-neutral `*` bullet.
+pub(crate) fn is_star_keyword(keyword: &str) -> bool { keyword.trim() == "*" }
+
 /// Detect an English textual conjunction ("And"/"But") in a step keyword.
 ///
+/// The `*` bullet is treated as `And`, so it inherits the previous primary
+/// keyword as in Cucumber; `gherkin` would otherwise type every `*` step as
+/// `Given`, breaking lookup for bullets that follow a `When` or `Then`.
 /// Non-English conjunctions rely on `gherkin::StepType` and are resolved
 /// centrally, so only the English spellings are recognized here.
 fn conjunction_from_keyword(keyword: &str) -> Option<StepKeyword> {
     let trimmed = keyword.trim();
-    if trimmed.eq_ignore_ascii_case("and") {
+    if trimmed.eq_ignore_ascii_case("and") || is_star_keyword(trimmed) {
         Some(StepKeyword::And)
     } else if trimmed.eq_ignore_ascii_case("but") {
         Some(StepKeyword::But)
@@ -162,6 +168,27 @@ mod tests {
             panic!("valid step keyword: {input}");
         };
         assert_eq!(parsed, expected);
+    }
+
+    #[rstest]
+    #[case::star_after_when(StepType::Given, "* ", StepKeyword::And)]
+    #[case::and(StepType::Given, "And ", StepKeyword::And)]
+    #[case::primary(StepType::When, "When ", StepKeyword::When)]
+    fn star_bullets_are_conjunctions(
+        #[case] ty: StepType,
+        #[case] keyword: &str,
+        #[case] expected: StepKeyword,
+    ) {
+        let step = Step {
+            keyword: keyword.to_owned(),
+            ty,
+            value: "a step".to_owned(),
+            docstring: None,
+            table: None,
+            span: gherkin::Span { start: 0, end: 0 },
+            position: gherkin::LineCol { line: 0, col: 0 },
+        };
+        assert_eq!(StepKeyword::try_from(&step).ok(), Some(expected));
     }
 
     #[test]

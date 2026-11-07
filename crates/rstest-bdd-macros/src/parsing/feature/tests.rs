@@ -104,3 +104,32 @@ fn parsed_step_equality_ignores_span() {
     };
     assert_ne!(b, c, "different keywords must not be equal");
 }
+
+#[rstest]
+#[case::leading_bullets_stay_given(
+    "  Scenario: s\n    * a precondition\n    * another precondition\n    When an action\n",
+    &[crate::StepKeyword::Given, crate::StepKeyword::And, crate::StepKeyword::When],
+)]
+#[case::bullets_after_primary_continue_it(
+    "  Scenario: s\n    When an action\n    * another action\n    Then a result\n    * another result\n",
+    &[
+        crate::StepKeyword::When,
+        crate::StepKeyword::And,
+        crate::StepKeyword::Then,
+        crate::StepKeyword::And,
+    ],
+)]
+#[case::background_bullet_anchors_scenario(
+    "  Background:\n    * a precondition\n  Scenario: s\n    When an action\n",
+    &[crate::StepKeyword::Given, crate::StepKeyword::When],
+)]
+fn star_bullets_resolve_against_previous_keyword(
+    #[case] body: &str,
+    #[case] expected: &[crate::StepKeyword],
+) {
+    let source = format!("Feature: bullets\n{body}");
+    let feature = Feature::parse(&source, GherkinEnv::default()).expect("feature should parse");
+    let data = extract_scenario_steps(&feature, Some(0)).expect("steps should extract");
+    let keywords: Vec<_> = data.steps.iter().map(|step| step.keyword).collect();
+    assert_eq!(keywords, expected);
+}

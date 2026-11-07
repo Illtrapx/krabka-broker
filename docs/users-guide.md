@@ -131,6 +131,13 @@ keep the `{feature_stem}_{scenario}` form. `#[scenario]` finds rule scenarios
 by `name` or `index`; their indexes follow the scenarios declared before the
 first rule, in file order.
 
+### Bullet steps
+
+A `*` bullet may replace any step keyword. It continues the previous primary
+keyword, exactly like `And`, so `* another outcome` after a `Then` step looks
+up a `#[then]` definition. A bullet that precedes every `Given`, `When`, or
+`Then` in the scenario (including its backgrounds) is treated as `Given`.
+
 ### Internationalized scenarios
 
 `rstest-bdd` reads the optional `# language: <code>` directive that appears at

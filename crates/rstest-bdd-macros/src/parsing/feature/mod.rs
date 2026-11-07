@@ -248,6 +248,10 @@ mod tests;
 /// Keeping this logic in a dedicated helper keeps `extract_scenario_steps`
 /// focused on scenario selection, tagging, and examples extraction, whilst
 /// letting callers decide how to collect or extend the resulting iterator.
+///
+/// A `*` bullet normally inherits the previous primary keyword. Bullets that
+/// precede every primary keyword have nothing to inherit, so they keep the
+/// `Given` type `gherkin` assigns them instead of borrowing a later keyword.
 fn iter_parsed_steps_with_background<'a>(
     feature: &'a Feature,
     scenario: &'a Scenario,
@@ -258,7 +262,29 @@ fn iter_parsed_steps_with_background<'a>(
         .into_iter()
         .flat_map(|background| background.steps.iter())
         .chain(scenario.steps.iter())
-        .map(ParsedStep::try_from)
+        .scan(false, |has_primary, step| {
+            Some(
+                ParsedStep::try_from(step)
+                    .map(|parsed| anchor_leading_star(parsed, step, has_primary)),
+            )
+        })
+}
+
+/// Give a `*` bullet that precedes every primary keyword the `Given` type.
+///
+/// `has_primary` records whether a primary keyword (or an anchored bullet)
+/// has been seen earlier in the step list.
+fn anchor_leading_star(mut parsed: ParsedStep, step: &Step, has_primary: &mut bool) -> ParsedStep {
+    let is_conjunction = matches!(
+        parsed.keyword,
+        crate::StepKeyword::And | crate::StepKeyword::But
+    );
+    let is_leading_star = !*has_primary && crate::step_keyword::is_star_keyword(&step.keyword);
+    if is_leading_star {
+        parsed.keyword = crate::StepKeyword::Given;
+    }
+    *has_primary |= is_leading_star || !is_conjunction;
+    parsed
 }
 
 /// Provides the internal `collect_base_tags` operation.
