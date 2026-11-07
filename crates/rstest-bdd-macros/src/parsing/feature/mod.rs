@@ -15,6 +15,8 @@ use crate::{
     },
     utils::errors::error_to_tokens,
 };
+
+mod rules;
 cfg_if::cfg_if! {
     if #[cfg(feature = "compile-time-validation")] {
         use crate::validation::examples::{validate_examples_in_feature_text, FeatureText};
@@ -61,6 +63,8 @@ pub(crate) struct ScenarioData {
     pub(crate) examples: Option<ExampleTable>,
     /// Stores the internal `tags` value.
     pub(crate) tags: Vec<String>,
+    /// Name of the `Rule:` declaring the scenario, if any.
+    pub(crate) rule: Option<String>,
     /// 1-based source line number of the scenario declaration in the feature
     /// file.
     pub(crate) line: u32,
@@ -156,7 +160,7 @@ pub(crate) fn parse_and_load_feature(path: &Path) -> Result<Feature, proc_macro2
         return Err(error_to_tokens(&err));
     }
 
-    let feature = Feature::parse_path(&feature_path, GherkinEnv::default()).map_err(|err| {
+    let mut feature = Feature::parse_path(&feature_path, GherkinEnv::default()).map_err(|err| {
         #[cfg(feature = "compile-time-validation")]
         {
             if let Ok(text) = std::fs::read_to_string(&feature_path)
@@ -169,6 +173,7 @@ pub(crate) fn parse_and_load_feature(path: &Path) -> Result<Feature, proc_macro2
         let msg = format!("failed to parse feature file: {err}");
         error_to_tokens(&syn::Error::new(proc_macro2::Span::call_site(), msg))
     })?;
+    rules::flatten_rules(&mut feature);
 
     let key = canonical.unwrap_or_else(|| feature_path.clone());
     // Recover from a poisoned lock: the cache only holds parsed features,
@@ -230,6 +235,7 @@ pub(crate) fn extract_scenario_steps(
         steps,
         examples,
         tags: base_tags,
+        rule: rules::rule_name_for(feature, scenario).map(str::to_owned),
         line: scenario_line,
     })
 }

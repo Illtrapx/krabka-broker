@@ -22,6 +22,7 @@ use super::{
     resolve_effective_runtime,
     resolve_fixture_error_type,
     resolve_harness_path,
+    scenario_test_base_name,
 };
 #[cfg(windows)]
 use super::{ScenarioTestContext, generate_scenario_test};
@@ -35,6 +36,23 @@ fn deduplicates_duplicate_titles() {
     let second = dedupe_name("dup_same_name", &mut used);
     assert_eq!(first, "dup_same_name");
     assert_eq!(second, "dup_same_name_1");
+}
+
+#[rstest]
+#[case::outside_rule("billing", None, "Pay invoice", "billing_pay_invoice")]
+#[case::inside_rule(
+    "billing",
+    Some("Late fees"),
+    "Pay invoice",
+    "billing_late_fees_pay_invoice"
+)]
+fn scenario_names_include_rule_when_present(
+    #[case] stem: &str,
+    #[case] rule: Option<&str>,
+    #[case] scenario: &str,
+    #[case] expected: &str,
+) {
+    assert_eq!(scenario_test_base_name(stem, rule, scenario), expected);
 }
 
 #[cfg(windows)]
@@ -61,6 +79,7 @@ fn generated_scenario_metadata_uses_portable_feature_separators() {
         steps: vec![],
         examples: None,
         tags: vec![],
+        rule: None,
         line: 1,
     };
 

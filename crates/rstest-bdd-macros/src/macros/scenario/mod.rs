@@ -135,6 +135,7 @@ fn try_scenario(
         examples,
         tags,
         line,
+        rule: _,
     } = scenario_data;
     let allow_skipped = crate::codegen::scenario::scenario_allows_skip(&tags);
 

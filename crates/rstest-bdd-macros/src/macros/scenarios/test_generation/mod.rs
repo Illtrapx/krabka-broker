@@ -136,6 +136,33 @@ pub(super) fn dedupe_name(base: &str, used: &mut HashSet<String>) -> String {
     name
 }
 
+/// Derive the undeduplicated test function name for a scenario.
+///
+/// Scenarios declared under a `Rule:` include the sanitized rule name so
+/// that equally named scenarios in different rules stay distinguishable;
+/// names of scenarios outside any rule are unchanged.
+///
+/// # Examples
+///
+/// ```rust,ignore
+/// assert_eq!(scenario_test_base_name("billing", None, "Pay"), "billing_pay");
+/// assert_eq!(
+///     scenario_test_base_name("billing", Some("Refunds"), "Pay"),
+///     "billing_refunds_pay",
+/// );
+/// ```
+pub(super) fn scenario_test_base_name(
+    feature_stem: &str,
+    rule: Option<&str>,
+    scenario: &str,
+) -> String {
+    let scenario = sanitize_ident(scenario);
+    rule.map_or_else(
+        || format!("{feature_stem}_{scenario}"),
+        |rule| format!("{feature_stem}_{}_{scenario}", sanitize_ident(rule)),
+    )
+}
+
 /// Builds lint suppression attributes when fixtures are present.
 fn build_lint_attributes(fixtures: &[FixtureSpec]) -> Vec<syn::Attribute> {
     if fixtures.is_empty() {
@@ -293,10 +320,11 @@ pub(super) fn generate_scenario_test(
         steps,
         examples,
         tags,
+        rule,
         line,
     } = data;
     let allow_skipped = crate::codegen::scenario::scenario_allows_skip(&tags);
-    let base_name = format!("{}_{}", ctx.feature_stem, sanitize_ident(&name));
+    let base_name = scenario_test_base_name(ctx.feature_stem, rule.as_deref(), &name);
     let fn_name = dedupe_name(&base_name, used_names);
     let fn_ident = format_ident!("{}", fn_name);
 

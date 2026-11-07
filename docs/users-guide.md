@@ -102,6 +102,35 @@ The feature file lives within the crate (commonly under `tests/features/`). The
 path to this file will be referenced by the `#[scenario]` macro in the test
 code.
 
+### Rule blocks
+
+Scenarios may be grouped under `Rule:` headings. A rule may declare its own
+`Background`, which runs after the feature `Background` and before the
+scenario's own steps. Rule tags are inherited by every scenario in the rule,
+so tag filters and `@allow_skipped` see them.
+
+```gherkin
+Feature: Invoices
+
+  Background:
+    Given an open ledger
+
+  @billing
+  Rule: Late fees
+    Background:
+      Given an invoice issued 31 days ago
+
+    Scenario: Paying a late invoice
+      When the invoice is paid
+      Then a late fee is charged
+```
+
+`scenarios!` names rule scenarios `{feature_stem}_{rule}_{scenario}`, for
+example `invoices_late_fees_paying_a_late_invoice`. Scenarios outside any rule
+keep the `{feature_stem}_{scenario}` form. `#[scenario]` finds rule scenarios
+by `name` or `index`; their indexes follow the scenarios declared before the
+first rule, in file order.
+
 ### Internationalized scenarios
 
 `rstest-bdd` reads the optional `# language: <code>` directive that appears at
