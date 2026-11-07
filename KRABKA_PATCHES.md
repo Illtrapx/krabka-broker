@@ -73,6 +73,11 @@ deduplicated with `_2`, `_3`, and so on. Names never start with an
 underscore, because `case_1__5` would trip `non_snake_case` in crates that
 deny warnings: digit-leading values gain a `v_` prefix (`5` becomes `v_5`),
 keywords gain a trailing underscore, and empty values become `row`.
+A value that starts with punctuation, such as a JSON cell `{"voter":1}`,
+drops it (`voter_1`), and a duplicate suffix never doubles an underscore
+(`type_` repeats as `type_2`). Before that follow-up fix, a JSON first
+column that repeated gave `..._true__2` in krabka-raft, which failed the
+broker's `-D warnings` Clippy gate.
 
 ## Per-row Examples tags
 

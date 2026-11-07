@@ -63,8 +63,19 @@ fn add_prefix_if_needed(mut ident: String) -> String {
 fn needs_underscore_prefix(ident: &str) -> bool {
     ident.is_empty()
         || ident.chars().next().is_some_and(|c| c.is_ascii_digit())
-        || RUST_KEYWORDS.contains(&ident)
+        || is_rust_keyword(ident)
 }
+
+/// Report whether a lowercased identifier is a Rust keyword.
+///
+/// # Examples
+///
+/// ```rust,ignore
+/// use crate::utils::ident::is_rust_keyword;
+/// assert!(is_rust_keyword("type"));
+/// assert!(!is_rust_keyword("typed"));
+/// ```
+pub(crate) fn is_rust_keyword(ident: &str) -> bool { RUST_KEYWORDS.contains(&ident) }
 
 /// Rust keywords that are invalid as identifiers.
 ///
