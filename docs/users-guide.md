@@ -176,6 +176,24 @@ scenario tags plus those of the `Examples:` block that declared it. These
 tags drive tag filters, `@allow_skipped`, the scenario tags recorded for
 reporting, and the metadata handed to a harness adapter.
 
+### Step failure messages
+
+When a step fails, or no step definition matches it, the test panics with the
+runtime error followed by the step's location in the feature file:
+
+```text
+Step failed at index 2: Given the invoice is paid - ...
+  at tests/features/billing.feature:14
+  rule: Late fees
+  scenario: Paying a late invoice
+  example: amount = "150"
+  step: And the invoice is paid
+```
+
+The `rule:` line appears for scenarios declared under a `Rule:`, and the
+`example:` line lists the running row's values for a `Scenario Outline`. The
+`step:` line shows the keyword exactly as written, such as `And` or `*`.
+
 ### Internationalized scenarios
 
 `rstest-bdd` reads the optional `# language: <code>` directive that appears at

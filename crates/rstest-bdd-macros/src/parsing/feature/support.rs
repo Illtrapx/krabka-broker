@@ -340,6 +340,7 @@ mod tests {
     fn assert_feature_extraction_validates_expected_steps() {
         let expected = [ParsedStep {
             keyword: crate::StepKeyword::Given,
+            source: crate::parsing::feature::StepSource::default(),
             text: "step".to_owned(),
             docstring: None,
             table: None,

@@ -58,6 +58,7 @@ fn scenario_output_with_shared_resolutions(
         block: &block,
         feature_path: FeaturePath::new("tests/features/shared.feature".to_owned()),
         scenario_name: ScenarioName::new("shared resolution".to_owned()),
+        rule: None,
         steps: vec![blank()],
         examples: None,
         allow_skipped: false,

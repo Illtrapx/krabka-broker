@@ -68,6 +68,8 @@ impl<'a> ScenarioMetadata<'a> {
 pub(crate) struct TestTokensConfig<'a> {
     /// Stores the internal `processed_steps` value.
     pub(crate) processed_steps: ProcessedSteps,
+    /// Failure context of each step, aligned with `processed_steps`.
+    pub(crate) step_contexts: Vec<String>,
     /// Stores the internal `metadata` value.
     pub(crate) metadata: ScenarioMetadata<'a>,
 }
@@ -77,6 +79,8 @@ pub(crate) struct TestTokensConfig<'a> {
 pub(crate) struct OutlineTestTokensConfig<'a> {
     /// Processed steps for each Examples row (one set per row).
     pub(crate) all_rows_steps: Vec<ProcessedStepTokens>,
+    /// Failure context of each step for each Examples row.
+    pub(crate) all_rows_contexts: Vec<Vec<String>>,
     /// Metadata shared by each generated outline case.
     pub(crate) metadata: ScenarioMetadata<'a>,
 }

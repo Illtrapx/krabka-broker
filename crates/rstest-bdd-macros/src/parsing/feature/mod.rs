@@ -23,11 +23,22 @@ cfg_if::cfg_if! {
     }
 }
 
+/// Where a step was written, for failure diagnostics.
+#[derive(Debug, Clone, Default)]
+pub(crate) struct StepSource {
+    /// The keyword exactly as written in the feature file, such as `And` or `*`.
+    pub(crate) keyword: String,
+    /// Source line of the step in the feature file.
+    pub(crate) line: usize,
+}
+
 /// Step extracted from a scenario with optional arguments (data table and doc string).
 #[derive(Debug, Clone)]
 pub(crate) struct ParsedStep {
     /// Stores the internal `keyword` value.
     pub keyword: crate::StepKeyword,
+    /// Keyword as written and source line, reported when the step fails.
+    pub(crate) source: StepSource,
     /// Stores the internal `text` value.
     pub text: String,
     /// Stores the internal `docstring` value.
@@ -39,7 +50,8 @@ pub(crate) struct ParsedStep {
     pub(crate) span: proc_macro2::Span,
 }
 
-// Equality intentionally ignores `span` as spans vary between compilations.
+// Equality intentionally ignores `span` as spans vary between compilations,
+// and `source`, which only feeds diagnostics.
 // Compare only semantic fields to keep tests stable; update if new fields are added.
 impl PartialEq for ParsedStep {
     fn eq(&self, other: &Self) -> bool {
@@ -97,6 +109,10 @@ impl TryFrom<&Step> for ParsedStep {
         let docstring = step.docstring.clone();
         Ok(Self {
             keyword,
+            source: StepSource {
+                keyword: step.keyword.trim().to_owned(),
+                line: step.position.line,
+            },
             text: step.value.clone(),
             docstring,
             table,

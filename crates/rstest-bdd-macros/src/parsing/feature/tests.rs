@@ -88,6 +88,7 @@ Scenario: demo
 fn parsed_step_equality_ignores_span() {
     let a = ParsedStep {
         keyword: crate::StepKeyword::Given,
+        source: crate::parsing::feature::StepSource::default(),
         text: "step".into(),
         docstring: None,
         table: None,
@@ -100,6 +101,7 @@ fn parsed_step_equality_ignores_span() {
 
     let c = ParsedStep {
         keyword: crate::StepKeyword::When,
+        source: crate::parsing::feature::StepSource::default(),
         ..a
     };
     assert_ne!(b, c, "different keywords must not be equal");

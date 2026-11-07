@@ -100,6 +100,7 @@ mod tests {
     fn parsed_step(text: &str) -> ParsedStep {
         ParsedStep {
             keyword: StepKeyword::Given,
+            source: crate::parsing::feature::StepSource::default(),
             text: text.to_owned(),
             docstring: None,
             table: None,

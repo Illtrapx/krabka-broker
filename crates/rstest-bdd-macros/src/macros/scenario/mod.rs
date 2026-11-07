@@ -141,7 +141,7 @@ fn try_scenario(
         examples,
         tags,
         line,
-        rule: _,
+        rule,
     } = scenario_data;
     let allow_skipped = crate::codegen::scenario::scenario_allows_skip(&tags);
 
@@ -183,6 +183,7 @@ fn try_scenario(
         block,
         feature_path: FeaturePath::new(feature_path_str),
         scenario_name: ScenarioName::new(scenario_name),
+        rule: rule.as_deref(),
         steps,
         examples,
         allow_skipped,

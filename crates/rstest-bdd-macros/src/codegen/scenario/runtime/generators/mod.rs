@@ -23,4 +23,9 @@ pub(super) use step::{
     generate_skip_extractor,
     generate_step_executor,
 };
-pub(super) use step_loop::{generate_async_step_executor_loop, generate_step_executor_loop};
+pub(super) use step_loop::{
+    generate_async_step_executor_loop,
+    generate_outline_step_contexts,
+    generate_step_contexts,
+    generate_step_executor_loop,
+};

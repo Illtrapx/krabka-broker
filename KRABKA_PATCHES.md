@@ -116,6 +116,25 @@ matching row's case individually. krabka uses this for its lifecycle tags
 remain runnable. The tag lexer also accepts `:` and `.` in tag names, as
 `gherkin` does.
 
+## Step failure context
+
+A failing or undefined step panicked with the runtime `ExecutionError`
+message, which names the feature and scenario but not where the step was
+written. The generated step loop now appends the failing step's context,
+rendered at expansion time from data `gherkin` provides:
+
+```text
+  at tests/features/billing.feature:14
+  rule: Late fees
+  scenario: Paying a late invoice
+  example: amount = "150"
+  step: And the invoice is paid
+```
+
+The `rule:` and `example:` lines appear only when they apply, and the step
+line shows the keyword as written (`And`, `*`) with the substituted text.
+`ParsedStep` gains a `source` field (keyword as written and line) for this.
+
 ## Validation
 
 All upstream proc-macro unit tests pass with Clippy clean (all warnings

@@ -24,6 +24,35 @@ struct StepDataSlices<'a> {
     tables: &'a [TokenStream2],
 }
 
+/// Declares `__rstest_bdd_step_contexts`, the failure context of each step of
+/// a scenario without Examples.
+///
+/// The step result handler appends the failing step's entry to its error.
+pub(in crate::codegen::scenario::runtime) fn generate_step_contexts(
+    contexts: &[String],
+) -> TokenStream2 {
+    quote! {
+        let __rstest_bdd_step_contexts: &[&str] = &[#(#contexts),*];
+    }
+}
+
+/// Declares `__rstest_bdd_step_contexts` for the running outline row, from a
+/// table holding the failure context of each step of every row.
+pub(in crate::codegen::scenario::runtime) fn generate_outline_step_contexts(
+    all_rows_contexts: &[Vec<String>],
+) -> TokenStream2 {
+    let rows = all_rows_contexts
+        .iter()
+        .map(|contexts| quote! { &[#(#contexts),*] });
+    quote! {
+        const __RSTEST_BDD_ALL_STEP_CONTEXTS: &[&[&str]] = &[#(#rows),*];
+        let __rstest_bdd_step_contexts: &[&str] = __RSTEST_BDD_ALL_STEP_CONTEXTS
+            .get(__rstest_bdd_case_idx)
+            .copied()
+            .unwrap_or_default();
+    }
+}
+
 /// Generates the result-handling match block for step execution loops.
 ///
 /// This shared implementation is used by both regular and outline executor loops to
@@ -77,8 +106,17 @@ pub(super) fn generate_step_result_handler(callee: &TokenStream2, is_async: bool
                     __rstest_bdd_skipped_at = Some(__rstest_bdd_index);
                     break;
                 } else {
-                    // Store non-skip errors for deferred panic after loop
-                    __rstest_bdd_failed = Some(format!("{}", __rstest_bdd_error));
+                    // Store non-skip errors for deferred panic after loop,
+                    // followed by the failing step's source location context.
+                    let __rstest_bdd_context = __rstest_bdd_step_contexts
+                        .get(__rstest_bdd_index)
+                        .copied()
+                        .unwrap_or_default();
+                    __rstest_bdd_failed = Some(format!(
+                        "{}\n{}",
+                        __rstest_bdd_error,
+                        __rstest_bdd_context,
+                    ));
                     break;
                 }
             }

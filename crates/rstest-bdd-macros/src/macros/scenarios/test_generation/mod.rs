@@ -372,6 +372,7 @@ pub(super) fn generate_scenario_test(
         block: &block,
         feature_path: FeaturePath::new(feature_path),
         scenario_name: ScenarioName::new(name),
+        rule: rule.as_deref(),
         steps,
         examples,
         allow_skipped,

@@ -18,6 +18,7 @@ pub(super) fn clear_registry() {
 pub(super) fn create_test_step(keyword: StepKeyword, text: &str) -> ParsedStep {
     ParsedStep {
         keyword,
+        source: crate::parsing::feature::StepSource::default(),
         text: text.to_owned(),
         docstring: None,
         table: None,

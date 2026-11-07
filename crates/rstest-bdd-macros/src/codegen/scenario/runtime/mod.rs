@@ -13,9 +13,11 @@ use generators::{
     generate_async_step_executor,
     generate_async_step_executor_loop,
     generate_async_step_executor_loop_outline,
+    generate_outline_step_contexts,
     generate_scenario_guard,
     generate_skip_extractor,
     generate_skip_handler,
+    generate_step_contexts,
     generate_step_executor,
     generate_step_executor_loop,
     generate_step_executor_loop_outline,
@@ -66,6 +68,7 @@ impl ScenarioTestConfig for TestTokensConfig<'_> {
     fn generate_components(&self) -> CodeComponents {
         generate_code_components(
             &self.processed_steps,
+            &self.step_contexts,
             self.metadata.is_async,
             self.metadata.return_kind,
         )
@@ -78,6 +81,7 @@ impl ScenarioTestConfig for OutlineTestTokensConfig<'_> {
     fn generate_components(&self) -> CodeComponents {
         generate_code_components_outline(
             &self.all_rows_steps,
+            &self.all_rows_contexts,
             self.metadata.is_async,
             self.metadata.return_kind,
         )
@@ -143,6 +147,7 @@ fn generate_common_components(
 /// Generate the executor-loop components for a regular scenario.
 fn generate_code_components(
     processed_steps: &ProcessedSteps,
+    step_contexts: &[String],
     is_async: bool,
     return_kind: ScenarioReturnKind,
 ) -> CodeComponents {
@@ -155,11 +160,13 @@ fn generate_code_components(
         tables,
     } = processed_steps;
 
-    let step_executor_loop = if is_async {
+    let contexts = generate_step_contexts(step_contexts);
+    let step_loop = if is_async {
         generate_async_step_executor_loop(keyword_tokens, values, docstrings, tables)
     } else {
         generate_step_executor_loop(keyword_tokens, values, docstrings, tables)
     };
+    let step_executor_loop = quote! { #contexts #step_loop };
 
     CodeComponents {
         step_executor,
@@ -303,16 +310,19 @@ where
 /// and produces a loop executor that iterates over rows at runtime.
 fn generate_code_components_outline(
     all_rows_steps: &[ProcessedStepTokens],
+    all_rows_contexts: &[Vec<String>],
     is_async: bool,
     return_kind: ScenarioReturnKind,
 ) -> CodeComponents {
     let (step_executor, skip_extractor, scenario_guard, skip_handler) =
         generate_common_components(is_async, return_kind);
-    let step_executor_loop = if is_async {
+    let contexts = generate_outline_step_contexts(all_rows_contexts);
+    let step_loop = if is_async {
         generate_async_step_executor_loop_outline(all_rows_steps)
     } else {
         generate_step_executor_loop_outline(all_rows_steps)
     };
+    let step_executor_loop = quote! { #contexts #step_loop };
 
     CodeComponents {
         step_executor,

@@ -144,6 +144,7 @@ fn generate_table_tokens(table: Option<&[Vec<String>]>) -> TokenStream2 {
 /// // Note: `span` is available only with the `compile-time-validation` feature.
 /// let steps = vec![ParsedStep {
 ///     keyword: StepKeyword::Given,
+///     source: crate::parsing::feature::StepSource::default(),
 ///     text: "x".into(),
 ///     docstring: None,
 ///     table: None,

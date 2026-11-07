@@ -29,6 +29,7 @@ use super::{
     vec![
         ParsedStep {
             keyword: crate::StepKeyword::Given,
+            source: crate::parsing::feature::StepSource::default(),
             text: "a background step".to_owned(),
             docstring: None,
             table: None,
@@ -37,6 +38,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::When,
+            source: crate::parsing::feature::StepSource::default(),
             text: "an action".to_owned(),
             docstring: None,
             table: None,
@@ -45,6 +47,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::Then,
+            source: crate::parsing::feature::StepSource::default(),
             text: "a result".to_owned(),
             docstring: None,
             table: None,
@@ -65,6 +68,7 @@ use super::{
     ),
     vec![ParsedStep {
         keyword: crate::StepKeyword::Given,
+        source: crate::parsing::feature::StepSource::default(),
         text: "numbers".to_owned(),
         docstring: None,
         table: Some(vec![
@@ -87,6 +91,7 @@ use super::{
     ),
     vec![ParsedStep {
         keyword: crate::StepKeyword::Given,
+        source: crate::parsing::feature::StepSource::default(),
         text: "text".to_owned(),
         docstring: Some("line1\nline2".to_owned()),
         table: None,
@@ -109,6 +114,7 @@ use super::{
     vec![
         ParsedStep {
             keyword: crate::StepKeyword::Given,
+            source: crate::parsing::feature::StepSource::default(),
             text: "setup".to_owned(),
             docstring: Some("bg line1\nbg line2".to_owned()),
             table: None,
@@ -117,6 +123,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::When,
+            source: crate::parsing::feature::StepSource::default(),
             text: "an action".to_owned(),
             docstring: None,
             table: None,
@@ -142,6 +149,7 @@ use super::{
     vec![
         ParsedStep {
             keyword: crate::StepKeyword::Given,
+            source: crate::parsing::feature::StepSource::default(),
             text: "setup".to_owned(),
             docstring: None,
             table: None,
@@ -150,6 +158,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::When,
+            source: crate::parsing::feature::StepSource::default(),
             text: "an action".to_owned(),
             docstring: None,
             table: None,
@@ -158,6 +167,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::Then,
+            source: crate::parsing::feature::StepSource::default(),
             text: "a result".to_owned(),
             docstring: None,
             table: None,
@@ -183,6 +193,7 @@ use super::{
     vec![
         ParsedStep {
             keyword: crate::StepKeyword::When,
+            source: crate::parsing::feature::StepSource::default(),
             text: "first".into(),
             docstring: None,
             table: None,
@@ -191,6 +202,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::And,
+            source: crate::parsing::feature::StepSource::default(),
             text: "second".into(),
             docstring: None,
             table: None,
@@ -199,6 +211,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::But,
+            source: crate::parsing::feature::StepSource::default(),
             text: "negated".into(),
             docstring: None,
             table: None,
@@ -221,6 +234,7 @@ use super::{
     vec![
         ParsedStep {
             keyword: crate::StepKeyword::And,
+            source: crate::parsing::feature::StepSource::default(),
             text: "first".into(),
             docstring: None,
             table: None,
@@ -229,6 +243,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::Then,
+            source: crate::parsing::feature::StepSource::default(),
             text: "result".into(),
             docstring: None,
             table: None,
@@ -251,6 +266,7 @@ use super::{
     vec![
         ParsedStep {
             keyword: crate::StepKeyword::But,
+            source: crate::parsing::feature::StepSource::default(),
             text: "first".into(),
             docstring: None,
             table: None,
@@ -259,6 +275,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::Then,
+            source: crate::parsing::feature::StepSource::default(),
             text: "result".into(),
             docstring: None,
             table: None,
@@ -285,6 +302,7 @@ use super::{
     vec![
         ParsedStep {
             keyword: crate::StepKeyword::Given,
+            source: crate::parsing::feature::StepSource::default(),
             text: "start".into(),
             docstring: None,
             table: None,
@@ -293,6 +311,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::And,
+            source: crate::parsing::feature::StepSource::default(),
             text: "cont".into(),
             docstring: None,
             table: None,
@@ -301,6 +320,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::But,
+            source: crate::parsing::feature::StepSource::default(),
             text: "neg".into(),
             docstring: None,
             table: None,
@@ -309,6 +329,7 @@ use super::{
         },
         ParsedStep {
             keyword: crate::StepKeyword::Then,
+            source: crate::parsing::feature::StepSource::default(),
             text: "end".into(),
             docstring: None,
             table: None,

@@ -1,12 +1,13 @@
 //! Code generation for scenario tests.
 //!
 //! This module coordinates code generation for a BDD scenario or outline across
-//! nine focused sub-modules:
+//! ten focused sub-modules:
 //!
 //! - [`adapters`] — resolves adapter APIs and fallback diagnostics once per expansion boundary.
 //! - [`boundary`] — applies shared adapter decisions at the macro-expansion boundary.
 //! - [`cases`] — named rstest case attributes for Scenario Outline rows.
 //! - [`domain`] — shared types for steps, examples, and docstrings.
+//! - [`failure_context`] — source-location context appended to step failure messages.
 //! - [`helpers`] — step-processing and placeholder-substitution utilities.
 //! - [`ignore`] — `ignore_tags` policy emitting `#[ignore]` on matching scenarios and rows.
 //! - [`metadata`] — feature-path and scenario-name wrappers for generated code.
@@ -28,6 +29,7 @@ mod adapters;
 mod boundary;
 mod cases;
 mod domain;
+mod failure_context;
 mod helpers;
 mod ignore;
 mod metadata;
@@ -38,6 +40,7 @@ use adapters::resolve_scenario_adapters;
 use boundary::finalize_scenario_signature;
 use cases::generate_indexed_case_attrs;
 pub(crate) use domain::*;
+use failure_context::{FailureScope, outline_row_step_contexts, scenario_step_contexts};
 pub(crate) use helpers::process_steps;
 use helpers::process_steps_substituted;
 pub(crate) use ignore::IgnoreTags;
@@ -83,6 +86,8 @@ pub(crate) struct ScenarioConfig<'a> {
     pub(crate) feature_path: FeaturePath,
     /// Name of the scenario.
     pub(crate) scenario_name: ScenarioName,
+    /// Name of the `Rule:` declaring the scenario, if any.
+    pub(crate) rule: Option<&'a str>,
     /// Steps in the scenario.
     pub(crate) steps: Vec<crate::parsing::feature::ParsedStep>,
     /// Examples table for scenario outlines.
@@ -124,6 +129,15 @@ pub(crate) struct ContextConfig<P, I, Q> {
 /// Determine whether inherited scenario tags permit skipping the scenario.
 pub(crate) fn scenario_allows_skip(tags: &[String]) -> bool {
     tags.iter().any(|tag| tag == "@allow_skipped")
+}
+
+/// Scenario-level part of each step's failure context.
+fn failure_scope<'a>(config: &'a ScenarioConfig<'_>) -> FailureScope<'a> {
+    FailureScope {
+        feature_path: config.feature_path.as_str(),
+        rule: config.rule,
+        scenario: config.scenario_name.as_str(),
+    }
 }
 
 /// Generate the runtime test for a single scenario.
@@ -204,6 +218,7 @@ where
     };
     let test_config = TestTokensConfig {
         processed_steps,
+        step_contexts: scenario_step_contexts(failure_scope(config), &config.steps),
         metadata,
     };
     let body = generate_test_tokens(
@@ -256,13 +271,18 @@ where
         return err.into_compile_error();
     };
     let headers = ExampleHeaders::new(examples.headers.clone());
-    let all_rows_steps: Vec<_> = examples
+    let rows: Vec<ExampleRow> = examples
         .rows
         .iter()
-        .map(|row| {
-            let row = ExampleRow::new(row.clone());
-            process_steps_substituted(&config.steps, &headers, &row)
-        })
+        .map(|row| ExampleRow::new(row.clone()))
+        .collect();
+    let all_rows_steps: Vec<_> = rows
+        .iter()
+        .map(|row| process_steps_substituted(&config.steps, &headers, row))
+        .collect();
+    let all_rows_contexts: Vec<_> = rows
+        .iter()
+        .map(|row| outline_row_step_contexts(failure_scope(config), &config.steps, &headers, row))
         .collect();
 
     let adapters = resolve_scenario_adapters(config);
@@ -283,6 +303,7 @@ where
     };
     let outline_config = OutlineTestTokensConfig {
         all_rows_steps,
+        all_rows_contexts,
         metadata,
     };
 

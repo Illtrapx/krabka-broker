@@ -51,6 +51,7 @@ fn kw(ts: &TokenStream2) -> syn::Result<crate::StepKeyword> {
 fn blank() -> ParsedStep {
     ParsedStep {
         keyword: crate::StepKeyword::Given,
+        source: crate::parsing::feature::StepSource::default(),
         text: String::new(),
         docstring: None,
         table: None,
