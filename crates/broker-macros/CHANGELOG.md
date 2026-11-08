@@ -15,6 +15,27 @@ release that contains `krabka-broker-macros`.
 
 ### Changed
 
+- `single_partition_produce_fixture!` no longer generates
+  `SinglePartitionProduceSetup`: the generated function is a `bon` builder
+  over the same fields and defaults, and `.acknowledgements(AllReplicas)`
+  replaces `SinglePartitionProduceSetup::replicated()`.
+- `create_topic_fixture!` no longer generates `CreateTopicSetup` or
+  `configured_topic_request_from`. Call the generated builder.
+- `wire_test_driver!(socket ..)` generates a `bon` builder (`stream`,
+  optional `api_key`, `version`, `correlation` and `header`, then `body`)
+  that forwards to `kafka_wire::round_trip`, instead of a function taking a
+  `SocketExchangeSetup`. The `flexible` mode keeps its signature.
+- `fixture_constructors!`'s `temporary_partition` and `open_partition`
+  domains default their builder members directly (`STANDALONE_TOPIC`, the
+  partition index's and storage mode's `Default`) instead of reading
+  `StandalonePartitionSetup::default()`.
+
+### Removed
+
+- The unused `token_refusal_result!` and `share_refusal_matrix!` macros, and
+  the single-use `keyed_record_batch_fixture!`, whose one caller now holds the
+  function as plain Rust.
+
 - `wire_codes!` rows in the `release` and `trunk` sections now name Kafka's
   default message, as `NAME = 3 => "message";`, and `private` rows name none.
   The caller's `NamedCode` gains a `message: Option<&'static str>` field, the

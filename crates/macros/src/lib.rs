@@ -757,16 +757,6 @@ pub fn argv_entrypoint(meta: TokenStream, item: TokenStream) -> Result<TokenStre
     cli_support::argv_entrypoint(meta, item)
 }
 
-/// Generate a duration-parser check over each caller's literal cases.
-///
-/// # Errors
-///
-/// Rejects input outside this macro's syntax.
-#[cfg_attr(not(test), moxy::function)]
-pub fn duration_cases_fixture(tokens: TokenStream) -> Result<TokenStream, ParseError> {
-    cli_support::duration_cases(tokens)
-}
-
 /// Generate a sorted directory-tree fixture with the caller's path projection.
 ///
 /// # Errors
@@ -815,16 +805,6 @@ pub fn bootstrap_parser_fixture(tokens: TokenStream) -> Result<TokenStream, Pars
 #[cfg_attr(not(test), moxy::function)]
 pub fn snapshot_node_fixture(tokens: TokenStream) -> Result<TokenStream, ParseError> {
     cli_support::snapshot_node_fixture(tokens)
-}
-
-/// Generate the temporary metadata and data directories used by format tests.
-///
-/// # Errors
-///
-/// Rejects input outside this macro's syntax.
-#[cfg_attr(not(test), moxy::function)]
-pub fn format_directories_fixture(tokens: TokenStream) -> Result<TokenStream, ParseError> {
-    cli_support::format_directories_fixture(tokens)
 }
 
 /// Generate the explicit topic map used by WAL capture fixtures.
@@ -952,15 +932,6 @@ pub fn finalized_feature_fixture(tokens: TokenStream) -> Result<TokenStream, Par
 #[cfg_attr(not(test), moxy::function)]
 pub fn record_limit_fixture(tokens: TokenStream) -> Result<TokenStream, ParseError> {
     cross_storage_fixtures::record_limit_fixture(tokens)
-}
-/// Generate keyed compaction batches with explicit producer state and timestamp.
-///
-/// # Errors
-///
-/// Rejects input outside this macro's syntax.
-#[cfg_attr(not(test), moxy::function)]
-pub fn compaction_record_fixture(tokens: TokenStream) -> Result<TokenStream, ParseError> {
-    cross_storage_fixtures::compaction_record_fixture(tokens)
 }
 /// Project registration feature bounds into an ordered map.
 ///
@@ -1107,7 +1078,7 @@ mod export_contract_tests {
         meta::{FunctionMacro, empty_input_accepted},
     };
 
-    const FUNCTION_MACROS: [FunctionMacro; 58] = [
+    const FUNCTION_MACROS: [FunctionMacro; 55] = [
         FunctionMacro {
             name: "cli_main",
             expand: cli_main,
@@ -1233,10 +1204,6 @@ mod export_contract_tests {
             expand: legacy_policy_fixture,
         },
         FunctionMacro {
-            name: "duration_cases_fixture",
-            expand: duration_cases_fixture,
-        },
-        FunctionMacro {
             name: "directory_tree_fixture",
             expand: directory_tree_fixture,
         },
@@ -1255,10 +1222,6 @@ mod export_contract_tests {
         FunctionMacro {
             name: "snapshot_node_fixture",
             expand: snapshot_node_fixture,
-        },
-        FunctionMacro {
-            name: "format_directories_fixture",
-            expand: format_directories_fixture,
         },
         FunctionMacro {
             name: "wal_capture_topic_fixture",
@@ -1311,10 +1274,6 @@ mod export_contract_tests {
         FunctionMacro {
             name: "record_limit_fixture",
             expand: record_limit_fixture,
-        },
-        FunctionMacro {
-            name: "compaction_record_fixture",
-            expand: compaction_record_fixture,
         },
         FunctionMacro {
             name: "registration_feature_projection",

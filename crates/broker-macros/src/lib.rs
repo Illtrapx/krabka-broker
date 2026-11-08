@@ -767,16 +767,6 @@ pub fn records_payload_match(tokens: NativeTokenStream) -> Result<NativeTokenStr
     sendfile_match::records_payload_native(tokens)
 }
 
-/// Generate keyed fixture records with explicit count and value size.
-///
-/// # Errors
-///
-/// Rejects input outside this macro's syntax.
-#[cfg_attr(not(test), moxy::function)]
-pub fn keyed_record_batch_fixture(tokens: TokenStream) -> Result<TokenStream, ParseError> {
-    network_fixtures::keyed_record_batch(tokens)
-}
-
 /// Generate bound-listener configuration or startup with the caller's diagnostics.
 ///
 /// # Errors
@@ -949,8 +939,6 @@ mod scheduled_loads;
 
 mod share_fixture_schemas;
 
-mod share_refusal_matrix;
-
 mod share_state_constructors;
 
 mod share_state_operation;
@@ -972,12 +960,6 @@ pub fn reconciliation_fields(
     reconciliation_fields::expand(&meta.into(), item)
 }
 
-/// Run share-offset refusal cases with direct startup, identity, assertions and shutdown.
-#[moxy::function]
-pub fn share_refusal_matrix(input: NativeTokenStream) -> Result<NativeTokenStream, ParseError> {
-    share_refusal_matrix::expand(input)
-}
-
 /// Derive projection construction from the member declaration's visible fields.
 #[moxy::derive(ReconciliationMember, attributes(reconciliation))]
 pub fn reconciliation_member(item: ItemStruct) -> Result<TokenStream, ParseError> {
@@ -994,12 +976,6 @@ pub fn group_record_key(item: ItemEnum) -> Result<TokenStream, ParseError> {
 #[moxy::function]
 pub fn empty_match_acl_filter(input: NativeTokenStream) -> Result<NativeTokenStream, ParseError> {
     handler_wire_fixtures::empty_match_acl_filter(&input.into()).map(Into::into)
-}
-
-/// Compare a delegation-token refusal with the full selected wire response.
-#[moxy::function]
-pub fn token_refusal_result(input: NativeTokenStream) -> Result<NativeTokenStream, ParseError> {
-    handler_wire_fixtures::token_refusal_result(&input.into()).map(Into::into)
 }
 
 /// Construct an external share-state request from visible field expressions.
@@ -1325,7 +1301,7 @@ mod export_contract_tests {
         meta::{FunctionMacro, empty_input_accepted},
     };
 
-    const FUNCTION_MACROS: [FunctionMacro; 24] = [
+    const FUNCTION_MACROS: [FunctionMacro; 23] = [
         FunctionMacro {
             name: "dispatch_table",
             expand: dispatch_table,
@@ -1381,10 +1357,6 @@ mod export_contract_tests {
         FunctionMacro {
             name: "frame_prefix_fixture",
             expand: frame_prefix_fixture,
-        },
-        FunctionMacro {
-            name: "keyed_record_batch_fixture",
-            expand: keyed_record_batch_fixture,
         },
         FunctionMacro {
             name: "bound_start_fixture",

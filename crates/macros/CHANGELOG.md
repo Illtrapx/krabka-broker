@@ -22,6 +22,12 @@ release that contains `krabka-macros`.
 
 ### Removed
 
+- The unused `duration_cases_fixture!` macro. No workspace crate invoked it.
+  Removing a public macro breaks the crate's API, which the 1.2.0 minor version
+  below already covers.
+- The single-use test fixtures `compaction_record_fixture!` and
+  `format_directories_fixture!`. The one caller of each now holds the
+  function as plain Rust.
 - The macros whose expansions name `krabka-broker` modules, and the fixtures
   only the broker's tests call, are now in the unpublished
   `krabka-broker-macros` crate and expand to the same code there. Removing them
