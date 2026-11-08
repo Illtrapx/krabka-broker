@@ -8,7 +8,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | family | member_or_regex | value_hex |
       | consumer-member | m | 00000b6d2d696e7374616e6365077261636b2d61026d05686f73740208746f7069632d6109746f7069632d2e2a0000afc80672616e676500 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -44,7 +44,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | family | member_or_regex | value_hex |
       | consumer-current | m | 00000000000300000002000201010101010101010101010101010101030000000000000001000100 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -95,7 +95,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | family | member_or_regex | value_hex |
       | consumer-target | m | 0000020303030303030303030303030303030302000000000000 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -128,7 +128,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | family | member_or_regex | value_hex |
       | consumer-regex | r | 00000202740000000000000001000000000000000200 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -160,7 +160,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-group-metadata |  | 0000000000020100080000000000000009 |
       | consumer-target-epoch |  | 0000000000000100080000000000000004 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -194,7 +194,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-subscription-metadata |  | tombstone |
       | consumer-group-metadata |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": null
@@ -212,7 +212,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-subscription-metadata |  | tombstone |
       | consumer-group-metadata |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": null
@@ -228,7 +228,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-target | other | tombstone |
       | consumer-member | other | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -274,7 +274,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-current | m | 00000000000300000002000201010101010101010101010101010101030000000000000001000100 |
       | consumer-member | m | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete member m but did not receive ConsumerGroupCurrentMemberAssignmentValue tombstone."
@@ -287,7 +287,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-member | m | 00000b6d2d696e7374616e6365077261636b2d61026d05686f73740208746f7069632d6109746f7069632d2e2a0000afc80672616e676500 |
       | consumer-member | m | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete member m but did not receive ConsumerGroupCurrentMemberAssignmentValue tombstone."
@@ -302,7 +302,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-current | m | tombstone |
       | consumer-member | m | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete member m but did not receive ConsumerGroupTargetAssignmentMetadataValue tombstone."
@@ -315,7 +315,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-target | m | 0000020303030303030303030303030303030302000000000000 |
       | consumer-target-epoch |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete target assignment of g but the assignment still has 1 members."
@@ -329,7 +329,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-target-epoch |  | tombstone |
       | consumer-group-metadata |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete group g but the group still has 1 members."
@@ -342,7 +342,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-group-metadata |  | 0000000000030100080000000000000009 |
       | consumer-group-metadata |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete group g but did not receive ConsumerGroupTargetAssignmentMetadataValue tombstone."
@@ -354,7 +354,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | family | member_or_regex | value_hex |
       | consumer-target-epoch |  | 0000fffffffe0100080000000000000004 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "The assignment epoch must be non-negative or -1."
@@ -367,7 +367,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | share-group-metadata |  | 000000000001000000000000000000 |
       | consumer-member | m | 00000b6d2d696e7374616e6365077261636b2d61026d05686f73740208746f7069632d6109746f7069632d2e2a0000afc80672616e676500 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Group g is not a consumer group"
@@ -380,7 +380,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | share-group-metadata |  | 000000000001000000000000000000 |
       | consumer-member | m | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Group g is not a consumer group"
@@ -397,7 +397,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | share-current | m | 0000000000060000000500020404040404040404040404040404040402000000010000 |
       | share-state-partitions |  | 0000010200000000000000000000000000000001076f7264657273030000000000000001000100 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -465,7 +465,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | family | member_or_regex | value_hex |
       | share-current | m | 0000000000060000000500020404040404040404040404040404040402000000010000 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -510,7 +510,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | family | member_or_regex | value_hex |
       | share-state-partitions |  | 0000010200000000000000000000000000000001076f7264657273030000000000000001000100 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -555,7 +555,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | share-state-partitions |  | tombstone |
       | share-group-metadata |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": null
@@ -572,7 +572,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | share-state-partitions |  | tombstone |
       | share-group-metadata |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": null
@@ -585,7 +585,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | share-member | m | 0000077261636b2d62026d05686f7374020c73686172652d746f70696300 |
       | share-member | m | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete member m with invalid leave group epoch."
@@ -600,7 +600,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | share-current | m | tombstone |
       | share-member | m | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete member m but member exists in target assignment."
@@ -613,7 +613,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | share-target | m | 000002040404040404040404040404040404040300000000000000030000 |
       | share-group-metadata |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete group g but the target assignment still has 1 members."
@@ -626,7 +626,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | share-group-metadata |  | 000000000002000000000000000900 |
       | share-group-metadata |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete group g but target assignment epoch in invalid."
@@ -639,7 +639,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-group-metadata |  | 00000000000100 |
       | share-group-metadata |  | 000000000002000000000000000900 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Group g is not a share group."
@@ -656,7 +656,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | streams-target | m | 000002023003000000000000000100010100 |
       | streams-current | m | 0000000000070000000602020230030000000000000001010009030000000700000007010101010100 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -743,7 +743,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | family | member_or_regex | value_hex |
       | streams-current | m | 0000000000070000000602020230030000000000000001010009030000000700000007010101010100 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -807,7 +807,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | streams-topology |  | 00000000001f0100 |
       | streams-topology |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -845,7 +845,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | streams-group-metadata |  | tombstone |
       | streams-topology |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": null
@@ -862,7 +862,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | streams-group-metadata |  | tombstone |
       | streams-topology |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": null
@@ -876,7 +876,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | streams-current | m | 0000000000070000000602020230030000000000000001010009030000000700000007010101010100 |
       | streams-current | m | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": {
@@ -938,7 +938,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | streams-member | m | 00000b6d2d696e7374616e6365077261636b2d63026d05686f737400007530000000040870726f63657373010a6c6f63616c686f73741f900002046170700873747265616d730000 |
       | streams-member | m | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete member m but did not receive StreamsGroupCurrentMemberAssignmentValue tombstone."
@@ -952,7 +952,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | streams-target-epoch |  | tombstone |
       | streams-group-metadata |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete group g but the group still has 1 members."
@@ -968,7 +968,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | streams-target | m | 000002023003000000000000000100010100 |
       | streams-group-metadata |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then the complete recovered seed is as follows and the cache holds the same seed
       """
       {
         "seed": null
@@ -981,7 +981,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | streams-group-metadata |  | 000000000002000000000000002c0100040000001f |
       | streams-group-metadata |  | tombstone |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Received a tombstone record to delete group g but did not receive StreamsGroupTargetAssignmentMetadataValue tombstone."
@@ -993,7 +993,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | family | member_or_regex | value_hex |
       | streams-group-metadata |  | 000000000002000000000000002c0200040000001f010b0302610231000261023200 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Duplicate key a (attempted merging values 1 and 2)"
@@ -1006,7 +1006,7 @@ Feature: Compacted consumer, Share and Streams logs rebuild their complete group
       | consumer-group-metadata |  | 00000000000100 |
       | streams-topology |  | 00000000001f0100 |
     When bootstrap reads the persisted group records in order
-    Then the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed
+    Then startup fails with exactly this error
       """
       {
         "error": "Group g is not a streams group."

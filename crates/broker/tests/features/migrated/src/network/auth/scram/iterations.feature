@@ -9,9 +9,9 @@ Feature: SCRAM stored credentials enforce Kafka's iteration floor after authoriz
     Then the first SCRAM round refuses the credential with generic authentication text
 
     Examples:
-      | mechanism |
-      | SCRAM-SHA-256 |
-      | SCRAM-SHA-512 |
+      | case        | mechanism     |
+      | SHA-256     | SCRAM-SHA-256 |
+      | SHA-512     | SCRAM-SHA-512 |
 
   Scenario Outline: Authenticate a credential at Kafka's iteration floor
     Given the <mechanism> credential store contains weak at 4095 iterations and floor at 4096
@@ -20,9 +20,9 @@ Feature: SCRAM stored credentials enforce Kafka's iteration floor after authoriz
     Then the floor user is authenticated through the configured SCRAM mechanism without a token
 
     Examples:
-      | mechanism |
-      | SCRAM-SHA-256 |
-      | SCRAM-SHA-512 |
+      | case        | mechanism     |
+      | SHA-256     | SCRAM-SHA-256 |
+      | SHA-512     | SCRAM-SHA-512 |
 
   Scenario Outline: Authorization identity mismatch takes precedence over weak iterations
     Given the <mechanism> credential store contains weak at 4095 iterations and floor at 4096
@@ -31,6 +31,6 @@ Feature: SCRAM stored credentials enforce Kafka's iteration floor after authoriz
     Then the first SCRAM round refuses the authorization id with Authentication failed: Client requested an authorization id that is different from username
 
     Examples:
-      | mechanism |
-      | SCRAM-SHA-256 |
-      | SCRAM-SHA-512 |
+      | case        | mechanism     |
+      | SHA-256     | SCRAM-SHA-256 |
+      | SHA-512     | SCRAM-SHA-512 |

@@ -130,9 +130,18 @@ mod tests {
         InitializeStateStory::default()
     }
     #[rstest_bdd_macros::given(
-        "Share initialization uses {rules} rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10"
+        "a {leadership} Share coordinator uses {rules} initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10"
     )]
-    async fn initialized_seed(initialize_state_story: &mut InitializeStateStory, rules: String) {
+    async fn initialized_seed(
+        initialize_state_story: &mut InitializeStateStory,
+        leadership: String,
+        rules: String,
+    ) {
+        let led = match leadership.as_str() {
+            "led" => true,
+            "resigned" => false,
+            unknown => panic!("unknown coordinator leadership {unknown}"),
+        };
         let unstable_repeat_initialize_noop = match rules.as_str() {
             "Kafka4.4" => false,
             "trunk" => true,
@@ -169,9 +178,6 @@ mod tests {
             )
             .await
             .expect("seed state");
-    }
-    #[rstest_bdd_macros::given("the InitializeShareGroupState coordinator leadership is {led}")]
-    async fn initialize_leadership(initialize_state_story: &InitializeStateStory, led: bool) {
         retain_leadership(&initialize_state_story.state().coordinator, led).await;
     }
     #[rstest_bdd_macros::when(
@@ -299,185 +305,10 @@ mod tests {
         );
     }
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "Equal epoch and offset under Kafka4.4"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "Equal epoch with a new offset under Kafka4.4"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka1(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "An older state epoch under Kafka4.4"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka2(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "An uninitialized start offset on a new key under Kafka4.4"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka3(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "A negative partition under Kafka4.4"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka4(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "A negative state epoch under Kafka4.4"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka5(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "A partition beyond the topic under Kafka4.4"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka6(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "A topic absent from the image under Kafka4.4"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka7(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "An empty group id under Kafka4.4"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka8(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "A resigned coordinator under Kafka4.4"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka9(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "Equal epoch and offset under trunk"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka10(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "Equal epoch with a new offset under trunk"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka11(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "An older state epoch under trunk"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka12(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "An uninitialized start offset on a new key under trunk"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka13(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "A negative partition under trunk"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka14(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "A negative state epoch under trunk"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka15(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "A partition beyond the topic under trunk"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka16(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "A topic absent from the image under trunk"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka17(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "An empty group id under trunk"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka18(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
-        name = "A resigned coordinator under trunk"
-    )]
-    #[tokio::test]
-    async fn initialize_state_answers_as_kafka19(initialize_state_story: InitializeStateStory) {
-        drop(initialize_state_story);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/share_coordinator/handlers/initialize.feature",
+        fixtures = [initialize_state_story: InitializeStateStory],
+    );
 
     /// An empty topic list gets a response with no results.
     #[tokio::test]

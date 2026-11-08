@@ -203,7 +203,7 @@ mod tests {
             test_support::{peek_version, wire_bytes},
         },
         assert2::assert,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
         std::collections::BTreeMap,
     };
 
@@ -315,7 +315,7 @@ mod tests {
             }
         }
         #[given(
-            "a Streams target assignment contains active task 1 in subtopology 0 and no standby or warmup tasks"
+            "a Streams target assignment contains active task 1 in subtopology 0 with empty standby and warmup tasks"
         )]
         fn prepared_value(stored_value: &mut EncodedValue) {
             let v = StreamsGroupTargetAssignmentMemberValue {
@@ -355,7 +355,7 @@ mod tests {
 
             assert!(&stored_value.encoded.as_ref().expect("record encoded")[..] == &want[..]);
         }
-        scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/assignment.feature",tags="@target_assignment_member",fixtures=[stored_value: EncodedValue]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/assignment.feature",fixtures=[stored_value: EncodedValue]);
     }
 
     mod bdd_current_member_assignment {
@@ -408,7 +408,7 @@ mod tests {
 
             assert!(&stored_value.encoded.as_ref().expect("record encoded")[..] == &want[..]);
         }
-        scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/assignment.feature",tags="@current_member_assignment",fixtures=[stored_value: EncodedValue]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/assignment_current.feature",fixtures=[stored_value: EncodedValue]);
     }
     mod bdd_current_member_assignment_epochs {
         use super::*;
@@ -483,7 +483,7 @@ mod tests {
         )]
         fn complete_record_layout(record: &RecordCompatibility) { record.assert_compatible(); }
 
-        scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/assignment.feature",tags="@current_member_assignment_epochs",fixtures=[record:RecordCompatibility]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/assignment_epochs.feature",fixtures=[record:RecordCompatibility]);
     }
     mod bdd_member_state {
         use {super::*, assert2::assert};
@@ -540,6 +540,6 @@ mod tests {
                     .is_err()
             );
         }
-        scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/assignment.feature",tags="@member-state",fixtures=[member_state:MemberStateEncoding]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/assignment_member_state.feature",fixtures=[member_state:MemberStateEncoding]);
     }
 }

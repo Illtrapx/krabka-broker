@@ -417,7 +417,7 @@ fn expected_transaction_append_failure(
     assert!(transaction_log_append_failure.response == Some(code));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/txn/coordinator/commit/tests.feature",
     fixtures = [transaction_log_append_failure: TransactionLogAppendFailure]
 );

@@ -8,6 +8,6 @@ Feature: Freeze signing pattern-type separation
     Then the signed payload's pattern-type byte is <byte>
 
     Examples:
-      | pattern  | byte |
-      | Literal  | 3    |
-      | Prefixed | 4    |
+      | case             | pattern  | byte |
+      | a literal topic  | Literal  | 3    |
+      | a prefixed scope | Prefixed | 4    |

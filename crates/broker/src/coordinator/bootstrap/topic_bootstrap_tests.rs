@@ -262,15 +262,19 @@ fn kafka_coordinator_topic_configs(topic_creation: &CoordinatorTopicCreation) {
         check!(image.topic_config(topic) == Some(&expected), "{topic}");
     }
 }
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/bootstrap/topic_bootstrap_tests.feature",
-    name = "Coordinator internal topics use Kafka configuration maps"
-)]
-#[tokio::test]
-async fn internal_topics_are_created_with_kafkas_topic_configs(
-    topic_creation: CoordinatorTopicCreation,
-) {
-    if let Some(handle) = topic_creation.handle {
-        handle.shutdown().await;
+impl krabka_bdd::World for CoordinatorTopicCreation {
+    async fn after(
+        &mut self,
+        _scenario: &krabka_bdd::ScenarioSpec,
+        _outcome: &krabka_bdd::Outcome,
+    ) {
+        if let Some(handle) = self.handle.take() {
+            handle.shutdown().await;
+        }
     }
 }
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/coordinator/bootstrap/topic_bootstrap_tests.feature",
+    fixtures = [topic_creation: CoordinatorTopicCreation],
+    world = topic_creation,
+);

@@ -674,20 +674,20 @@ Feature: Hosted classic members use explicit consumer state and classic RPC fiel
     When classic member m instance absent heartbeats at generation member
     Then the hosted classic heartbeat returns Kafka error code <code>
     Examples:
-      | epoch | assignment | held | code |
-      | 5 | stable | false | 0 |
-      | 4 | stable | false | 27 |
-      | 5 | unrevoked | false | 27 |
-      | 5 | unreleased | true | 0 |
-      | 5 | unreleased | false | 27 |
+      | case                                    | epoch | assignment | held  | code |
+      | the member is stable at the group epoch | 5     | stable     | false | 0    |
+      | the member is behind the group epoch    | 4     | stable     | false | 27   |
+      | revocation is pending                   | 5     | unrevoked  | false | 27   |
+      | a partition is still held elsewhere     | 5     | unreleased | true  | 0    |
+      | a released partition is free to take    | 5     | unreleased | false | 27   |
   Scenario Outline: Classic hosted heartbeat validates member instance and generation identity
     Given consumer group g hosts classic member m at static instance instance-1 and native member native
     When classic member <member> instance <instance> heartbeats at generation <generation>
     Then the hosted classic heartbeat returns Kafka error code <code>
     Examples:
-      | member | instance | generation | code |
-      | nobody | absent | target | 25 |
-      | native | absent | target | 25 |
-      | m | instance-2 | target | 25 |
-      | other | instance-1 | target | 82 |
-      | m | instance-1 | zero | 22 |
+      | case                                      | member | instance   | generation | code |
+      | an unknown member                         | nobody | absent     | target     | 25   |
+      | a native member uses the classic protocol | native | absent     | target     | 25   |
+      | a different instance than the member's    | m      | instance-2 | target     | 25   |
+      | another member claims the held instance   | other  | instance-1 | target     | 82   |
+      | a stale generation                        | m      | instance-1 | zero       | 22   |

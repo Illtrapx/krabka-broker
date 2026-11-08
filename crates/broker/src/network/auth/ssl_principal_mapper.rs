@@ -353,19 +353,10 @@ mod tests {
         check!(tls_principal.principal.get() == Some(expected));
     }
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/network/auth/ssl_principal_mapper.feature",
-        name = "Map Kafka documented TLS subjects"
-    )]
-    fn kafka_documented_rules_map_the_subject_dn(
-        tls_principal: TlsPrincipalScenario,
-        case: String,
-        rules: String,
-        distinguished_name: String,
-        expected: String,
-    ) {
-        let _ = (tls_principal, case, rules, distinguished_name, expected);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/network/auth/ssl_principal_mapper.feature",
+        fixtures = [tls_principal: TlsPrincipalScenario]
+    );
 
     /// `Matcher.matches()` and `String.replaceAll`, which the `regex` crate
     /// reads differently: `$1_$2` is group 1, an underscore and group 2, a

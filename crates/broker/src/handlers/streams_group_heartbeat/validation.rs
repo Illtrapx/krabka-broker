@@ -266,7 +266,7 @@ mod tests {
         check!(streams_validation.observations.as_slice() == [None]);
     }
     #[rstest_bdd_macros::then(
-        "the streams request is refused with code {code} and message \"{message}\""
+        "the streams request is refused with code {code} and message {message}"
     )]
     fn refused_streams_request(
         streams_validation: &StreamsRequestValidation,
@@ -277,7 +277,19 @@ mod tests {
             streams_validation.observations.as_slice() == [Some(RequestError { code, message })]
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_streams_request_validation.feature", fixtures = [streams_validation: StreamsRequestValidation]);
+    /// The same refusal, for a Kafka message the step text cannot carry.
+    #[rstest_bdd_macros::then("the streams request is refused with code {code} and this message")]
+    fn refused_streams_request_with_message(
+        streams_validation: &StreamsRequestValidation,
+        code: i16,
+        docstring: String,
+    ) {
+        refused_streams_request(streams_validation, code, docstring.trim().to_owned());
+    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_streams_request_validation.feature",
+        fixtures = [streams_validation: StreamsRequestValidation],
+    );
 
     /// Released 4.4 accepts static membership, offsets and warmup tasks
     /// under both flag settings, but retains ordinary validation and regex rejection.

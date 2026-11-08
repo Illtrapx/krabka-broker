@@ -149,11 +149,15 @@ fn expected_listener_protocol(protocol: &str) -> ListenerProtocol {
     }
 }
 
-#[rstest_bdd_macros::given("listener addresses are JSON {value}")]
-#[rstest_bdd_macros::given("the protocol mapping is JSON {value}")]
+#[rstest_bdd_macros::given("listener addresses are {value}")]
+#[rstest_bdd_macros::given("the protocol mapping is {value}")]
 fn listener_configuration_input(listener_configuration: &mut ListenerConfiguration, value: String) {
-    listener_configuration.input =
-        serde_json::from_str(&value).expect("JSON preserves configuration whitespace");
+    listener_configuration.input = value;
+}
+
+#[rstest_bdd_macros::given("the protocol mapping has no characters")]
+fn empty_listener_protocol_mapping(listener_configuration: &mut ListenerConfiguration) {
+    listener_configuration.input = String::new();
 }
 
 #[rstest_bdd_macros::when(
@@ -175,6 +179,14 @@ fn parse_listener_protocols(listener_configuration: &mut ListenerConfiguration) 
 #[rstest_bdd_macros::then("listener resolution fails with {message}")]
 fn refused_listener_addresses(listener_configuration: &ListenerConfiguration, message: String) {
     check!(listener_configuration.endpoints == Some(Err(message)));
+}
+
+#[rstest_bdd_macros::then("the listener resolution error is:")]
+fn refused_listener_addresses_message(
+    listener_configuration: &ListenerConfiguration,
+    docstring: String,
+) {
+    check!(listener_configuration.endpoints == Some(Err(docstring.trim().to_owned())));
 }
 
 #[rstest_bdd_macros::then("protocol mapping fails with {message}")]
@@ -222,7 +234,7 @@ fn empty_listener_protocols(listener_configuration: &ListenerConfiguration) {
     check!(listener_configuration.mapping == Some(Ok(BTreeMap::new())));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/config_keys/listener_endpoints/tests",
     fixtures = [listener_configuration: ListenerConfiguration]
 );

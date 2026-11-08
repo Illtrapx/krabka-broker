@@ -287,12 +287,14 @@ mod tests {
         feature_compatibility: &FeatureCompatibilityContract,
         message: String,
     ) {
-        let expected: Option<String> =
-            serde_json::from_str(&message).expect("nullable JSON diagnostic");
+        let expected = (message != "null").then_some(message);
         assert!(feature_compatibility.reason.get() == Some(expected));
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/handlers/update_features/preconditions.feature", fixtures = [feature_compatibility: FeatureCompatibilityContract]);
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/handlers/update_features/preconditions.feature",
+        fixtures = [feature_compatibility: FeatureCompatibilityContract],
+    );
 
     /// Kafka 4.4 supports share.version 2 regardless of unstable opt-in.
     #[test]

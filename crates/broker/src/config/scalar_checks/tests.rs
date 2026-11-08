@@ -655,7 +655,7 @@ fn refused_expiry_configuration(expiry_configuration: &ExpiryConfiguration, mess
     assert!(actual == &message);
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/config/scalar_checks/tests.feature",
     fixtures = [expiry_configuration: ExpiryConfiguration]
 );

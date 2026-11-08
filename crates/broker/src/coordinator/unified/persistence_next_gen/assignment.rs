@@ -238,7 +238,7 @@ mod tests {
             test_support::wire_bytes,
         },
         assert2::assert,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
     };
 
     #[test]
@@ -372,7 +372,7 @@ mod tests {
 
             assert!(&stored_value.encoded.as_ref().expect("record encoded")[..] == &want[..]);
         }
-        scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/assignment.feature",tags="@target_assignment_member",fixtures=[stored_value: EncodedValue]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/assignment.feature",fixtures=[stored_value: EncodedValue]);
     }
     mod bdd_current_member_assignment {
         use super::*;
@@ -449,7 +449,7 @@ mod tests {
         )]
         fn complete_record_layout(record: &RecordCompatibility) { record.assert_compatible(); }
 
-        scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/assignment.feature",tags="@current_member_assignment",fixtures=[record:RecordCompatibility]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/assignment_current.feature",fixtures=[record:RecordCompatibility]);
     }
     mod bdd_member_state {
         use {super::*, assert2::assert};
@@ -495,6 +495,6 @@ mod tests {
                 }
             }
         }
-        scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/assignment.feature",tags="@member-state",fixtures=[stored_state:StoredMemberState]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/assignment_member_state.feature",fixtures=[stored_state:StoredMemberState]);
     }
 }

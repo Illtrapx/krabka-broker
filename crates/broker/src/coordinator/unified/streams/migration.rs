@@ -203,7 +203,7 @@ mod tests {
     /// Kafka 4.3.1's `classicGroupJoinToClassicGroup` for a drained streams
     /// group: the streams tombstones, then `newEmptyGroupMetadataRecord`, in
     /// one batch.
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct StreamsDeletion {
         members: Vec<String>,
@@ -290,5 +290,5 @@ mod tests {
         assert2::check!(record_contents(batch) == expected);
         assert2::check!(batch.max_timestamp == 123);
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/streams/migration.feature",fixtures=[deletion:StreamsDeletion]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/migration.feature",fixtures=[deletion:StreamsDeletion]);
 }

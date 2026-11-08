@@ -370,7 +370,7 @@ mod tests {
     }
     use {
         rstest_bdd::datatable::Rows,
-        rstest_bdd_macros::{DataTableRow, given, scenarios, then, when},
+        rstest_bdd_macros::{DataTableRow, given, then, when},
     };
     #[derive(Default)]
     struct ClassicSync {
@@ -474,5 +474,5 @@ mod tests {
             check!(after == classic_sync.before);
         }
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/classic_ops/sync.feature",fixtures=[classic_sync:ClassicSync]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/classic_ops/sync.feature",fixtures=[classic_sync:ClassicSync]);
 }

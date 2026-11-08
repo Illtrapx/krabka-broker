@@ -220,7 +220,7 @@ fn expected_transaction_partition_verification(
     assert!(transaction_partition_verification.code == Some(code));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/txn/coordinator/produce_verification/tests.feature",
     fixtures = [transaction_partition_verification: TransactionPartitionVerification]
 );

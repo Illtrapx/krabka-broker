@@ -1223,7 +1223,7 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/network/dispatch/sasl.feature",
         fixtures = [sasl_audit_vocabulary: SaslAuditVocabulary]
     );

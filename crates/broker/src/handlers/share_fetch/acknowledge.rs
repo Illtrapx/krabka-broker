@@ -760,7 +760,10 @@ mod tests {
         assert!(share_acknowledgement.result == Some(code));
         assert!((state.start_offset.0, state.record_states()) == (start, expected));
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_share_acknowledgement.feature", fixtures = [share_acknowledgement: ShareAcknowledgementScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_share_acknowledgement.feature",
+        fixtures = [share_acknowledgement: ShareAcknowledgementScenario],
+    );
 
     /// One row of the lock-deadline table: the setup, the seconds after the
     /// acquisition, whether the request renews, the acknowledge type, and the

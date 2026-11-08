@@ -256,52 +256,8 @@ mod tests {
         assert2::check!(read_story.observed.as_ref().expect("read RPC completed") == &expected);
     }
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read.feature",
-        name = "Persisted state is returned"
-    )]
-    #[tokio::test]
-    async fn read_state_answers_as_kafka(read_story: ReadStory) { drop(read_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read.feature",
-        name = "An uninitialized key is refused"
-    )]
-    #[tokio::test]
-    async fn read_state_answers_as_kafka_1(read_story: ReadStory) { drop(read_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read.feature",
-        name = "An old leader epoch is fenced"
-    )]
-    #[tokio::test]
-    async fn read_state_answers_as_kafka_2(read_story: ReadStory) { drop(read_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read.feature",
-        name = "A resigned coordinator refuses reads"
-    )]
-    #[tokio::test]
-    async fn read_state_answers_as_kafka_3(read_story: ReadStory) { drop(read_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read.feature",
-        name = "An empty group returns no rows"
-    )]
-    #[tokio::test]
-    async fn read_state_answers_as_kafka_4(read_story: ReadStory) { drop(read_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read.feature",
-        name = "An empty partition list returns no rows"
-    )]
-    #[tokio::test]
-    async fn read_state_answers_as_kafka_5(read_story: ReadStory) { drop(read_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read.feature",
-        name = "An empty topic list returns no rows"
-    )]
-    #[tokio::test]
-    async fn read_state_answers_as_kafka_6(read_story: ReadStory) { drop(read_story); }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/share_coordinator/handlers/read.feature",
+        fixtures = [read_story: ReadStory],
+    );
 }

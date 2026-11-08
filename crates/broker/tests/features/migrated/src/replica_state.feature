@@ -2,17 +2,20 @@ Feature: Kafka follower progress and caught-up credit
   A follower earns credit from the fetch that proves it reached a leader log
   end. A short fetch retains earlier credit, and an overshoot never invents data.
 
-  Scenario: Follower fetch progress credits caught-up time without inventing progress
+  Scenario: A first short fetch keeps the credit of the ISR installation
     Given brokers 1 and 2 are installed in the ISR at time zero
     When follower 2 fetches offset 5 at 100 milliseconds while the leader ends at 10
     Then follower 2 has log end 5, last fetch 100, leader end 10, and caught-up time 0
-    When follower 2 fetches offset 9 at 200 milliseconds while the leader ends at 20
-    Then follower 2 has log end 9, last fetch 200, leader end 20, and caught-up time 0
-    When follower 2 fetches offset 20 at 300 milliseconds while the leader ends at 30
-    Then follower 2 has log end 20, last fetch 300, leader end 30, and caught-up time 200
-    When follower 2 fetches offset 30 at 400 milliseconds while the leader ends at 30
-    Then follower 2 has log end 30, last fetch 400, leader end 30, and caught-up time 400
-    When follower 2 fetches offset 25 at 500 milliseconds while the leader ends at 40
-    Then follower 2 has log end 25, last fetch 500, leader end 40, and caught-up time 400
-    When follower 2 fetches offset 99 at 600 milliseconds while the leader ends at 40
-    Then follower 2 has log end 40, last fetch 600, leader end 40, and caught-up time 600
+
+  Scenario Outline: A later fetch credits caught-up time without inventing progress
+    Given follower 2 last fetched to log end <end> at <fetched> milliseconds while the leader ended at <leader_end>, caught up at <caught_up>
+    When follower 2 fetches offset <offset> at <at> milliseconds while the leader ends at <leader_now>
+    Then follower 2 has log end <new_end>, last fetch <at>, leader end <new_leader_end>, and caught-up time <new_caught_up>
+
+    Examples:
+      | case                                                | end | fetched | leader_end | caught_up | offset | at  | leader_now | new_end | new_leader_end | new_caught_up |
+      | a fetch short of the previous leader end            | 5   | 100     | 10         | 0         | 9      | 200 | 20         | 9       | 20             | 0             |
+      | reaching the previous leader end credits that fetch | 9   | 200     | 20         | 0         | 20     | 300 | 30         | 20      | 30             | 200           |
+      | reaching the current leader end credits this fetch  | 20  | 300     | 30         | 200       | 30     | 400 | 30         | 30      | 30             | 400           |
+      | falling behind keeps the earlier credit             | 30  | 400     | 30         | 400       | 25     | 500 | 40         | 25      | 40             | 400           |
+      | an overshoot is clamped to the leader end           | 25  | 500     | 40         | 400       | 99     | 600 | 40         | 40      | 40             | 600           |

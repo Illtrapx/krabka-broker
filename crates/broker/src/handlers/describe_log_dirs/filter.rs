@@ -129,5 +129,8 @@ mod tests {
     fn assert_directory_filter(directory_filter: &LogDirectoryFilterScenario, expected: bool) {
         check!(directory_filter.allowed.unwrap() == expected);
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_log_directory_filter",fixtures=[directory_filter:LogDirectoryFilterScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_log_directory_filter",
+        fixtures = [directory_filter: LogDirectoryFilterScenario],
+    );
 }

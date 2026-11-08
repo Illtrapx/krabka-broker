@@ -321,7 +321,7 @@ pub mod tests {
         check!(operator_principal.name.as_ref() == Some(&expected));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/break_glass/handlers/mod.feature",
         fixtures = [operator_principal: BreakGlassPrincipalScenario]
     );

@@ -510,5 +510,5 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/bin/broker/runtime_args.feature", fixtures = [message_limit_command: MessageLimitCommand]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/bin/broker/runtime_args.feature", fixtures = [message_limit_command: MessageLimitCommand]);
 }

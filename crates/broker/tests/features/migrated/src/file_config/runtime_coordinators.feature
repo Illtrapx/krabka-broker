@@ -252,7 +252,7 @@ Feature: Runtime coordinator bounds and rack tag validation
       streams_group_rack_aware_assignment_tags = []
       """
     When the broker validates and applies the coordinator properties
-    Then the Streams rack tags are exactly []
+    Then the broker has no Streams rack tags
 
   Scenario: Rack tag parsing for [""]
     Given the runtime coordinator properties are
@@ -260,7 +260,7 @@ Feature: Runtime coordinator bounds and rack tag validation
       streams_group_rack_aware_assignment_tags = [""]
       """
     When the broker validates and applies the coordinator properties
-    Then the Streams rack tags are exactly []
+    Then the broker has no Streams rack tags
 
   Scenario: Rack tag parsing for ["zone"]
     Given the runtime coordinator properties are
@@ -268,7 +268,7 @@ Feature: Runtime coordinator bounds and rack tag validation
       streams_group_rack_aware_assignment_tags = ["zone"]
       """
     When the broker validates and applies the coordinator properties
-    Then the Streams rack tags are exactly ["zone"]
+    Then the Streams rack tags are exactly zone
 
   Scenario: Rack tag parsing for [" zone ", "rack"]
     Given the runtime coordinator properties are
@@ -276,7 +276,7 @@ Feature: Runtime coordinator bounds and rack tag validation
       streams_group_rack_aware_assignment_tags = [" zone ", "rack"]
       """
     When the broker validates and applies the coordinator properties
-    Then the Streams rack tags are exactly ["zone", "rack"]
+    Then the Streams rack tags are exactly zone, rack
 
   Scenario: Rack tag parsing for ["zone,rack"]
     Given the runtime coordinator properties are
@@ -284,7 +284,7 @@ Feature: Runtime coordinator bounds and rack tag validation
       streams_group_rack_aware_assignment_tags = ["zone,rack"]
       """
     When the broker validates and applies the coordinator properties
-    Then the Streams rack tags are exactly ["zone", "rack"]
+    Then the Streams rack tags are exactly zone, rack
 
   Scenario: Rack tag parsing for ["zone", ""]
     Given the runtime coordinator properties are

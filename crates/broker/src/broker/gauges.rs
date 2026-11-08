@@ -578,18 +578,10 @@ mod tests {
         );
     }
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/broker/gauges.feature",
-        name = "Sample metadata progress using Kafka units and initial values"
-    )]
-    fn applied_record_gauges_follow_kafka_units_and_initial_values(
-        metadata_gauge_sample: MetadataGaugeSample,
-        case: String,
-        progress: String,
-        gauges: String,
-    ) {
-        let _ = (metadata_gauge_sample, case, progress, gauges);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/broker/gauges.feature",
+        fixtures = [metadata_gauge_sample: MetadataGaugeSample],
+    );
 
     /// Reads the KIP-835 applied-record gauges back from the registry.
     fn published_applied_record_gauges(metrics: &BrokerMetrics) -> AppliedRecordGauges {

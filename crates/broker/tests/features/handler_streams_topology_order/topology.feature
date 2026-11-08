@@ -7,6 +7,6 @@ Feature: StreamsGroupDescribe orders submitted and configured topologies in Kafk
     When StreamsGroupDescribe renders the submitted topology
     Then the complete topology orders subtopologies a,b and every topic list by name with <partitions> internal partitions
     Examples:
-      | representation | partitions |
-      | stored         | 0          |
-      | configured     | 3          |
+      | case                | representation | partitions |
+      | stored topology     | stored         | 0          |
+      | configured topology | configured     | 3          |

@@ -208,7 +208,7 @@ mod tests {
         assert!(share_persister_failure.response == Some((code, fenced)));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/share_partition/manager/persistence.feature",
         fixtures = [share_persister_failure: SharePersisterFailure]
     );

@@ -318,8 +318,7 @@ mod tests {
     ) {
         group_dead_letter_topic
             .image
-            .as_mut()
-            .expect("share group was given")
+            .get_or_insert_with(|| image(&[], None))
             .apply(&MetadataRecord::V1GroupConfig(GroupConfigRecord {
                 group_id: "g".to_owned(),
                 configs: configs(&[entry(KEY_DLQ_TOPIC_NAME, &topic)]),
@@ -400,7 +399,7 @@ mod tests {
         assert!(group_dead_letter_topic.validated.as_ref() == Some(&Ok(expected)));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/share_partition/dlq/validate.feature",
         fixtures = [group_dead_letter_topic: GroupDeadLetterTopic]
     );

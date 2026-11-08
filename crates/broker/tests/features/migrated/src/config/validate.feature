@@ -8,8 +8,8 @@ Feature: Kafka super-user principal configuration
     Then the super-user set is accepted without excluding ANONYMOUS
 
     Examples:
-      | principals                    |
-      | []                            |
-      | ["operator"]                  |
-      | ["ANONYMOUS"]                 |
-      | ["ANONYMOUS","operator"]      |
+      | case                          | principals                    |
+      | no super-users                | []                            |
+      | one named user                | ["operator"]                  |
+      | only ANONYMOUS                | ["ANONYMOUS"]                 |
+      | ANONYMOUS beside a named user | ["ANONYMOUS","operator"]      |

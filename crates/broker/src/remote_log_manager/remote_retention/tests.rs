@@ -1334,7 +1334,7 @@ fn supplied_remote_time_retention(
 }
 
 #[rstest_bdd_macros::when(
-    "mutable archive retention is evaluated at millisecond 10000 without size or deletion-floor pressure"
+    "mutable archive retention is evaluated at millisecond 10000 with only the time limit in force"
 )]
 fn evaluate_remote_time_retention(remote_time_retention: &mut RemoteTimeRetention) {
     remote_time_retention.evicted = Some(remote_retention_eviction_set(
@@ -1360,7 +1360,7 @@ fn expected_remote_time_retention(remote_time_retention: &RemoteTimeRetention, c
     );
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/remote_log_manager/remote_retention/tests.feature",
     fixtures = [remote_time_retention: RemoteTimeRetention]
 );

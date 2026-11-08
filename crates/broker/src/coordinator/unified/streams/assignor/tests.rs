@@ -119,7 +119,7 @@ fn range_assigns_each_member_a_task_of_every_subtopology() {
 
 use {
     rstest_bdd::datatable::Rows,
-    rstest_bdd_macros::{DataTableRow, given, scenarios, then, when},
+    rstest_bdd_macros::{DataTableRow, given, then, when},
     serde::Deserialize,
 };
 #[derive(Default)]
@@ -236,7 +236,7 @@ fn expected_task_owners(
     assert!(task_placement.forward.as_ref() == Some(&expected));
     assert!(task_placement.reversed.as_ref() == Some(&expected));
 }
-scenarios!("tests/features/migrated/src/coordinator/unified/streams/assignor/tests.feature",fixtures=[task_placement:TaskPlacement]);
+krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/assignor/tests.feature",fixtures=[task_placement:TaskPlacement]);
 
 /// Distinct native implementations must execute, not merely report names.
 #[test]
@@ -420,7 +420,7 @@ mod task_assignor_registry_scenarios {
         crate::coordinator::unified::streams::config::{KEY_ASSIGNOR_NAME, StreamsGroupConfig},
         assert2::assert,
         rstest::fixture,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
     };
     #[derive(Default)]
     struct NativeRegistry {
@@ -475,5 +475,5 @@ mod task_assignor_registry_scenarios {
         assert!(result.active.len() == 1);
         assert!(result.active[&owner]["s"] == vec![0, 1]);
     }
-    scenarios!("tests/features/streams/task_assignor_registry.feature", fixtures = [native_registry: NativeRegistry]);
+    krabka_bdd::scenarios!("tests/features/streams/task_assignor_registry.feature", fixtures = [native_registry: NativeRegistry]);
 }

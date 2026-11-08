@@ -584,19 +584,11 @@ mod tests {
             .shutdown()
             .await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_describe_acl_patterns/patterns.feature",
-        name = "Pattern filters distinguish null names exact names and matching prefixes"
-    )]
-    #[tokio::test]
-    async fn handle_matches_patterns_the_way_kafka_does(
-        acl_pattern_listing: AclPatternListingScenario,
-        pattern: String,
-        name: String,
-        listed: String,
-    ) {
-        let _ = (acl_pattern_listing, pattern, name, listed);
-    }
+
+    krabka_bdd::scenarios!(
+        "tests/features/handler_describe_acl_patterns/patterns.feature",
+        fixtures = [acl_pattern_listing: AclPatternListingScenario],
+    );
 
     /// Only a null principal or host is a wildcard. An empty string matches
     /// only an empty field.

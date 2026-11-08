@@ -413,7 +413,7 @@ mod tests {
         leader_isr_scan.state = Some(state);
     }
 
-    #[rstest_bdd_macros::when("the leader scans for Kafka ISR expansion or shrink")]
+    #[rstest_bdd_macros::when("the leader scans its ISR against Kafka follower rules")]
     fn compute_leader_isr_proposal(leader_isr_scan: &mut LeaderIsrScan) {
         let proposed = proposal_at(
             leader_isr_scan
@@ -451,7 +451,7 @@ mod tests {
         assert2::check!(leader_isr_scan.proposal.get() == Some(expected));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/isr_maintenance/proposal.feature",
         fixtures = [leader_isr_scan: LeaderIsrScan]
     );

@@ -242,5 +242,5 @@ mod tests {
         check!(metadata_hash.group_hash == Some(hash));
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/coordinator/unified/topic_hash.feature", fixtures = [metadata_hash: MetadataHashScenario]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/topic_hash.feature", fixtures = [metadata_hash: MetadataHashScenario]);
 }

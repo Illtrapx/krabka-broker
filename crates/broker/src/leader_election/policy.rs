@@ -1270,7 +1270,7 @@ mod tests {
         assert!(leaderless_election.decision.as_ref() == Some(&expected));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/leader_election/policy.feature",
         fixtures = [leaderless_election: LeaderlessElection]
     );

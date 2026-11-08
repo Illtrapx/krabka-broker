@@ -137,7 +137,7 @@ mod tests {
         super::{SubscriptionShape, SubscriptionType, subscription_type},
         assert2::assert,
         rstest_bdd::datatable::Rows,
-        rstest_bdd_macros::{DataTableRow, given, scenarios, then, when},
+        rstest_bdd_macros::{DataTableRow, given, then, when},
         std::collections::HashSet,
     };
     struct MemberTopics {
@@ -209,5 +209,5 @@ mod tests {
         };
         assert!(subscriptions.classification == Some(expected));
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/assignor/mod.feature",fixtures=[subscriptions:SubscriptionClassification]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/assignor/mod.feature",fixtures=[subscriptions:SubscriptionClassification]);
 }

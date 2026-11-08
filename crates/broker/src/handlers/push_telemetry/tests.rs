@@ -313,20 +313,10 @@ async fn check_subscribed_telemetry(telemetry_push: &mut TelemetryPushScenario, 
         .shutdown()
         .await;
 }
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_push_telemetry/payload.feature",
-    name = "Telemetry payload framing compression decoding and size limits follow the selected Kafka version"
-)]
-#[tokio::test]
-async fn push_after_get_follows_kafkas_payload_checks(
-    telemetry_push: TelemetryPushScenario,
-    unstable: bool,
-    payload: String,
-    compression: i8,
-    code: i16,
-) {
-    let _ = (telemetry_push, unstable, payload, compression, code);
-}
+krabka_bdd::scenarios!(
+    "tests/features/handler_push_telemetry/payload.feature",
+    fixtures = [telemetry_push: TelemetryPushScenario],
+);
 
 /// A push for an instance this broker does not hold: Kafka builds the
 /// instance from the current subscriptions and checks the push, and answers

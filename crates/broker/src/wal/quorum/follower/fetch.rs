@@ -205,7 +205,7 @@ mod tests {
         assert2::assert!(wal_divergence_response.validated == Some(Err(message)));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/wal/quorum/follower/fetch.feature",
         fixtures = [wal_divergence_response: WalDivergenceResponse]
     );

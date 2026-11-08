@@ -344,7 +344,7 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/throttle/mod.feature",
         fixtures = [throttled_replica_selection: ThrottledReplicaSelection]
     );

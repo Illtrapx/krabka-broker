@@ -9,10 +9,10 @@ Feature: Observer fetch corruption follows Kafka framing and loader policies
     And the published topics from that sequence are JSON <topics>
 
     Examples:
-      | fault | offset | errors | timestamp | topics |
-      | a corrupt CRC | 0 | 0 | unset | [] |
-      | an unsupported magic byte | 0 | 0 | unset | [] |
-      | a negative batch length | 0 | 0 | unset | [] |
-      | a truncated body | 1 | 0 | 0 | ["a"] |
-      | a truncated header | 1 | 0 | 0 | ["a"] |
-      | unparseable records in sound framing | 3 | 1 | 0 | ["a"] |
+      | case                         | fault                                | offset | errors | timestamp | topics |
+      | corrupt CRC                  | a corrupt CRC                        | 0      | 0      | unset     | []     |
+      | unsupported magic            | an unsupported magic byte            | 0      | 0      | unset     | []     |
+      | negative length              | a negative batch length              | 0      | 0      | unset     | []     |
+      | truncated body               | a truncated body                     | 1      | 0      | 0         | ["a"]  |
+      | truncated header             | a truncated header                   | 1      | 0      | 0         | ["a"]  |
+      | bad records in sound framing | unparseable records in sound framing | 3      | 1      | 0         | ["a"]  |

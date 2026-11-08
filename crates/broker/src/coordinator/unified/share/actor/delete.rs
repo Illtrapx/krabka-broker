@@ -543,48 +543,10 @@ mod tests {
         }
         check!(share_deletion.appended == expected);
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/share/actor/delete.feature",
-        name = "A missing Share group is not found"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn delete_share_group_answers_as_kafka(share_deletion: ShareDeletionBehavior) {
-        let _ = share_deletion;
-    }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/share/actor/delete.feature",
-        name = "A Share group with members cannot be deleted"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn delete_share_group_2(share_deletion: ShareDeletionBehavior) { let _ = share_deletion; }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/share/actor/delete.feature",
-        name = "An empty Share group without state deletes without a persister"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn delete_share_group_3(share_deletion: ShareDeletionBehavior) { let _ = share_deletion; }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/share/actor/delete.feature",
-        name = "Initialized Share state is marked deleting before an unavailable coordinator refuses deletion"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn delete_share_group_4(share_deletion: ShareDeletionBehavior) { let _ = share_deletion; }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/share/actor/delete.feature",
-        name = "Deleting state whose topic disappeared is cleared before group tombstones"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn delete_share_group_5(share_deletion: ShareDeletionBehavior) { let _ = share_deletion; }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/share/actor/delete.feature",
-        name = "Initialized Share state requires a wired persister"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn delete_share_group_6(share_deletion: ShareDeletionBehavior) { let _ = share_deletion; }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/share/actor/delete.feature",
-        name = "Initializing Share state also requires a wired persister"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn delete_share_group_7(share_deletion: ShareDeletionBehavior) { let _ = share_deletion; }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/coordinator/unified/share/actor/delete.feature",
+        fixtures = [share_deletion: ShareDeletionBehavior],
+        runtime = "tokio-multi-thread",
+        workers = 2,
+    );
 }

@@ -779,6 +779,26 @@ mod tests {
         state: Option<ReplicaState>,
     }
 
+    impl FollowerProgress {
+        /// Follower 2's stats after a fetch, with times in milliseconds from the start.
+        fn follower_stats(
+            &self,
+            end: i64,
+            fetched: u64,
+            leader_end: i64,
+            caught_up: u64,
+        ) -> FollowerStats {
+            FollowerStats {
+                leo: o(end),
+                last_fetch: Some(self.started + Duration::from_millis(fetched)),
+                last_fetch_leader_leo: o(leader_end),
+                last_caught_up: Some(self.started + Duration::from_millis(caught_up)),
+                broker_epoch: None,
+                fetched_since_isr_exit: true,
+            }
+        }
+    }
+
     #[rstest::fixture]
     fn progress() -> FollowerProgress {
         FollowerProgress {
@@ -790,6 +810,22 @@ mod tests {
     #[rstest_bdd_macros::given("brokers 1 and 2 are installed in the ISR at time zero")]
     fn initial_isr(progress: &mut FollowerProgress) {
         progress.state = Some(fresh_with_isr(&[1, 2], progress.started));
+    }
+
+    #[rstest_bdd_macros::given(
+        "follower 2 last fetched to log end {end} at {fetched} milliseconds while the leader ended at {leader_end}, caught up at {caught_up}"
+    )]
+    fn earlier_follower_fetch(
+        progress: &mut FollowerProgress,
+        end: i64,
+        fetched: u64,
+        leader_end: i64,
+        caught_up: u64,
+    ) {
+        let mut state = fresh_with_isr(&[1, 2], progress.started);
+        let stats = progress.follower_stats(end, fetched, leader_end, caught_up);
+        state.per_follower.insert(NodeId(2), stats);
+        progress.state = Some(state);
     }
 
     #[rstest_bdd_macros::when(
@@ -814,14 +850,7 @@ mod tests {
         leader_end: i64,
         caught_up: u64,
     ) {
-        let expected = FollowerStats {
-            leo: o(end),
-            last_fetch: Some(progress.started + Duration::from_millis(fetched)),
-            last_fetch_leader_leo: o(leader_end),
-            last_caught_up: Some(progress.started + Duration::from_millis(caught_up)),
-            broker_epoch: None,
-            fetched_since_isr_exit: true,
-        };
+        let expected = progress.follower_stats(end, fetched, leader_end, caught_up);
         let state = progress.state.as_ref().expect("the ISR was installed");
         check!(state.per_follower.get(&NodeId(2)) == Some(&expected));
     }
@@ -1170,7 +1199,7 @@ mod tests {
         }
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/replica_state.feature", fixtures = [progress: FollowerProgress]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/replica_state.feature", fixtures = [progress: FollowerProgress]);
 }
 
 #[cfg(test)]

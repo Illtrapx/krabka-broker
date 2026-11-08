@@ -94,7 +94,10 @@ Feature: Tiered topic retention follows Kafka log configuration rules
       | remote.storage.enable | true |
       | cleanup.policy | compact |
     When the resulting tiered topic map is canonicalized
-    Then the topic combination is refused with exact Kafka message Remote log storage only supports topics with cleanup.policy=delete or cleanup.policy being an empty list.
+    Then the topic combination refusal is this exact Kafka message:
+      """
+      Remote log storage only supports topics with cleanup.policy=delete or cleanup.policy being an empty list.
+      """
 
   Scenario: 11 remote.storage.enable=true, cleanup.policy=compact,delete with broker tiered storage true
     Given broker tiered storage is true
@@ -103,7 +106,10 @@ Feature: Tiered topic retention follows Kafka log configuration rules
       | remote.storage.enable | true |
       | cleanup.policy | compact,delete |
     When the resulting tiered topic map is canonicalized
-    Then the topic combination is refused with exact Kafka message Remote log storage only supports topics with cleanup.policy=delete or cleanup.policy being an empty list.
+    Then the topic combination refusal is this exact Kafka message:
+      """
+      Remote log storage only supports topics with cleanup.policy=delete or cleanup.policy being an empty list.
+      """
 
   Scenario: 12 remote.storage.enable=true, cleanup.policy= with broker tiered storage true
     Given broker tiered storage is true

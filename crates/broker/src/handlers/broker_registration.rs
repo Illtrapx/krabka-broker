@@ -685,7 +685,10 @@ mod tests {
                 == &expected
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_broker_registration.feature", fixtures = [registration_checks: BrokerRegistrationChecks]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_broker_registration.feature",
+        fixtures = [registration_checks: BrokerRegistrationChecks],
+    );
 
     /// A broker from the pre-reservation release advertises `krabka.version`
     /// only through level 1. After level 2 is finalized, registration rejects

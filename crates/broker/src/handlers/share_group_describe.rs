@@ -457,12 +457,10 @@ mod tests {
             .shutdown()
             .await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_group_describe.feature",
-        name = "Group ACLs, topic ACLs and missing groups preserve Kafka response rows"
-    )]
-    #[tokio::test]
-    async fn handle_matches_kafka_with_acls(share_description: ShareDescriptionScenario) {}
+    krabka_bdd::scenarios!(
+        "tests/features/handler_share_group_describe.feature",
+        fixtures = [share_description: ShareDescriptionScenario],
+    );
 
     /// `INVALID_GROUP_ID` for an empty id, ahead of the shard rows, and
     /// Kafka's message for a group of another type.

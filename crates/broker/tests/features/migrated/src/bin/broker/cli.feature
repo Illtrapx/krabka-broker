@@ -8,9 +8,9 @@ Feature: Operator-supplied cluster identity
     Then the configured cluster UUID is 01020304-0506-0708-090a-0b0c0d0e0f10
 
     Examples:
-      | value                                |
-      | AQIDBAUGBwgJCgsMDQ4PEA               |
-      | 01020304-0506-0708-090a-0b0c0d0e0f10 |
+      | case                  | value                                |
+      | Kafka base64 spelling | AQIDBAUGBwgJCgsMDQ4PEA               |
+      | Java UUID spelling    | 01020304-0506-0708-090a-0b0c0d0e0f10 |
 
   Scenario: An invalid cluster ID prevents startup
     Given the operator supplies cluster ID not-a-cluster-id

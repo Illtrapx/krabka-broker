@@ -517,7 +517,7 @@ mod tests {
         );
     }
     #[rstest_bdd_macros::when(
-        "share offset description for group \"{group}\" requests these topic partitions"
+        "share offset description for group {group} requests these topic partitions"
     )]
     async fn describe_share_offset_rows(
         share_offset_rows: &mut ShareOffsetRowsScenario,
@@ -606,89 +606,11 @@ mod tests {
                 })
         );
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "Lag subtracts start offset and completed deliveries"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_0(share_offset_rows: ShareOffsetRowsScenario) {}
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "Missing partition state has no data or lag"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_1(share_offset_rows: ShareOffsetRowsScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "Uninitialized delivery count suppresses lag"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_2(share_offset_rows: ShareOffsetRowsScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "State read failure has no data and no partition error"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_3(share_offset_rows: ShareOffsetRowsScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "Failed end lookup carries its own error"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_4(share_offset_rows: ShareOffsetRowsScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "Unknown topics follow known topics"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_5(share_offset_rows: ShareOffsetRowsScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "Unknown topics with empty partitions still have a topic row"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_6(share_offset_rows: ShareOffsetRowsScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "Unknown topics need no group identity"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_7(share_offset_rows: ShareOffsetRowsScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "Repeated topics merge and repeated partitions collapse in first-seen order"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_8(share_offset_rows: ShareOffsetRowsScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "An empty partition list for a known topic fails the group"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_9(share_offset_rows: ShareOffsetRowsScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "A negative known partition fails the group"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_10(share_offset_rows: ShareOffsetRowsScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_offset_rows.feature",
-        name = "An empty group identity fails a known topic"
-    )]
-    #[tokio::test]
-    async fn share_offset_rows_case_11(share_offset_rows: ShareOffsetRowsScenario) {}
+    krabka_bdd::scenarios!(
+        "tests/features/handler_share_offset_rows.feature",
+        fixtures = [share_offset_rows: ShareOffsetRowsScenario],
+    );
 
     #[test]
     fn an_unauthorized_topic_answers_each_partition_it_named() {

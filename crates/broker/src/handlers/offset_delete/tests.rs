@@ -144,7 +144,7 @@ async fn offset_deletion_group_state(offset_deletion: &mut OffsetDeletionScenari
         coordinator.seed_classic(&group_id, Box::new(group));
     }
 }
-#[rstest_bdd_macros::when("alice deletes offsets for group \"{group}\" and these topic partitions")]
+#[rstest_bdd_macros::when("alice deletes offsets for group {group} and these topic partitions")]
 async fn delete_group_offsets(
     offset_deletion: &mut OffsetDeletionScenario,
     group: String,
@@ -168,7 +168,7 @@ async fn delete_group_offsets(
         .map(|(name, partitions)| RequestTopic { name, partitions })
         .collect::<Vec<_>>();
     let request = OffsetDeleteRequest {
-        group_id: if group == "<empty>" {
+        group_id: if group == "empty" {
             String::new()
         } else {
             group
@@ -255,54 +255,10 @@ async fn offset_deletion_response(
         .await;
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_deletion.feature",
-    name = "Group Delete denial returns only a top-level error"
-)]
-#[tokio::test]
-async fn offset_deletion_case_0(offset_deletion: OffsetDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_deletion.feature",
-    name = "Empty group IDs are invalid"
-)]
-#[tokio::test]
-async fn offset_deletion_case_1(offset_deletion: OffsetDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_deletion.feature",
-    name = "Missing groups return only a top-level error"
-)]
-#[tokio::test]
-async fn offset_deletion_case_2(offset_deletion: OffsetDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_deletion.feature",
-    name = "A non-consumer nonempty classic group cannot delete offsets"
-)]
-#[tokio::test]
-async fn offset_deletion_case_3(offset_deletion: OffsetDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_deletion.feature",
-    name = "Undecodable consumer metadata protects every topic"
-)]
-#[tokio::test]
-async fn offset_deletion_case_4(offset_deletion: OffsetDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_deletion.feature",
-    name = "Resolved consumer regex subscriptions protect matching topics"
-)]
-#[tokio::test]
-async fn offset_deletion_case_5(offset_deletion: OffsetDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_deletion.feature",
-    name = "Existence precedes subscription and successful deletions write clock-dated tombstones"
-)]
-#[tokio::test]
-async fn offset_deletion_case_6(offset_deletion: OffsetDeletionScenario) {}
+krabka_bdd::scenarios!(
+    "tests/features/handler_offset_deletion.feature",
+    fixtures = [offset_deletion: OffsetDeletionScenario],
+);
 
 /// The group that a [`StreamsDeleteRow`] deletes from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

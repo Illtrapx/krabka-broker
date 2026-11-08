@@ -8,11 +8,11 @@ Feature: Streams topology descriptions validate node shapes and preserve node da
     When the coordinator validates the pushed topology and renders its describe response
     Then the topology push is rejected with Kafka message <message>
     Examples:
-      | node | source | processor | message |
-      | 0 | absent | absent | Unknown topology node type: 0 |
-      | 4 | absent | absent | Unknown topology node type: 4 |
-      | -1 | absent | absent | Unknown topology node type: -1 |
-      | absent | 3 | 2 | Global store must be composed of a source and a processor node. |
-      | absent | 1 | 1 | Global store must be composed of a source and a processor node. |
-      | absent | 1 | 7 | Unknown topology node type: 7 |
-      | 9 | 3 | 2 | Unknown topology node type: 9 |
+      | case                                                    | node   | source | processor | message                                                         |
+      | node type zero is unknown                               | 0      | absent | absent    | Unknown topology node type: 0                                   |
+      | node type four is unknown                               | 4      | absent | absent    | Unknown topology node type: 4                                   |
+      | a negative node type is unknown                         | -1     | absent | absent    | Unknown topology node type: -1                                  |
+      | a global store of a sink and a processor                | absent | 3      | 2         | Global store must be composed of a source and a processor node. |
+      | a global store of two sources                           | absent | 1      | 1         | Global store must be composed of a source and a processor node. |
+      | an unknown processor in a global store                  | absent | 1      | 7         | Unknown topology node type: 7                                   |
+      | an unknown node type wins over a malformed global store | 9      | 3      | 2         | Unknown topology node type: 9                                   |

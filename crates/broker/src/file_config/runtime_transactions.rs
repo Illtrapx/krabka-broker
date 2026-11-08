@@ -349,5 +349,5 @@ barrier_max_topics_per_group = 16
             .expect("valid policy");
         assert!(config.share_coordinator_load_buffer_size == krabka_units::bytes(bytes));
     }
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/file_config/runtime_transactions.feature", fixtures = [share_coordinator_properties: ShareCoordinatorProperties]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/file_config/runtime_transactions.feature", fixtures = [share_coordinator_properties: ShareCoordinatorProperties]);
 }

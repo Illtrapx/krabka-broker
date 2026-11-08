@@ -8,11 +8,11 @@ Feature: Kafka listener-prefixed broker key resolution
     Then the configured name resolves to base key <base> with Kafka type <kind>
 
     Examples:
-      | configured | base | kind |
-      | num.io.threads | num.io.threads | INT |
-      | listener.name.external.ssl.keystore.location | ssl.keystore.location | STRING |
-      | listener.name.external.ssl.keystore.password | ssl.keystore.password | PASSWORD |
-      | listener.name.external.plain.sasl.jaas.config | sasl.jaas.config | PASSWORD |
+      | case                                       | configured | base | kind |
+      | a base key                                 | num.io.threads | num.io.threads | INT |
+      | a listener-prefixed string                 | listener.name.external.ssl.keystore.location | ssl.keystore.location | STRING |
+      | a listener-prefixed password               | listener.name.external.ssl.keystore.password | ssl.keystore.password | PASSWORD |
+      | a listener and mechanism prefixed password | listener.name.external.plain.sasl.jaas.config | sasl.jaas.config | PASSWORD |
 
   Scenario Outline: Unknown configured names remain unresolved
     Given the broker configuration key is <configured>
@@ -20,6 +20,6 @@ Feature: Kafka listener-prefixed broker key resolution
     Then the configured name does not resolve to a broker key
 
     Examples:
-      | configured |
-      | listener.name.external.no.such.key |
-      | no.such.key |
+      | case                             | configured |
+      | an unknown listener-prefixed key | listener.name.external.no.such.key |
+      | an unknown key                   | no.such.key |

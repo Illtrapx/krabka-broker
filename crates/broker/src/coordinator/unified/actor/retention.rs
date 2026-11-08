@@ -675,7 +675,7 @@ mod tests {
     /// `ConsumerGroup.createGroupTombstoneRecords`, in that order.
     use {
         rstest_bdd::datatable::Rows,
-        rstest_bdd_macros::{DataTableRow, given, scenarios, then, when},
+        rstest_bdd_macros::{DataTableRow, given, then, when},
     };
     #[derive(Default)]
     struct RetentionRecords {
@@ -767,5 +767,5 @@ mod tests {
             .collect::<Vec<_>>();
         check!(actual == expected);
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/actor/retention.feature",fixtures=[retention_records:RetentionRecords]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/actor/retention.feature",fixtures=[retention_records:RetentionRecords]);
 }

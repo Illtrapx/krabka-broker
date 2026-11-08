@@ -269,12 +269,17 @@ fn coordinator_auto_topic_defaults(
     }
 }
 
-#[rstest_bdd_macros::given("the {kind} coordinator topic minimum ISR is {minimum}")]
-fn coordinator_auto_topic_minimum_isr(
+#[rstest_bdd_macros::given(
+    "the {kind} coordinator topic uses {partitions} partitions, replication {replication} and minimum ISR {minimum}"
+)]
+fn coordinator_auto_topic_defaults_with_minimum_isr(
     auto_topic_definition: &mut AutoTopicDefinition,
     kind: String,
+    partitions: i32,
+    replication: i16,
     minimum: i32,
 ) {
+    coordinator_auto_topic_defaults(auto_topic_definition, kind.clone(), partitions, replication);
     let config = auto_topic_definition
         .broker
         .as_mut()
@@ -360,7 +365,7 @@ fn expected_auto_topic_definition(
     check!(auto_topic_definition.created.as_ref() == Some(&expected));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/auto_topic_creation/definitions",
     fixtures = [auto_topic_definition: AutoTopicDefinition]
 );
@@ -432,6 +437,19 @@ fn refused_streams_topic_envelope(streams_topic_completion: &mut StreamsTopicCom
     "streams creation completes at millisecond 100 with error cache lifetime 1000 milliseconds"
 )]
 fn finish_streams_topic_response(streams_topic_completion: &StreamsTopicCompletion) {
+    complete_streams_topic_creation(streams_topic_completion);
+}
+
+#[rstest_bdd_macros::given(
+    "streams creation completed at millisecond 100 with error cache lifetime 1000 milliseconds"
+)]
+fn finished_streams_topic_response(streams_topic_completion: &StreamsTopicCompletion) {
+    complete_streams_topic_creation(streams_topic_completion);
+}
+
+/// Completes the in-flight streams creations with the controller's answer at
+/// millisecond 100, caching each error for 1000 milliseconds.
+fn complete_streams_topic_creation(streams_topic_completion: &StreamsTopicCompletion) {
     streams_topic_completion
         .creation
         .as_ref()
@@ -472,17 +490,30 @@ fn query_streams_topic_errors(streams_topic_completion: &mut StreamsTopicComplet
     );
 }
 
-#[rstest_bdd_macros::then("the cached streams topic errors are JSON {errors}")]
+#[derive(rstest_bdd_macros::DataTableRow)]
+struct CachedTopicError {
+    topic: String,
+    message: String,
+}
+
+#[rstest_bdd_macros::then("the cached streams topic errors are:")]
 fn expected_streams_topic_errors(
     streams_topic_completion: &StreamsTopicCompletion,
-    errors: String,
+    #[datatable] rows: Rows<CachedTopicError>,
 ) {
-    let expected: BTreeMap<String, String> =
-        serde_json::from_str(&errors).expect("independent per-topic controller failures");
+    let expected: BTreeMap<String, String> = rows
+        .into_iter()
+        .map(|row| (row.topic, row.message))
+        .collect();
     check!(streams_topic_completion.cached.as_ref() == Some(&expected));
 }
 
-rstest_bdd_macros::scenarios!(
+#[rstest_bdd_macros::then("no streams topic error is cached")]
+fn no_cached_streams_topic_errors(streams_topic_completion: &StreamsTopicCompletion) {
+    check!(streams_topic_completion.cached.as_ref() == Some(&BTreeMap::new()));
+}
+
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/auto_topic_creation/completion.feature",
     fixtures = [streams_topic_completion: StreamsTopicCompletion]
 );

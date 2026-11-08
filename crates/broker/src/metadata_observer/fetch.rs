@@ -1016,7 +1016,7 @@ mod tests {
         assert!(observer_fetch_records.header_dump.as_ref() == Some(&expected));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/metadata_observer/fetch",
         fixtures = [observer_fetch_records: ObserverFetchRecords]
     );

@@ -182,7 +182,7 @@ mod tests {
         check!(diskless_override.enabled == Some(enabled));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/config_keys/diskless",
         fixtures = [diskless_override: DisklessOverride]
     );

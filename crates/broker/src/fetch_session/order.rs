@@ -209,7 +209,7 @@ mod tests {
     use {
         super::*,
         assert2::{assert, check},
-        rstest_bdd::Slot,
+        rstest_bdd::{Slot, datatable::Rows},
     };
 
     const SECOND: Duration = Duration::from_secs(1);
@@ -259,6 +259,40 @@ mod tests {
     #[rstest_bdd_macros::given("an empty fetch session eviction index")]
     fn empty_eviction_index(session_eviction: &mut SessionEviction) {
         session_eviction.order = SessionOrder::new();
+    }
+
+    /// One cached session of a `the fetch session cache holds these sessions`
+    /// table: created at `created` with `partitions`, then used again at
+    /// `used` with the same partitions.
+    #[derive(rstest_bdd_macros::DataTableRow)]
+    struct CachedSession {
+        session: FetchSessionId,
+        follower: bool,
+        partitions: usize,
+        created: u32,
+        used: u32,
+    }
+
+    #[rstest_bdd_macros::given("the fetch session cache holds these sessions:")]
+    fn cached_eviction_sessions(
+        session_eviction: &mut SessionEviction,
+        #[datatable] rows: Rows<CachedSession>,
+    ) {
+        let mut steps: Vec<Step> = rows
+            .into_iter()
+            .flat_map(|row| {
+                [
+                    Step::Insert(row.session, row.follower, row.partitions, row.created),
+                    Step::Touch(row.session, row.partitions, row.used),
+                ]
+            })
+            .collect();
+        steps.sort_by_key(|(Step::Insert(.., seconds) | Step::Touch(_, _, seconds))| *seconds);
+        session_eviction.previous_second = steps.last().map_or(
+            0,
+            |(Step::Insert(.., seconds) | Step::Touch(_, _, seconds))| *seconds,
+        );
+        session_eviction.order = seeded(&steps);
     }
 
     #[rstest_bdd_macros::given(
@@ -322,7 +356,7 @@ mod tests {
         check!(session_eviction.victim.get() == Some(Some(id)));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/fetch_session/order",
         fixtures = [session_eviction: SessionEviction]
     );

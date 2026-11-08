@@ -295,71 +295,10 @@ mod tests {
             .shutdown()
             .await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_sync_group_validation/sync.feature",
-        name = "Protocol fields precede authorization and authorization precedes group identity: allowed=false, version=5, group=sync-group-unit (1)"
-    )]
-    #[tokio::test]
-    async fn handle_checks_mandatory_protocol_fields_acl_and_group_id_in_kafka_order(
-        sync_group_validation: SyncGroupValidationScenario,
-    ) {
-        let _ = (sync_group_validation,);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_sync_group_validation/sync.feature",
-        name = "Protocol fields precede authorization and authorization precedes group identity: allowed=true, version=5, group=sync-group-unit (2)"
-    )]
-    #[tokio::test]
-    async fn handle_checks_mandatory_protocol_fields_acl_and_group_id_in_kafka_order_case_2(
-        sync_group_validation: SyncGroupValidationScenario,
-    ) {
-        let _ = (sync_group_validation,);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_sync_group_validation/sync.feature",
-        name = "Protocol fields precede authorization and authorization precedes group identity: allowed=true, version=4, group=sync-group-unit (3)"
-    )]
-    #[tokio::test]
-    async fn handle_checks_mandatory_protocol_fields_acl_and_group_id_in_kafka_order_case_3(
-        sync_group_validation: SyncGroupValidationScenario,
-    ) {
-        let _ = (sync_group_validation,);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_sync_group_validation/sync.feature",
-        name = "Protocol fields precede authorization and authorization precedes group identity: allowed=false, version=5, group=sync-group-unit (4)"
-    )]
-    #[tokio::test]
-    async fn handle_checks_mandatory_protocol_fields_acl_and_group_id_in_kafka_order_case_4(
-        sync_group_validation: SyncGroupValidationScenario,
-    ) {
-        let _ = (sync_group_validation,);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_sync_group_validation/sync.feature",
-        name = "Protocol fields precede authorization and authorization precedes group identity: allowed=true, version=5, group=empty (5)"
-    )]
-    #[tokio::test]
-    async fn handle_checks_mandatory_protocol_fields_acl_and_group_id_in_kafka_order_case_5(
-        sync_group_validation: SyncGroupValidationScenario,
-    ) {
-        let _ = (sync_group_validation,);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_sync_group_validation/sync.feature",
-        name = "Protocol fields precede authorization and authorization precedes group identity: allowed=false, version=5, group=empty (6)"
-    )]
-    #[tokio::test]
-    async fn handle_checks_mandatory_protocol_fields_acl_and_group_id_in_kafka_order_case_6(
-        sync_group_validation: SyncGroupValidationScenario,
-    ) {
-        let _ = (sync_group_validation,);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_sync_group_validation/sync.feature",
+        fixtures = [sync_group_validation: SyncGroupValidationScenario],
+    );
 
     #[tokio::test]
     async fn handle_denies_group_read_and_preserves_error_response_shape() {

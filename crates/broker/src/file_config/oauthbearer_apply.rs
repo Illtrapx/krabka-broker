@@ -1076,15 +1076,15 @@ introspection_client_secret_path = '{}'
     }
 
     #[rstest_bdd_macros::given(
-        "alice presents an unsecured token valid for sixty seconds with extra JSON claims {claims}"
+        "alice presents an unsecured token valid for sixty seconds with these extra JSON claims:"
     )]
     fn scoped_oauth_policy_token(
         configured_oauth_token: &mut ConfiguredOAuthToken,
-        claims: String,
+        docstring: String,
     ) {
         let mut payload = serde_json::json!({"sub":"alice","exp": NOW_MS / 1000 + 60});
         let claims: serde_json::Map<String, serde_json::Value> =
-            serde_json::from_str(&claims).expect("explicit extra scope claims");
+            serde_json::from_str(&docstring).expect("explicit extra scope claims");
         payload
             .as_object_mut()
             .expect("JWT claims object")
@@ -1138,15 +1138,17 @@ introspection_client_secret_path = '{}'
         );
     }
 
-    #[rstest_bdd_macros::then("the OAuth policy returns RFC 7628 challenge {challenge}")]
+    #[rstest_bdd_macros::then("the OAuth policy returns this RFC 7628 challenge:")]
     fn refused_scoped_oauth_policy_token(
         configured_oauth_token: &ConfiguredOAuthToken,
-        challenge: String,
+        docstring: String,
     ) {
-        assert2::assert!(configured_oauth_token.validation.as_ref() == Some(&Err(challenge)));
+        assert2::assert!(
+            configured_oauth_token.validation.as_ref() == Some(&Err(docstring.trim().to_owned()))
+        );
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/file_config/oauthbearer_apply",
         fixtures = [configured_oauth_token: ConfiguredOAuthToken]
     );

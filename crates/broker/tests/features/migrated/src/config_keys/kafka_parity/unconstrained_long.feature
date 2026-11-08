@@ -8,9 +8,9 @@ Feature: Kafka LONG topic values without an invented lower bound
     Then the individual topic alteration is accepted
 
     Examples:
-      | value |
-      | "-9223372036854775808" |
-      | "-2" |
-      | "-1" |
-      | "0" |
-      | "9223372036854775807" |
+      | case                          | value |
+      | the smallest long             | "-9223372036854775808" |
+      | a negative below the sentinel | "-2" |
+      | the unlimited sentinel        | "-1" |
+      | zero                          | "0" |
+      | the largest long              | "9223372036854775807" |

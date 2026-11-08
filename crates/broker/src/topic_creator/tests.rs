@@ -876,7 +876,7 @@ fn expected_controller_topic_failure(
     check!(controller_topic_failure.rendered.as_ref() == Some(&message));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/topic_creator/tests.feature",
     fixtures = [controller_topic_failure: ControllerTopicFailure]
 );

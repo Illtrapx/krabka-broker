@@ -377,5 +377,5 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/features.feature", fixtures = [transition: MetadataTransition]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/features.feature", fixtures = [transition: MetadataTransition]);
 }

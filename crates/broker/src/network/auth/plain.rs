@@ -332,11 +332,27 @@ mod tests {
 
     #[rstest_bdd_macros::then("PLAIN authentication fails with Kafka message {message}")]
     fn plain_login_refusal(plain_login: &PlainAuthenticationScenario, message: String) {
+        assert_plain_login_refused(plain_login, &message);
+    }
+
+    /// Kafka gives an unknown user and a wrong password one message, so a
+    /// client cannot tell which of the two it got wrong.
+    #[rstest_bdd_macros::then(
+        "PLAIN authentication fails with Kafka's invalid credentials message"
+    )]
+    fn plain_login_invalid_credentials(plain_login: &PlainAuthenticationScenario) {
+        assert_plain_login_refused(
+            plain_login,
+            "Authentication failed: Invalid username or password",
+        );
+    }
+
+    fn assert_plain_login_refused(plain_login: &PlainAuthenticationScenario, message: &str) {
         let response = plain_login
             .response
             .as_ref()
             .expect("authentication was attempted");
-        assert_failed_authenticate_response(response, Some(&message));
+        assert_failed_authenticate_response(response, Some(message));
         check!(
             !plain_login
                 .auth
@@ -357,7 +373,7 @@ mod tests {
         assert!(auth.principal().map(|principal| principal.name.as_str()) == Some(user.as_str()));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/network/auth/plain",
         fixtures = [plain_login: PlainAuthenticationScenario]
     );

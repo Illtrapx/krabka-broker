@@ -444,7 +444,10 @@ mod tests {
                 }
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_streams_topology_order",fixtures=[topology_order:TopologyOrderScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_streams_topology_order",
+        fixtures = [topology_order: TopologyOrderScenario],
+    );
 
     #[test]
     fn task_map_to_ids_preserves_sorted_task_maps() {

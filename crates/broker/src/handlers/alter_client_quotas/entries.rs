@@ -452,5 +452,8 @@ mod tests {
         };
         check!(client_quota_entries.outcome.as_ref().unwrap() == &Alteration { results, records });
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_client_quota_entries",fixtures=[client_quota_entries:ClientQuotaEntryScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_client_quota_entries",
+        fixtures = [client_quota_entries: ClientQuotaEntryScenario],
+    );
 }

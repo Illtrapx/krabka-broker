@@ -238,7 +238,7 @@ mod tests {
             super::*,
             crate::coordinator::unified::codec_observations::EncodedRecord,
             assert2::assert,
-            rstest_bdd_macros::{given, scenarios, then, when},
+            rstest_bdd_macros::{given, then, when},
         };
         type EncodedValue = EncodedRecord<StreamsGroupTopologyValue>;
         #[rstest::fixture]
@@ -307,6 +307,6 @@ mod tests {
 
             assert!(&stored_value.encoded.as_ref().expect("record encoded")[..] == &want[..]);
         }
-        scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/topology.feature",tags="@topology",fixtures=[stored_value: EncodedValue]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/topology.feature",fixtures=[stored_value: EncodedValue]);
     }
 }

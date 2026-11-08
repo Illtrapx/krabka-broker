@@ -1,6 +1,5 @@
-Feature: Consumer heartbeat identity and classic group migration
+Feature: Consumer heartbeats check member identity and epochs
 
-  @consumer-identity
   Scenario: A static member releases its instance with epoch -2
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -34,7 +33,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: A new member takes a released static instance
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -72,7 +70,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: An unreleased static instance refuses a new member
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -106,7 +103,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: A known dynamic member rejoins at epoch zero
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -143,7 +139,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: A previous epoch may acknowledge a subset of the current assignment
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -180,7 +175,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: A previous epoch cannot retain a superset of the assignment
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -214,7 +208,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: An epoch older than the previous epoch is fenced
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -248,7 +241,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: An epoch above the coordinator epoch is fenced
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -282,7 +274,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: An unknown member cannot leave
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -316,7 +307,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: A dynamic member leaves with epoch -1
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -346,7 +336,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: A different member id cannot heartbeat for a static instance
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -380,7 +369,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: A different member id cannot release a static instance
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -414,7 +402,6 @@ Feature: Consumer heartbeat identity and classic group migration
       }
       """
 
-  @consumer-identity
   Scenario: A static heartbeat cannot use an unknown instance
     Given consumer group g has group and target epochs 5 with four partitions of topic t UUID 09090909-0909-0909-0909-090909090909 and these settled members
       | member | instance | epoch | previous_epoch | partitions |
@@ -446,44 +433,4 @@ Feature: Consumer heartbeat identity and classic group migration
         ],
         "instance_i1": "s1"
       }
-      """
-
-  Scenario: An offset-only classic group upgrades even with migration disabled
-    Given classic group g at generation 1 has 0 members subscribed to one-partition topic t with protocol absent and migration policy disabled
-    When native consumer native heartbeats at epoch 0 subscribed to t with rebalance timeout 60000 ms and no owned partitions
-    Then the consumer admission error and classic metadata tombstone are
-      """
-      {"error_code": 0, "error_message": null, "classic_tombstone": true}
-      """
-
-  Scenario: An empty connect group is replaced by a consumer group
-    Given classic group g at generation 1 has 0 members subscribed to one-partition topic t with protocol connect and migration policy bidirectional
-    When native consumer native heartbeats at epoch 0 subscribed to t with rebalance timeout 60000 ms and no owned partitions
-    Then the consumer admission error and classic metadata tombstone are
-      """
-      {"error_code": 0, "error_message": null, "classic_tombstone": true}
-      """
-
-  Scenario: A live classic group refuses a consumer join when online upgrade is disabled
-    Given classic group g at generation 1 has 1 members subscribed to one-partition topic t with protocol consumer and migration policy disabled
-    When native consumer native heartbeats at epoch 0 subscribed to t with rebalance timeout 60000 ms and no owned partitions
-    Then the consumer admission error and classic metadata tombstone are
-      """
-      {"error_code": 69, "error_message": "Cannot upgrade classic group g to consumer group because online upgrade is disabled.", "classic_tombstone": false}
-      """
-
-  Scenario: A live classic group upgrades when online upgrade is allowed
-    Given classic group g at generation 1 has 1 members subscribed to one-partition topic t with protocol consumer and migration policy upgrade
-    When native consumer native heartbeats at epoch 0 subscribed to t with rebalance timeout 60000 ms and no owned partitions
-    Then the consumer admission error and classic metadata tombstone are
-      """
-      {"error_code": 0, "error_message": null, "classic_tombstone": true}
-      """
-
-  Scenario: A steady heartbeat cannot create a consumer group over an offset-only group
-    Given classic group g at generation 1 has 0 members subscribed to one-partition topic t with protocol absent and migration policy bidirectional
-    When native consumer native heartbeats at epoch 3 subscribed to t with rebalance timeout 60000 ms and no owned partitions
-    Then the consumer admission error and classic metadata tombstone are
-      """
-      {"error_code": 69, "error_message": "Group g is not a consumer group.", "classic_tombstone": false}
       """

@@ -437,18 +437,10 @@ async fn check_denied_group_coordinator(
         .shutdown()
         .await;
 }
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_denied_group_coordinator/coordinator.feature",
-    name = "Denied group lookups preserve the version-specific coordinator response"
-)]
-#[tokio::test]
-async fn denied_group_key_answers_kafka_row_shape_per_version(
-    denied_coordinator: DeniedCoordinatorScenario,
-    version: i16,
-    shape: String,
-) {
-    let _ = (denied_coordinator, version, shape);
-}
+krabka_bdd::scenarios!(
+    "tests/features/handler_denied_group_coordinator/coordinator.feature",
+    fixtures = [denied_coordinator: DeniedCoordinatorScenario],
+);
 
 /// With `ClusterAction` granted, a malformed share key gets its own
 /// `INVALID_REQUEST` row with no message and a valid key resolves.

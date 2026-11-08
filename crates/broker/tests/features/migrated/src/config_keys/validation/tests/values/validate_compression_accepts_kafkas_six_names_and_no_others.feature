@@ -7,14 +7,14 @@ Feature: Kafka compression names are exactly the six broker codec names
     Then the supplied topic value is accepted <accepted>
 
     Examples:
-      | value | accepted |
-      | "producer" | true |
-      | "uncompressed" | true |
-      | "gzip" | true |
-      | "snappy" | true |
-      | "lz4" | true |
-      | "zstd" | true |
-      | "none" | false |
-      | "" | false |
-      | "GZIP" | false |
-      | " gzip" | true |
+      | case                 | value | accepted |
+      | the producer codec   | "producer" | true |
+      | no compression       | "uncompressed" | true |
+      | gzip                 | "gzip" | true |
+      | snappy               | "snappy" | true |
+      | lz4                  | "lz4" | true |
+      | zstd                 | "zstd" | true |
+      | a producer-only name | "none" | false |
+      | an empty name        | "" | false |
+      | an uppercase name    | "GZIP" | false |
+      | a leading space      | " gzip" | true |

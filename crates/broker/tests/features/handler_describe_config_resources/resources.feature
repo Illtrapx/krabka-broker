@@ -4,14 +4,14 @@ Feature: DescribeConfigs identifies resources and reports Kafka configuration me
     When broker 1 describes the requested resource with complete configuration metadata
     Then the complete configuration resource refusal has code <code> and message <message>
     Examples:
-      | kind           | name     | code | message                                                                                                                        |
-      | topic          | missing  | 3    | null                                                                                                                           |
-      | topic          | empty    | 17   | Topic name is invalid: the empty string is not allowed                                                                          |
-      | topic          | bad/name | 17   | Topic name is invalid: 'bad/name' contains one or more characters other than ASCII alphanumerics, '.', '_' and '-'               |
-      | client_metrics | empty    | 42   | Client metrics subscription name must not be empty                                                                              |
-      | group          | empty    | 42   | Group name must not be empty                                                                                                   |
-      | broker         | abc      | 42   | Broker id must be an integer, but it is: abc                                                                                    |
-      | broker         | -1       | 42   | Unexpected broker id, expected 1 or empty string, but received -1                                                               |
+      | case                         | kind           | name     | code | message                                                                                                            |
+      | an absent topic              | topic          | missing  | 3    | null                                                                                                               |
+      | an empty topic name          | topic          | empty    | 17   | Topic name is invalid: the empty string is not allowed                                                             |
+      | an illegal topic character   | topic          | bad/name | 17   | Topic name is invalid: 'bad/name' contains one or more characters other than ASCII alphanumerics, '.', '_' and '-' |
+      | an empty client metrics name | client_metrics | empty    | 42   | Client metrics subscription name must not be empty                                                                 |
+      | an empty group name          | group          | empty    | 42   | Group name must not be empty                                                                                       |
+      | a non-numeric broker id      | broker         | abc      | 42   | Broker id must be an integer, but it is: abc                                                                       |
+      | another broker id            | broker         | -1       | 42   | Unexpected broker id, expected 1 or empty string, but received -1                                                  |
 
   Scenario: An existing topic has describable configuration
     Given topic orders exists and the requested configuration resource is topic named orders

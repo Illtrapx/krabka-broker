@@ -6,7 +6,10 @@ Feature: File-configured unsecured OAuth policies enforce Kafka scope options
       [oauthbearer]
       allow_unsecured = true
       """
-    And alice presents an unsecured token valid for sixty seconds with extra JSON claims {}
+    And alice presents an unsecured token valid for sixty seconds with these extra JSON claims:
+      """
+      {}
+      """
     When the configured OAuth validator validates the token at timestamp 2000000000000
     Then the configured OAuth policy admits principal alice
 
@@ -17,7 +20,10 @@ Feature: File-configured unsecured OAuth policies enforce Kafka scope options
       allow_unsecured = true
       unsecured_required_scope = "a b"
       """
-    And alice presents an unsecured token valid for sixty seconds with extra JSON claims {"scope":["b","a","c"]}
+    And alice presents an unsecured token valid for sixty seconds with these extra JSON claims:
+      """
+      {"scope":["b","a","c"]}
+      """
     When the configured OAuth validator validates the token at timestamp 2000000000000
     Then the configured OAuth policy admits principal alice
 
@@ -28,9 +34,15 @@ Feature: File-configured unsecured OAuth policies enforce Kafka scope options
       allow_unsecured = true
       unsecured_required_scope = "a b"
       """
-    And alice presents an unsecured token valid for sixty seconds with extra JSON claims {"scope":["a"]}
+    And alice presents an unsecured token valid for sixty seconds with these extra JSON claims:
+      """
+      {"scope":["a"]}
+      """
     When the configured OAuth validator validates the token at timestamp 2000000000000
-    Then the OAuth policy returns RFC 7628 challenge {"status":"insufficient_scope", "scope":"[a, b]"}
+    Then the OAuth policy returns this RFC 7628 challenge:
+      """
+      {"status":"insufficient_scope", "scope":"[a, b]"}
+      """
 
   Scenario: Blank required scope requires nothing
     Given the OAuth validator is configured by this file:
@@ -39,7 +51,10 @@ Feature: File-configured unsecured OAuth policies enforce Kafka scope options
       allow_unsecured = true
       unsecured_required_scope = "   "
       """
-    And alice presents an unsecured token valid for sixty seconds with extra JSON claims {}
+    And alice presents an unsecured token valid for sixty seconds with these extra JSON claims:
+      """
+      {}
+      """
     When the configured OAuth validator validates the token at timestamp 2000000000000
     Then the configured OAuth policy admits principal alice
 
@@ -51,7 +66,10 @@ Feature: File-configured unsecured OAuth policies enforce Kafka scope options
       unsecured_required_scope = "a"
       unsecured_scope_claim_name = "scp"
       """
-    And alice presents an unsecured token valid for sixty seconds with extra JSON claims {"scp":"a"}
+    And alice presents an unsecured token valid for sixty seconds with these extra JSON claims:
+      """
+      {"scp":"a"}
+      """
     When the configured OAuth validator validates the token at timestamp 2000000000000
     Then the configured OAuth policy admits principal alice
 
@@ -63,9 +81,15 @@ Feature: File-configured unsecured OAuth policies enforce Kafka scope options
       unsecured_required_scope = "a"
       unsecured_scope_claim_name = "scp"
       """
-    And alice presents an unsecured token valid for sixty seconds with extra JSON claims {"scope":"a"}
+    And alice presents an unsecured token valid for sixty seconds with these extra JSON claims:
+      """
+      {"scope":"a"}
+      """
     When the configured OAuth validator validates the token at timestamp 2000000000000
-    Then the OAuth policy returns RFC 7628 challenge {"status":"insufficient_scope", "scope":"[a]"}
+    Then the OAuth policy returns this RFC 7628 challenge:
+      """
+      {"status":"insufficient_scope", "scope":"[a]"}
+      """
 
   Scenario: Numeric custom claim is an invalid token
     Given the OAuth validator is configured by this file:
@@ -74,6 +98,12 @@ Feature: File-configured unsecured OAuth policies enforce Kafka scope options
       allow_unsecured = true
       unsecured_scope_claim_name = "scp"
       """
-    And alice presents an unsecured token valid for sixty seconds with extra JSON claims {"scp":7}
+    And alice presents an unsecured token valid for sixty seconds with these extra JSON claims:
+      """
+      {"scp":7}
+      """
     When the configured OAuth validator validates the token at timestamp 2000000000000
-    Then the OAuth policy returns RFC 7628 challenge {"status":"invalid_token"}
+    Then the OAuth policy returns this RFC 7628 challenge:
+      """
+      {"status":"invalid_token"}
+      """

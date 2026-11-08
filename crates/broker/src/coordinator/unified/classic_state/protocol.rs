@@ -212,7 +212,7 @@ mod tests {
         stable
     }
 
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct ProtocolNegotiation {
         group: Option<ClassicGroup>,
@@ -252,5 +252,5 @@ mod tests {
     fn compatible_protocols(negotiation: &ProtocolNegotiation, compatible: bool) {
         assert2::assert!(negotiation.supported == Some(compatible));
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/classic_state/protocol.feature",fixtures=[negotiation:ProtocolNegotiation]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/classic_state/protocol.feature",fixtures=[negotiation:ProtocolNegotiation]);
 }

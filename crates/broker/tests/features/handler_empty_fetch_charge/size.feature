@@ -4,9 +4,9 @@ Feature: Fetch quota accounting includes version-specific empty response overhea
     When the fetch response size is charged to the consumer byte quota
     Then the empty response quota charge is <bytes> bytes
     Examples:
-      | version | bytes |
-      | 0       | 8     |
-      | 1       | 12    |
-      | 4       | 12    |
-      | 7       | 18    |
-      | 12      | 16    |
+      | case                                        | version | bytes |
+      | original layout                             | 0       | 8     |
+      | throttle time added                         | 1       | 12    |
+      | isolation level leaves empty size unchanged | 4       | 12    |
+      | session id added                            | 7       | 18    |
+      | flexible tagged layout                      | 12      | 16    |

@@ -7,8 +7,8 @@ Feature: Trunk topic keys require opt-in on both individual and whole-map paths
     Then both released and unstable modes store quoted value <canonical> exactly
 
     Examples:
-      | key | value | canonical |
-      | remote.copy.lag.ms | " 1000 " | "1000" |
-      | remote.copy.lag.bytes | "-1" | "-1" |
-      | max.decompressed.message.bytes | "2147483639" | "2147483639" |
-      | errors.deadletterqueue.group.enable | "TRUE" | "true" |
+      | case                          | key | value | canonical |
+      | a padded copy lag             | remote.copy.lag.ms | " 1000 " | "1000" |
+      | the copy lag sentinel         | remote.copy.lag.bytes | "-1" | "-1" |
+      | the largest decompressed size | max.decompressed.message.bytes | "2147483639" | "2147483639" |
+      | an uppercase dead letter flag | errors.deadletterqueue.group.enable | "TRUE" | "true" |

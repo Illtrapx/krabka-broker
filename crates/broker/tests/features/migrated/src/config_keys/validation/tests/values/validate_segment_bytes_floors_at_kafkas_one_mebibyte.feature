@@ -7,11 +7,11 @@ Feature: Kafka segment bytes has a one-MiB floor
     Then the supplied topic value is accepted <accepted>
 
     Examples:
-      | value | accepted |
-      | "0" | false |
-      | "1" | false |
-      | "14" | false |
-      | "1048575" | false |
-      | "1048576" | true |
-      | "1073741824" | true |
-      | "not-a-number" | false |
+      | case                                  | value | accepted |
+      | zero                                  | "0" | false |
+      | one byte                              | "1" | false |
+      | a few bytes                           | "14" | false |
+      | one byte under the floor              | "1048575" | false |
+      | the floor                             | "1048576" | true |
+      | one gibibyte                          | "1073741824" | true |
+      | not a number                          | "not-a-number" | false |

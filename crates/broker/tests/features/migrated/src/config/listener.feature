@@ -3,6 +3,6 @@ Feature: Listener idle timeout defaults
   window rather than an unlimited or immediate timeout.
 
   Scenario: An unconfigured listener inherits Kafka's ten-minute idle window
-    Given no broker-wide or listener-specific idle timeout is configured
+    Given neither the broker nor any listener configures an idle timeout
     When the broker resolves the PLAINTEXT listener idle timeout
     Then the PLAINTEXT idle timeout is Kafka's 600000 milliseconds

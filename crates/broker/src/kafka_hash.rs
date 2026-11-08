@@ -115,5 +115,5 @@ mod tests {
         assert!(hashing.partition == Some(expected));
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/kafka_hash.feature", fixtures = [hashing: HashScenario]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/kafka_hash.feature", fixtures = [hashing: HashScenario]);
 }

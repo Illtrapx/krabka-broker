@@ -611,7 +611,7 @@ fn documented_topic_key_surface(topic_parity: &TopicParityScenario) {
 }
 
 #[rstest_bdd_macros::then(
-    "every captured topic key retains Kafka's type and its default or a documented divergence"
+    "every captured topic key retains Kafka's type and default unless it documents a divergence"
 )]
 fn kafka_topic_metadata(topic_parity: &TopicParityScenario) {
     for observation in topic_parity
@@ -674,7 +674,7 @@ fn refused_topic_property(topic_parity: &TopicParityScenario) {
     );
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/config_keys/kafka_parity",
     fixtures = [topic_parity: TopicParityScenario]
 );

@@ -716,7 +716,7 @@ mod tests {
     }
     use {
         rstest_bdd::datatable::Rows,
-        rstest_bdd_macros::{DataTableRow, given, scenarios, then, when},
+        rstest_bdd_macros::{DataTableRow, given, then, when},
         serde::Deserialize,
         serde_json::{Value, json},
     };
@@ -913,9 +913,16 @@ mod tests {
             }
         }
     }
-    #[then("the complete configured topology or exact configuration error is")]
+    #[then("the complete configured topology is")]
     fn expected_configured_topology(configured_topics: &ConfiguredTopics, docstring: String) {
-        let expected = serde_json::from_str::<Value>(&docstring)
+        expected_configuration_outcome(configured_topics, &docstring);
+    }
+    #[then("the topology configuration fails with exactly this error")]
+    fn expected_configuration_error(configured_topics: &ConfiguredTopics, docstring: String) {
+        expected_configuration_outcome(configured_topics, &docstring);
+    }
+    fn expected_configuration_outcome(configured_topics: &ConfiguredTopics, docstring: &str) {
+        let expected = serde_json::from_str::<Value>(docstring)
             .expect("complete configured topology expectation");
         check!(
             configured_outcome_snapshot(
@@ -926,5 +933,5 @@ mod tests {
             ) == expected
         );
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/streams/topology/configured.feature",fixtures=[configured_topics:ConfiguredTopics]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/topology/configured.feature",fixtures=[configured_topics:ConfiguredTopics]);
 }

@@ -7,9 +7,9 @@ Feature: Trunk topic keys retain Kafka value validation after opt-in
     Then the trunk topic value is rejected by its validator
 
     Examples:
-      | key | value |
-      | remote.copy.lag.ms | "-2" |
-      | remote.copy.lag.bytes | "-2" |
-      | max.decompressed.message.bytes | "0" |
-      | max.decompressed.message.bytes | "2147483640" |
-      | errors.deadletterqueue.group.enable | "yes" |
+      | case                                   | key | value |
+      | a copy lag below the sentinel          | remote.copy.lag.ms | "-2" |
+      | a copy lag in bytes below the sentinel | remote.copy.lag.bytes | "-2" |
+      | a zero decompressed size               | max.decompressed.message.bytes | "0" |
+      | a decompressed size above its range    | max.decompressed.message.bytes | "2147483640" |
+      | a non-boolean dead letter flag         | errors.deadletterqueue.group.enable | "yes" |

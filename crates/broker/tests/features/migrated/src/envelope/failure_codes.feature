@@ -7,8 +7,8 @@ Feature: Kafka Envelope failure codes
     Then the Envelope wire error code is <code>
 
     Examples:
-      | failure                         | code |
-      | ClusterAuthorizationFailed      | 31   |
-      | PrincipalDeserializationFailure | 97   |
-      | UnsupportedVersion              | 35   |
-      | InvalidRequest                  | 42   |
+      | case                      | failure                         | code |
+      | cluster authorization     | ClusterAuthorizationFailed      | 31   |
+      | principal deserialization | PrincipalDeserializationFailure | 97   |
+      | unsupported version       | UnsupportedVersion              | 35   |
+      | invalid request           | InvalidRequest                  | 42   |

@@ -387,13 +387,8 @@ async fn published_opa_request_allowed(opa_policy_request: &OpaPolicyRequest) {
         .await;
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/authorizer/opa/tests.feature",
-    name = "Published Kafka plugin policy receives action and context"
-)]
-#[tokio::test(flavor = "multi_thread")]
-async fn published_kafka_plugin_policy_receives_action_and_context(
-    opa_policy_request: OpaPolicyRequest,
-) {
-    let _ = opa_policy_request;
-}
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/authorizer/opa/tests.feature",
+    fixtures = [opa_policy_request: OpaPolicyRequest],
+    runtime = "tokio-multi-thread",
+);

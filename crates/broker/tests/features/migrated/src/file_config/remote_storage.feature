@@ -65,18 +65,18 @@ Feature: Remote storage file policy reaches broker runtime configuration
     Then remote policy application refuses property <field>
 
     Examples:
-      | field | value |
-      | min_isr | 0 |
-      | topic_create_timeout | "0ms" |
-      | topic_create_timeout | "0.5ms" |
-      | topic_create_timeout | "2147483648ms" |
-      | fetch_max_wait | "0ms" |
-      | fetch_max_bytes | "0B" |
-      | fetch_max_bytes | "0.5B" |
-      | fetch_max_bytes | "2147483648B" |
-      | fetch_retry_backoff | "0ms" |
-      | event_queue_capacity | 0 |
-      | snapshot_interval | "0s" |
+      | case                                      | field | value |
+      | a zero minimum ISR                        | min_isr | 0 |
+      | a zero topic creation timeout             | topic_create_timeout | "0ms" |
+      | a fractional millisecond creation timeout | topic_create_timeout | "0.5ms" |
+      | a creation timeout past the int range     | topic_create_timeout | "2147483648ms" |
+      | a zero fetch wait                         | fetch_max_wait | "0ms" |
+      | a zero fetch size                         | fetch_max_bytes | "0B" |
+      | a fractional byte fetch size              | fetch_max_bytes | "0.5B" |
+      | a fetch size past the int range           | fetch_max_bytes | "2147483648B" |
+      | a zero fetch retry backoff                | fetch_retry_backoff | "0ms" |
+      | a zero event queue                        | event_queue_capacity | 0 |
+      | a zero snapshot interval                  | snapshot_interval | "0s" |
 
   Scenario: Remote readers retain Kafka thread and cache defaults
     Given the remote storage TOML is

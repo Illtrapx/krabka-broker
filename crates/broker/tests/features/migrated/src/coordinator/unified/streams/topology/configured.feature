@@ -61,7 +61,7 @@ Feature: Streams internal topic configuration exposes full topology inputs and o
       | customers | 2 | 3 |
       | orders | 1 | 6 |
     When the internal topic manager configures the topology against the metadata image
-    Then the complete configured topology or exact configuration error is
+    Then the complete configured topology is
       """
       {
         "internal_topics_to_create": {
@@ -167,7 +167,7 @@ Feature: Streams internal topic configuration exposes full topology inputs and o
       | other | 2 | 8 |
       | rp | 3 | 4 |
     When the internal topic manager configures the topology against the metadata image
-    Then the complete configured topology or exact configuration error is
+    Then the complete configured topology is
       """
       {
         "internal_topics_to_create": {},
@@ -262,7 +262,7 @@ Feature: Streams internal topic configuration exposes full topology inputs and o
       | name | id | partitions |
       | in | 1 | 2 |
     When the internal topic manager configures the topology against the metadata image
-    Then the complete configured topology or exact configuration error is
+    Then the complete configured topology is
       """
       {
         "internal_topics_to_create": {},
@@ -309,7 +309,7 @@ Feature: Streams internal topic configuration exposes full topology inputs and o
       | a | 1 | 2 |
       | b | 2 | 3 |
     When the internal topic manager configures the topology against the metadata image
-    Then the complete configured topology or exact configuration error is
+    Then the complete configured topology is
       """
       {
         "internal_topics_to_create": {},
@@ -353,7 +353,7 @@ Feature: Streams internal topic configuration exposes full topology inputs and o
       | in | 1 | 2 |
       | store-changelog | 2 | 5 |
     When the internal topic manager configures the topology against the metadata image
-    Then the complete configured topology or exact configuration error is
+    Then the complete configured topology is
       """
       {
         "internal_topics_to_create": {},
@@ -400,7 +400,7 @@ Feature: Streams internal topic configuration exposes full topology inputs and o
       | name | id | partitions |
       | c | 1 | 1 |
     When the internal topic manager configures the topology against the metadata image
-    Then the complete configured topology or exact configuration error is
+    Then the complete configured topology is
       """
       {
         "internal_topics_to_create": {},
@@ -443,7 +443,7 @@ Feature: Streams internal topic configuration exposes full topology inputs and o
       | name | id | partitions |
       | in | 1 | 1 |
     When the internal topic manager configures the topology against the metadata image
-    Then the complete configured topology or exact configuration error is
+    Then the topology configuration fails with exactly this error
       """
       {
         "error_kind": "invalid-topology",
@@ -498,7 +498,7 @@ Feature: Streams internal topic configuration exposes full topology inputs and o
     And the metadata image contains these topic partition counts
       | name | id | partitions |
     When the internal topic manager configures the topology against the metadata image
-    Then the complete configured topology or exact configuration error is
+    Then the topology configuration fails with exactly this error
       """
       {
         "error_kind": "invalid-topology",
@@ -526,7 +526,7 @@ Feature: Streams internal topic configuration exposes full topology inputs and o
     And the metadata image contains these topic partition counts
       | name | id | partitions |
     When the internal topic manager configures the topology against the metadata image
-    Then the complete configured topology or exact configuration error is
+    Then the topology configuration fails with exactly this error
       """
       {
         "error_kind": "invalid-topology",
@@ -564,7 +564,7 @@ Feature: Streams internal topic configuration exposes full topology inputs and o
       | name | id | partitions |
       | in | 1 | 1 |
     When the internal topic manager configures the topology against the metadata image
-    Then the complete configured topology or exact configuration error is
+    Then the topology configuration fails with exactly this error
       """
       {
         "error_kind": "invalid-topic",

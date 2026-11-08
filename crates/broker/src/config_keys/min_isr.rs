@@ -259,5 +259,5 @@ mod tests {
         check!(clear_elr_records(&image, None).len() == 2);
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/config_keys/min_isr.feature", fixtures = [minimum_isr: MinimumIsrScenario]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/config_keys/min_isr.feature", fixtures = [minimum_isr: MinimumIsrScenario]);
 }

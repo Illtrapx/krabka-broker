@@ -951,20 +951,10 @@ fn expected_share_state_initialization(
     check!(share_state_initialization.summary.as_ref() == Some(&Ok(expected.summary)));
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/share_coordinator/coordinator/state_machine/tests/initialize.feature",
-    name = "Initialize an existing key under Kafka release rules"
-)]
-#[tokio::test]
-async fn initialize_follows_the_rules_of_each_kafka_release(
-    share_state_initialization: ShareStateInitialization,
-    case: String,
-    trunk: bool,
-    request: String,
-    expected: String,
-) {
-    let _ = (share_state_initialization, case, trunk, request, expected);
-}
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/share_coordinator/coordinator/state_machine/tests/initialize.feature",
+    fixtures = [share_state_initialization: ShareStateInitialization],
+);
 
 #[derive(serde::Deserialize)]
 struct ShareStateWriteRequest {
@@ -1071,20 +1061,10 @@ fn expected_share_state_write(share_state_write: &ShareStateWrite, expected: Str
     check!(share_state_write.summary.as_ref() == Some(&Ok(expected.summary)));
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/share_coordinator/coordinator/state_machine/tests/write.feature",
-    name = "Write stored share state under Kafka release rules"
-)]
-#[tokio::test]
-async fn write_matches_kafka_checks_and_record_rules(
-    share_state_write: ShareStateWrite,
-    case: String,
-    trunk: bool,
-    request: String,
-    expected: String,
-) {
-    let _ = (share_state_write, case, trunk, request, expected);
-}
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/share_coordinator/coordinator/state_machine/tests/write.feature",
+    fixtures = [share_state_write: ShareStateWrite],
+);
 
 /// A load drops the keys of its state partition and replays them. A bare read
 /// of the stored summary in that window finds no state for a key the

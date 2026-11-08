@@ -309,18 +309,10 @@ mod tests {
         );
         voter_update.started.take().unwrap().broker.shutdown().await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_update_voter/validation.feature",
-        name = "Invalid voter fields retain Kafka error codes and leader hints"
-    )]
-    #[tokio::test]
-    async fn handle_reports_the_kafka_code_for_each_rejected_field(
-        voter_update: UpdateVoterScenario,
-        malformation: String,
-        code: i16,
-    ) {
-        let _ = (voter_update, malformation, code);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_update_voter/validation.feature",
+        fixtures = [voter_update: UpdateVoterScenario],
+    );
 
     /// `KafkaRaftClient.hasValidClusterId` answers true for a request that
     /// carries no cluster id, so an absent one is not an inconsistent one: the

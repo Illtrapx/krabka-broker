@@ -106,7 +106,10 @@ mod tests {
         assert!(feature_order.validated.as_ref() == Some(&expected));
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/handlers/update_features/java_order.feature", fixtures = [feature_order: FeatureValidationOrder]);
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/handlers/update_features/java_order.feature",
+        fixtures = [feature_order: FeatureValidationOrder],
+    );
 
     #[test]
     fn the_table_grows_past_three_quarters_full() {

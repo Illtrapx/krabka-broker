@@ -285,16 +285,11 @@ mod tests {
             .shutdown()
             .await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_directory_reports/reports.feature",
-        name = "A valid report remains assigned while unknown partitions and UUIDs receive their own errors"
-    )]
-    #[tokio::test]
-    async fn handle_answers_each_partition_with_kafkas_error_code(
-        directory_report: DirectoryReportScenario,
-    ) {
-        let _ = directory_report;
-    }
+
+    krabka_bdd::scenarios!(
+        "tests/features/handler_directory_reports/reports.feature",
+        fixtures = [directory_report: DirectoryReportScenario],
+    );
 
     /// Seed topic "t" with id `topic_uuid` and partition 0 on broker 1.
     async fn seed_topic(broker: &Broker, topic_uuid: uuid::Uuid) {

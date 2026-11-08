@@ -7,10 +7,10 @@ Feature: Runtime message size limits fit Kafka integer bytes
     Then the partition maximum message size is <bytes> bytes
 
     Examples:
-      | value | bytes |
-      | 0B | 0 |
-      | 2KiB | 2048 |
-      | 2147483647B | 2147483647 |
+      | case                 | value | bytes |
+      | a zero size          | 0B | 0 |
+      | a binary unit size   | 2KiB | 2048 |
+      | the largest int size | 2147483647B | 2147483647 |
 
   Scenario Outline: Refuse an unrepresentable maximum message size
     Given the runtime file sets message_max_bytes to <value>
@@ -18,11 +18,11 @@ Feature: Runtime message size limits fit Kafka integer bytes
     Then the runtime file cannot be applied as a valid message size
 
     Examples:
-      | value |
-      | -1B |
-      | 2147483648B |
-      | 2GiB |
-      | 1.5B |
+      | case                             | value |
+      | a negative size                  | -1B |
+      | one byte past the int range      | 2147483648B |
+      | a binary unit past the int range | 2GiB |
+      | a fractional byte                | 1.5B |
 
   Scenario: Omitting the size preserves Kafka's default
     Given the runtime file omits message_max_bytes

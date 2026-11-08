@@ -5,7 +5,7 @@ Feature: Native Streams task assignor selection
     Then the selected assignor is <reported> and all active tasks belong to <owner>
 
     Examples:
-      | selection | reported | owner |
-      | default   | first    | a     |
-      | first     | first    | a     |
-      | second    | second   | b     |
+      | case                                         | selection | reported | owner |
+      | the default is the first registered assignor | default   | first    | a     |
+      | the first assignor by name                   | first     | first    | a     |
+      | the second assignor by name                  | second    | second   | b     |

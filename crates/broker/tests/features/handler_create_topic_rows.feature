@@ -1,9 +1,7 @@
 Feature: CreateTopics check precedence, duplicate names and request partition limits
 
-  Background: Existing topic
-    Given a single allow-all broker already holds topic t with one partition and replication factor one
-
   Scenario: A duplicated name creates nothing
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only false
       | topic | partitions | replication factor | configs | assignments |
       | n | 1 | 1 | none | none |
@@ -13,6 +11,7 @@ Feature: CreateTopics check precedence, duplicate names and request partition li
       | n | 42 | Duplicate topic name. |
 
   Scenario: A duplicated name is also invalid in a dry run
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only true
       | topic | partitions | replication factor | configs | assignments |
       | n | 1 | 1 | none | none |
@@ -22,6 +21,7 @@ Feature: CreateTopics check precedence, duplicate names and request partition li
       | n | 42 | Duplicate topic name. |
 
   Scenario: Controller rows precede duplicate-name refusals
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only false
       | topic | partitions | replication factor | configs | assignments |
       | n | 1 | 1 | none | none |
@@ -33,6 +33,7 @@ Feature: CreateTopics check precedence, duplicate names and request partition li
       | n | 42 | Duplicate topic name. |
 
   Scenario: Existing topics precede config validation
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only false
       | topic | partitions | replication factor | configs | assignments |
       | t | 1 | 1 | retention.ms:abc | none |
@@ -41,6 +42,7 @@ Feature: CreateTopics check precedence, duplicate names and request partition li
       | t | 36 | Topic 't' already exists. |
 
   Scenario: Existing topics precede partition count validation
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only false
       | topic | partitions | replication factor | configs | assignments |
       | t | 0 | 1 | none | none |
@@ -49,6 +51,7 @@ Feature: CreateTopics check precedence, duplicate names and request partition li
       | t | 36 | Topic 't' already exists. |
 
   Scenario: Existing topics precede replication factor validation
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only false
       | topic | partitions | replication factor | configs | assignments |
       | t | 1 | 3 | none | none |
@@ -57,6 +60,7 @@ Feature: CreateTopics check precedence, duplicate names and request partition li
       | t | 36 | Topic 't' already exists. |
 
   Scenario: Existing topics precede config validation in dry runs
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only true
       | topic | partitions | replication factor | configs | assignments |
       | t | 1 | 1 | retention.ms:abc | none |
@@ -65,6 +69,7 @@ Feature: CreateTopics check precedence, duplicate names and request partition li
       | t | 36 | Topic 't' already exists. |
 
   Scenario: Null config values are invalid
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only false
       | topic | partitions | replication factor | configs | assignments |
       | n | 1 | 1 | retention.ms:null | none |
@@ -73,6 +78,7 @@ Feature: CreateTopics check precedence, duplicate names and request partition li
       | n | 40 | Null value not supported for topic configs: retention.ms |
 
   Scenario: All null configs are named in dry-run refusal
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only true
       | topic | partitions | replication factor | configs | assignments |
       | n | 1 | 1 | retention.ms:null;segment.ms:60000;cleanup.policy:null | none |
@@ -81,6 +87,7 @@ Feature: CreateTopics check precedence, duplicate names and request partition li
       | n | 40 | Null value not supported for topic configs: retention.ms,cleanup.policy |
 
   Scenario: Explicit assignments require sentinel replication factor
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only false
       | topic | partitions | replication factor | configs | assignments |
       | m | -1 | 2 | none | 0:1 |
@@ -89,6 +96,7 @@ Feature: CreateTopics check precedence, duplicate names and request partition li
       | m | 42 | A manual partition assignment was specified, but replication factor was not set to -1. |
 
   Scenario: One topic over the partition request limit refuses creation
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only false
       | topic | partitions | replication factor | configs | assignments |
       | a | 10001 | 1 | none | none |
@@ -97,6 +105,7 @@ Feature: CreateTopics check precedence, duplicate names and request partition li
       | a | 44 | Excessively large number of partitions per request. |
 
   Scenario: The aggregate partition limit refuses every original row including duplicates
+    Given a single allow-all broker already holds topic t with one partition and replication factor one
     When CreateTopics processes these ordered rows with validate only false
       | topic | partitions | replication factor | configs | assignments |
       | a | 6000 | 1 | none | none |

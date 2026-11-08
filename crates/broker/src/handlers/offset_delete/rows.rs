@@ -243,5 +243,8 @@ mod tests {
         };
         check!(offset_deletion_rows.rows.as_ref().unwrap().to_delete == want);
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_offset_deletion_rows",fixtures=[offset_deletion_rows:OffsetDeletionRowsScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_offset_deletion_rows",
+        fixtures = [offset_deletion_rows: OffsetDeletionRowsScenario],
+    );
 }

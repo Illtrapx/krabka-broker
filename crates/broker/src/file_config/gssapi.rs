@@ -308,7 +308,7 @@ type = "carrier-pigeon"
         }
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/file_config/gssapi.feature",
         fixtures = [kerberos_configuration_file: KerberosConfigurationFile]
     );

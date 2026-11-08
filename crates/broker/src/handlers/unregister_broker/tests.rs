@@ -437,7 +437,10 @@ fn assert_unregister_controller(
     };
     check!(unregister_controller.responses == vec![expected]);
 }
-rstest_bdd_macros::scenarios!("tests/features/handler_unregister_controller",fixtures=[unregister_controller:UnregisterControllerScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_unregister_controller",
+    fixtures = [unregister_controller: UnregisterControllerScenario],
+);
 
 /// A request that arrives on the controller listener, or inside an `Envelope`,
 /// is already at the active controller and is never forwarded again.

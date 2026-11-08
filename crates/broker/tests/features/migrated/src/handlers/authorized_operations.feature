@@ -23,14 +23,14 @@ Feature: Kafka authorized-operation discovery
     Then the operation contributes mask <mask>
 
     Examples:
-      | operation       | mask |
-      | Read            | 8    |
-      | Write           | 16   |
-      | Create          | 32   |
-      | Delete          | 64   |
-      | Alter           | 128  |
-      | Describe        | 256  |
-      | ClusterAction   | 512  |
-      | DescribeConfigs | 1024 |
-      | AlterConfigs    | 2048 |
-      | IdempotentWrite | 4096 |
+      | case             | operation       | mask |
+      | read             | Read            | 8    |
+      | write            | Write           | 16   |
+      | create           | Create          | 32   |
+      | delete           | Delete          | 64   |
+      | alter            | Alter           | 128  |
+      | describe         | Describe        | 256  |
+      | cluster action   | ClusterAction   | 512  |
+      | describe configs | DescribeConfigs | 1024 |
+      | alter configs    | AlterConfigs    | 2048 |
+      | idempotent write | IdempotentWrite | 4096 |

@@ -222,7 +222,7 @@ mod tests {
         assert!(offset_commit_verification.response == Some(code));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/txn/handlers/txn_offset_commit/verification.feature",
         fixtures = [offset_commit_verification: OffsetCommitVerification]
     );

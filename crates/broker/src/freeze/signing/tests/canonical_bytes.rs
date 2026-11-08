@@ -102,7 +102,7 @@ fn signed_freeze_pattern(freeze_payload: &FreezePatternPayload, expected: u8) {
     check!(encoded[pattern_byte] == expected);
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/freeze/signing/tests/canonical_bytes.feature",
     fixtures = [freeze_payload: FreezePatternPayload]
 );

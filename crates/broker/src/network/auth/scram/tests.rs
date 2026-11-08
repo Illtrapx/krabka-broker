@@ -903,7 +903,7 @@ fn refused_scram_client_first(scram_client_first_message: &ScramClientFirstMessa
     check!(scram_client_first_message.parsed.get() == Some(None));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/network/auth/scram/parser.feature",
     fixtures = [scram_client_first_message: ScramClientFirstMessage]
 );
@@ -1072,7 +1072,7 @@ fn authenticated_floor_scram_credential(stored_scram_credential: &StoredScramCre
     check!(!*authenticated_via_token);
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/network/auth/scram/iterations.feature",
     fixtures = [stored_scram_credential: StoredScramCredential]
 );

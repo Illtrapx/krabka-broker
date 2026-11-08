@@ -7,13 +7,13 @@ Feature: Replica destination identity and future directory length
     Then the complete replica move response has partition error <error>
 
     Examples:
-      | destination | topic | error |
-      | configured | orders | 9 |
-      | configured/ | orders | 57 |
-      | configured/. | orders | 57 |
-      | configured/../basename | orders | 57 |
-      | relative-configured | orders | 57 |
-      | symlink | orders | 57 |
-      | configured | 213-times-t | 9 |
-      | configured | 214-times-t | 17 |
-      | configured/ | 214-times-t | 17 |
+      | case                                     | destination            | topic       | error |
+      | the configured directory spelled exactly | configured             | orders      | 9     |
+      | a trailing slash                         | configured/            | orders      | 57    |
+      | a trailing dot segment                   | configured/.           | orders      | 57    |
+      | a parent segment                         | configured/../basename | orders      | 57    |
+      | a relative path                          | relative-configured    | orders      | 57    |
+      | a symlink to the directory               | symlink                | orders      | 57    |
+      | the longest future directory name        | configured             | 213-times-t | 9     |
+      | a future directory name one too long     | configured             | 214-times-t | 17    |
+      | a too-long name outranks the path check  | configured/            | 214-times-t | 17    |

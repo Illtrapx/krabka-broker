@@ -564,7 +564,7 @@ storage_dir = "/var/lib/krabka/tier"
         assert!(error.contains(&field), "{field}: {error}");
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/file_config/remote_storage.feature", fixtures = [remote_file_policy: RemoteFilePolicy]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/file_config/remote_storage.feature", fixtures = [remote_file_policy: RemoteFilePolicy]);
 
     #[test]
     fn reader_bounds_and_index_cache_size_are_overridable() {

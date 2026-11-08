@@ -347,7 +347,7 @@ mod tests {
         check!(kerberos_principal.short_name.get() == Some(None));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/network/auth/kerberos_name.feature",
         fixtures = [kerberos_principal: KerberosPrincipalScenario]
     );

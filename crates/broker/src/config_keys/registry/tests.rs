@@ -302,7 +302,7 @@ fn registered_read_only_config(registered_config: &RegisteredConfigScenario) {
     check!(row.read_only, "{}", registered_config.key);
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/config_keys/registry/tests",
     fixtures = [registered_config: RegisteredConfigScenario]
 );

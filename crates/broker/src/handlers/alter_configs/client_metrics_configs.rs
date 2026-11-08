@@ -124,5 +124,8 @@ mod tests {
             client_metrics_replacement.result.as_ref().unwrap() == &Err((code, message))
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_client_metrics_replacement",fixtures=[client_metrics_replacement:ClientMetricsReplacementScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_client_metrics_replacement",
+        fixtures = [client_metrics_replacement: ClientMetricsReplacementScenario],
+    );
 }

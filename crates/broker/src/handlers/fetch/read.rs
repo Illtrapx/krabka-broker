@@ -1620,18 +1620,10 @@ mod tests {
                 == offline
         );
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_read_failures.feature",
-        name = "Read exceptions produce partition errors and only disk failures fence directories"
-    )]
-    #[tokio::test]
-    async fn a_failed_read_answers_the_row_kafka_gives_its_error(
-        failed_fetch_read: FailedFetchRead,
-        failure: String,
-        code: i16,
-        offline: bool,
-    ) {
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_fetch_read_failures.feature",
+        fixtures = [failed_fetch_read: FailedFetchRead],
+    );
 
     /// Retention or `DeleteRecords` can move the log start between `plan_read`
     /// and the second log lock. The read then fails with `OffsetTooLow`, and

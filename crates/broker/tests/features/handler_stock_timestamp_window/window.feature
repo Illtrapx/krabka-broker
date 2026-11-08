@@ -4,7 +4,7 @@ Feature: Unconfigured topics retain Kafka's one-hour future timestamp window
     When the batch is prepared through both verbatim and owned compression paths
     Then both preparation paths return timestamp error <code>
     Examples:
-      | timestamps                                  | code |
-      | 1000 and 2000 milliseconds since the epoch   | 0    |
-      | now and exactly one hour ahead               | 0    |
-      | now and one hour plus one minute ahead       | 32   |
+      | case                   | timestamps                                 | code |
+      | past timestamps        | 1000 and 2000 milliseconds since the epoch | 0    |
+      | exactly one hour ahead | now and exactly one hour ahead             | 0    |
+      | beyond one hour        | now and one hour plus one minute ahead     | 32   |

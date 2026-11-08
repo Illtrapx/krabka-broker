@@ -894,7 +894,7 @@ fn expected_tiered_local_retention(
     );
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/remote_log_manager/local_retention/tests.feature",
     fixtures = [tiered_local_retention: TieredLocalRetention]
 );

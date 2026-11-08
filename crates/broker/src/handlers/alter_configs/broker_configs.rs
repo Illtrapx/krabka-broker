@@ -325,7 +325,10 @@ mod tests {
             .collect();
         check!(broker_replacement.result.as_ref().unwrap() == &Ok(expected));
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_broker_config_replacement",fixtures=[broker_replacement:BrokerReplacementScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_broker_config_replacement",
+        fixtures = [broker_replacement: BrokerReplacementScenario],
+    );
 
     #[test]
     fn broker_full_replacement_rejects_controller_managed_configs() {

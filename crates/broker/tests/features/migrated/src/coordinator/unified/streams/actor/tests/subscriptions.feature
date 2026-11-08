@@ -6,7 +6,7 @@ Feature: Streams subscriptions include source and repartition source topics
     Then the complete subscribed topic set is <topics>
 
     Examples:
-      | input | topics |
-      | {"live":false,"topology":[["0","in",[],["rep"]],["1","other",["rep"],[]]]} | [] |
-      | {"live":true,"topology":null} | [] |
-      | {"live":true,"topology":[["0","in",[],["rep"]],["1","other",["rep"],[]]]} | ["in","other","rep"] |
+      | case                                                     | input                                                                      | topics               |
+      | an empty group subscribes to nothing                     | {"live":false,"topology":[["0","in",[],["rep"]],["1","other",["rep"],[]]]} | []                   |
+      | a live group without a topology                          | {"live":true,"topology":null}                                              | []                   |
+      | a live group subscribes to source and repartition topics | {"live":true,"topology":[["0","in",[],["rep"]],["1","other",["rep"],[]]]}  | ["in","other","rep"] |

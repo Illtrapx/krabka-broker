@@ -56,9 +56,7 @@ mod tests {
         OffsetRetentionScenario::default()
     }
 
-    #[rstest_bdd_macros::given(
-        "the operator has not overridden offset retention or its sweep interval"
-    )]
+    #[rstest_bdd_macros::given("offset retention and its sweep interval keep their defaults")]
     fn untouched_retention(retention: &mut OffsetRetentionScenario) {
         retention.config = Some(BrokerConfig::default());
     }
@@ -102,5 +100,5 @@ mod tests {
         check!(config.offsets_retention_check_interval() == minutes(1));
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/config/offset_retention.feature", fixtures = [retention: OffsetRetentionScenario]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/config/offset_retention.feature", fixtures = [retention: OffsetRetentionScenario]);
 }

@@ -260,59 +260,8 @@ mod tests {
         assert2::check!(summary_story.observed.as_ref().expect("read RPC completed") == &expected);
     }
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read_summary.feature",
-        name = "Persisted state is returned"
-    )]
-    #[tokio::test]
-    async fn read_summary_answers_as_kafka(summary_story: SummaryStory) { drop(summary_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read_summary.feature",
-        name = "An uninitialized key has the Kafka empty summary"
-    )]
-    #[tokio::test]
-    async fn read_summary_answers_as_kafka_1(summary_story: SummaryStory) { drop(summary_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read_summary.feature",
-        name = "A resigned coordinator refuses reads"
-    )]
-    #[tokio::test]
-    async fn read_summary_answers_as_kafka_2(summary_story: SummaryStory) { drop(summary_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read_summary.feature",
-        name = "A negative partition is refused"
-    )]
-    #[tokio::test]
-    async fn read_summary_answers_as_kafka_3(summary_story: SummaryStory) { drop(summary_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read_summary.feature",
-        name = "An out of range partition is unknown"
-    )]
-    #[tokio::test]
-    async fn read_summary_answers_as_kafka_4(summary_story: SummaryStory) { drop(summary_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read_summary.feature",
-        name = "An empty group returns no rows"
-    )]
-    #[tokio::test]
-    async fn read_summary_answers_as_kafka_5(summary_story: SummaryStory) { drop(summary_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read_summary.feature",
-        name = "An empty partition list returns no rows"
-    )]
-    #[tokio::test]
-    async fn read_summary_answers_as_kafka_6(summary_story: SummaryStory) { drop(summary_story); }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/read_summary.feature",
-        name = "An empty topic list returns no rows"
-    )]
-    #[tokio::test]
-    async fn read_summary_answers_as_kafka_7(summary_story: SummaryStory) { drop(summary_story); }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/share_coordinator/handlers/read_summary.feature",
+        fixtures = [summary_story: SummaryStory],
+    );
 }

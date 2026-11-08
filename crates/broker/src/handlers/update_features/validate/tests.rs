@@ -255,7 +255,10 @@ fn check_elr_safety_records(feature_planning: &FeaturePlanningScenario, records:
     };
     assert!(feature_planning.safety.as_ref().unwrap() == &expected);
 }
-rstest_bdd_macros::scenarios!("tests/features/handler_feature_planning",fixtures=[feature_planning:FeaturePlanningScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_feature_planning",
+    fixtures = [feature_planning: FeaturePlanningScenario],
+);
 
 /// A version 0 row carries `AllowDowngrade` rather than `UpgradeType`, and
 /// Kafka reads the `UpgradeType` default, UPGRADE, so the flag never

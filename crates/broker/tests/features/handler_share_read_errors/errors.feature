@@ -4,8 +4,8 @@ Feature: ShareFetch exposes distinct storage corruption and broker read failures
     When ShareFetch settles the failed read for its partition row
     Then the ShareFetch partition error is <code> and the log dir offline state is <offline>
     Examples:
-      | failure                             | code | offline |
-      | a log disk I/O error                | 56   | true    |
-      | a corrupt transaction index         | 2    | false   |
-      | a record body shorter than one byte | 2    | false   |
-      | a broker I/O error                  | -1   | false   |
+      | case                      | failure                             | code | offline |
+      | log disk failure          | a log disk I/O error                | 56   | true    |
+      | corrupt transaction index | a corrupt transaction index         | 2    | false   |
+      | truncated record body     | a record body shorter than one byte | 2    | false   |
+      | broker io error           | a broker I/O error                  | -1   | false   |

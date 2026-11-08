@@ -64,7 +64,7 @@ fn replay(records: Vec<LogRecord>) -> Outcome {
 }
 
 use {
-    rstest_bdd_macros::{given, scenarios, then, when},
+    rstest_bdd_macros::{given, then, when},
     std::mem,
 };
 #[derive(Default)]
@@ -129,4 +129,4 @@ fn loaded_partition_metadata(
     };
     check!(metadata_load.outcome.as_ref() == Some(&expected));
 }
-scenarios!("tests/features/migrated/src/coordinator/bootstrap/partition_metadata_replay_tests.feature",fixtures=[metadata_load:PartitionMetadataLoad]);
+krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/bootstrap/partition_metadata_replay_tests.feature",fixtures=[metadata_load:PartitionMetadataLoad]);

@@ -350,7 +350,10 @@ fn prepare_invalid_produce_slice(invalid_produce_slice: &mut InvalidProduceSlice
 fn check_invalid_produce_slice(invalid_produce_slice: &InvalidProduceSliceScenario, code: i16) {
     assert!(matches!(invalid_produce_slice.result.as_ref().unwrap(),Err(error)if *error==code));
 }
-rstest_bdd_macros::scenarios!("tests/features/handler_invalid_produce_slice",fixtures=[invalid_produce_slice:InvalidProduceSliceScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_invalid_produce_slice",
+    fixtures = [invalid_produce_slice: InvalidProduceSliceScenario],
+);
 
 #[test]
 fn rejects_crc_valid_malformed_record_body() {

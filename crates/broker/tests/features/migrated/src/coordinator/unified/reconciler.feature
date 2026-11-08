@@ -4,8 +4,8 @@ Feature: Subscription metadata changes advance consumer group epochs
     When the coordinator refreshes subscription metadata with explicit epoch bump <requested>
     Then the epoch was bumped <bumped> to <epoch> and the current metadata hash is recorded without a pending refresh
     Examples:
-      | recorded | current | requested | bumped | epoch |
-      | 2 | 2 | false | false | 1 |
-      | 2 | 2 | true | true | 2 |
-      | 2 | 4 | false | true | 2 |
-      | 2 | 4 | true | true | 2 |
+      | case                                    | recorded | current | requested | bumped | epoch |
+      | nothing changed                         | 2        | 2       | false     | false  | 1     |
+      | a requested bump                        | 2        | 2       | true      | true   | 2     |
+      | the topic grew                          | 2        | 4       | false     | true   | 2     |
+      | the topic grew and a bump was requested | 2        | 4       | true      | true   | 2     |

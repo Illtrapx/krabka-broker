@@ -700,7 +700,7 @@ mod tests {
                 }
         );
     }
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/client_metrics/manager/subscription.feature",
         fixtures = [metrics_subscription: MetricsSubscription],
     );

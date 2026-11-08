@@ -375,7 +375,7 @@ mod tests {
         assert!(server_transaction_abort.completion == Some((ProducerId(producer), epoch)));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/txn/handlers/end_txn/producer_identity.feature",
         fixtures = [server_transaction_abort: ServerTransactionAbort]
     );

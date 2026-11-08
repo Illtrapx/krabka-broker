@@ -5,13 +5,13 @@ Feature: ListGroups combines normalized state and type filters with authorizatio
     When ListGroups filters the groups and applies group authorization
     Then the complete listed groups in order are <ids>
     Examples:
-      | states                      | types           | ids                                                         |
-      | none                        | none            | classic-a,classic-b,consumer-a,consumer-b,share-a,streams-a   |
-      | empty                       | none            | classic-a,share-a                                            |
-      | STABLE surrounded by spaces | none            | consumer-b                                                  |
-      | reconciling,notready         | none            | consumer-a,streams-a                                        |
-      | Dead                        | none            | none                                                        |
-      | none                        | Share           | share-a                                                     |
-      | none                        | CLASSIC,streams | classic-a,classic-b,streams-a                                |
-      | none                        | unknown         | none                                                        |
-      | empty                       | consumer        | none                                                        |
+      | case                                 | states                      | types           | ids                                                         |
+      | no filters                           | none                        | none            | classic-a,classic-b,consumer-a,consumer-b,share-a,streams-a |
+      | state filter                         | empty                       | none            | classic-a,share-a                                           |
+      | state filter with surrounding spaces | STABLE surrounded by spaces | none            | consumer-b                                                  |
+      | several state filters                | reconciling,notready        | none            | consumer-a,streams-a                                        |
+      | dead state matches nothing           | Dead                        | none            | none                                                        |
+      | type filter                          | none                        | Share           | share-a                                                     |
+      | several type filters                 | none                        | CLASSIC,streams | classic-a,classic-b,streams-a                               |
+      | unknown type                         | none                        | unknown         | none                                                        |
+      | state and type filters both apply    | empty                       | consumer        | none                                                        |

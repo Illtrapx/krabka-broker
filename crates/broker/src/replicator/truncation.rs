@@ -1622,7 +1622,7 @@ mod tests {
     fn divergence_target(diverging_log: &DivergingLog, offset: i64) {
         assert!(diverging_log.target.expect("calculated target") == Offset(offset));
     }
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/replicator/truncation/divergence.feature",
         fixtures = [diverging_log: DivergingLog],
     );
@@ -1727,16 +1727,8 @@ mod tests {
                 }
         );
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/replicator/truncation/recovery.feature",
-        name = "Recover a replica after its fetch offset is rejected"
-    )]
-    #[tokio::test]
-    async fn out_of_range_recovery_follows_kafka_fetch_offset_and_truncate(
-        out_of_range_log: OutOfRangeLog,
-        lookups: String,
-        expected: String,
-    ) {
-        let _ = (out_of_range_log, lookups, expected);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/replicator/truncation/recovery.feature",
+        fixtures = [out_of_range_log: OutOfRangeLog],
+    );
 }

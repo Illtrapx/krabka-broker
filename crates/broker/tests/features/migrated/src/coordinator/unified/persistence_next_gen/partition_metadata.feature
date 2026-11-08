@@ -8,7 +8,7 @@ Feature: Consumer partition metadata codec compatibility
     When the coordinator reads the consumer partition metadata bytes
     Then Kafka incompatible partition metadata is rejected
     Examples:
-      | corruption |
-      | unknown-value-version |
-      | missing-trailer |
-      | empty |
+      | case                     | corruption            |
+      | an unknown value version | unknown-value-version |
+      | a missing tagged trailer | missing-trailer       |
+      | no bytes at all          | empty                 |

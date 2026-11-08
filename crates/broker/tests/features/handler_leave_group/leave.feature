@@ -5,8 +5,8 @@ Feature: LeaveGroup preserves missing-group and invalid-group wire semantics
     When the group coordinator handles the LeaveGroup request
     Then LeaveGroup returns top-level error <code> with <members> and does not create the missing group
     Examples:
-      | version | group | identities                                | code | members                                 |
-      | 2       | ghost | legacy member m                           | 25   | no member rows                          |
-      | 5       | ghost | member m-a and static instance inst-b      | 0    | unknown-member rows for both identities  |
-      | 5       | empty | member m-a                                | 24   | no member rows                          |
-      | 0       | empty | legacy member m                           | 24   | no member rows                          |
+      | case                                | version | group | identities                            | code | members                                 |
+      | legacy request for missing group    | 2       | ghost | legacy member m                       | 25   | no member rows                          |
+      | batched request for missing group   | 5       | ghost | member m-a and static instance inst-b | 0    | unknown-member rows for both identities |
+      | batched request with empty group id | 5       | empty | member m-a                            | 24   | no member rows                          |
+      | legacy request with empty group id  | 0       | empty | legacy member m                       | 24   | no member rows                          |

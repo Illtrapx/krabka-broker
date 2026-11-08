@@ -2,11 +2,9 @@ Feature: Remote reads exclude segments from a diverging leader history
   A remote segment must follow every overlapping leader epoch and end before
   the leader's log end before a by-timestamp read can use it.
 
-  Background:
-    Given the leader epoch starts are JSON [[0,0],[1,10],[2,20],[3,30],[4,40],[5,50],[7,70]] and the leader log end is 90
-
   Scenario Outline: Admit a remote segment that <case>
-    Given a remote segment has epoch starts JSON <epochs> and inclusive end offset <end>
+    Given the leader epoch starts are JSON [[0,0],[1,10],[2,20],[3,30],[4,40],[5,50],[7,70]] and the leader log end is 90
+    And a remote segment has epoch starts JSON <epochs> and inclusive end offset <end>
     When the remote reader checks whether the segment belongs to the leader history
     Then the remote segment belongs to the current leader lineage
 
@@ -19,7 +17,8 @@ Feature: Remote reads exclude segments from a diverging leader history
       | ends at the last offset of its last epoch | [[1,15],[2,20]] | 29 |
 
   Scenario Outline: Refuse a remote segment that <case>
-    Given a remote segment has epoch starts JSON <epochs> and inclusive end offset <end>
+    Given the leader epoch starts are JSON [[0,0],[1,10],[2,20],[3,30],[4,40],[5,50],[7,70]] and the leader log end is 90
+    And a remote segment has epoch starts JSON <epochs> and inclusive end offset <end>
     When the remote reader checks whether the segment belongs to the leader history
     Then the remote segment is refused as outside the current leader lineage
 

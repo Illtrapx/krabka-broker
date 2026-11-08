@@ -758,7 +758,7 @@ mod connections_max_idle_tests {
         IdleTimeoutScenario::default()
     }
 
-    #[rstest_bdd_macros::given("no broker-wide or listener-specific idle timeout is configured")]
+    #[rstest_bdd_macros::given("neither the broker nor any listener configures an idle timeout")]
     fn default_idle_timeout(idle_timeout: &mut IdleTimeoutScenario) {
         idle_timeout.config = Some(BrokerConfig::default());
     }
@@ -817,7 +817,7 @@ mod connections_max_idle_tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/config/listener.feature", fixtures = [idle_timeout: IdleTimeoutScenario]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/config/listener.feature", fixtures = [idle_timeout: IdleTimeoutScenario]);
 }
 
 #[cfg(test)]

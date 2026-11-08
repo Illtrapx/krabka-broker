@@ -233,6 +233,7 @@ mod tests {
         },
         assert2::{assert, check},
         rstest_bdd::datatable::Rows,
+        std::collections::BTreeMap,
     };
 
     fn peek_type(buf: &[u8]) -> i16 {
@@ -427,41 +428,39 @@ mod tests {
         ShareValueScenario::default()
     }
 
-    #[rstest_bdd_macros::given(
-        "a share snapshot has snapshot epoch {snapshot}, state epoch {state}, leader epoch {leader}, and start offset {start}"
-    )]
-    fn share_snapshot_fields(
-        share_value: &mut ShareValueScenario,
-        snapshot: i32,
-        state: i32,
-        leader: i32,
-        start: i64,
-    ) {
-        share_value.snapshot = Some(ShareSnapshotValue {
-            snapshot_epoch: snapshot,
-            state_epoch: state,
-            leader_epoch: leader,
-            start_offset: Offset(start),
-            delivery_complete_count: -1,
-            create_timestamp: 0,
-            write_timestamp: 0,
-            state_batches: Vec::new(),
-        });
+    #[derive(rstest_bdd_macros::DataTableRow)]
+    struct SnapshotField {
+        field: String,
+        value: String,
     }
 
-    #[rstest_bdd_macros::given(
-        "snapshot creation time is {created}, write time is {written}, and delivery-complete count is {complete}"
-    )]
-    fn share_snapshot_timestamps(
+    #[rstest_bdd_macros::given("a share snapshot has these fields:")]
+    fn share_snapshot_fields(
         share_value: &mut ShareValueScenario,
-        created: i64,
-        written: i64,
-        complete: i32,
+        #[datatable] rows: Rows<SnapshotField>,
     ) {
-        let snapshot = share_value.snapshot.as_mut().expect("a snapshot was given");
-        snapshot.create_timestamp = created;
-        snapshot.write_timestamp = written;
-        snapshot.delivery_complete_count = complete;
+        let fields: BTreeMap<String, String> =
+            rows.into_iter().map(|row| (row.field, row.value)).collect();
+        let field = |name: &str| -> i64 {
+            fields
+                .get(name)
+                .unwrap_or_else(|| panic!("missing snapshot field {name}"))
+                .parse()
+                .unwrap_or_else(|error| panic!("invalid snapshot field {name}: {error}"))
+        };
+        let narrow = |name: &str| -> i32 {
+            i32::try_from(field(name)).unwrap_or_else(|_| panic!("{name} is out of range"))
+        };
+        share_value.snapshot = Some(ShareSnapshotValue {
+            snapshot_epoch: narrow("snapshot epoch"),
+            state_epoch: narrow("state epoch"),
+            leader_epoch: narrow("leader epoch"),
+            start_offset: Offset(field("start offset")),
+            delivery_complete_count: narrow("delivery-complete count"),
+            create_timestamp: field("creation time"),
+            write_timestamp: field("write time"),
+            state_batches: Vec::new(),
+        });
     }
 
     #[rstest_bdd_macros::given(
@@ -545,7 +544,7 @@ mod tests {
         check!(share_value.decoded_update == share_value.update);
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/share_coordinator/persistence",
         fixtures = [share_value: ShareValueScenario]
     );

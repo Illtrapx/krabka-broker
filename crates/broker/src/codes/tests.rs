@@ -415,7 +415,7 @@ fn replica_not_available_is_not_the_controller_moved_code() {
     assert!(REPLICA_NOT_AVAILABLE == 9);
 }
 
-rstest_bdd_macros::scenarios!("tests/features/migrated/src/codes/tests.feature", fixtures = [errors: ErrorNamespaces]);
+krabka_bdd::scenarios!("tests/features/migrated/src/codes/tests.feature", fixtures = [errors: ErrorNamespaces]);
 
 // Config validation fails startup and never reaches a request, but its errors
 // still have a wire code, and an operator still reads their messages: both

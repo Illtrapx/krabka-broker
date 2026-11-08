@@ -410,7 +410,10 @@ fn check_explicit_partition_assignment(
             })
     );
 }
-rstest_bdd_macros::scenarios!("tests/features/handler_explicit_partition_assignment",fixtures=[explicit_partition_assignment:ExplicitPartitionAssignmentScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_explicit_partition_assignment",
+    fixtures = [explicit_partition_assignment: ExplicitPartitionAssignmentScenario],
+);
 
 /// An automatic placement that cannot put `rf` replicas on the brokers
 /// answers the message of Kafka's placer. `createPartitions` lets that

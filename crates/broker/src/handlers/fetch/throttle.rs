@@ -326,7 +326,10 @@ mod tests {
     fn check_fetch_charge(fetch_charge: &FetchChargeScenario, bytes: u64) {
         assert2::assert!(fetch_charge.size.unwrap() == bytes);
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_empty_fetch_charge",fixtures=[fetch_charge:FetchChargeScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_empty_fetch_charge",
+        fixtures = [fetch_charge: FetchChargeScenario],
+    );
 
     #[test]
     fn consume_consumer_quota_tuple_match_overage_throttles() {

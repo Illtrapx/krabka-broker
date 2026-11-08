@@ -225,7 +225,10 @@ fn check_stock_timestamp(stock_timestamp: &StockTimestampScenario, code: i16) {
     };
     check!(stock_timestamp.results == vec![expected, expected]);
 }
-rstest_bdd_macros::scenarios!("tests/features/handler_stock_timestamp_window",fixtures=[stock_timestamp:StockTimestampScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_stock_timestamp_window",
+    fixtures = [stock_timestamp: StockTimestampScenario],
+);
 
 /// KFC-1: a scheduled topic's timestamps are delivery times, and the default
 /// `delivery.max.delay.ms` is seven days. Kafka's one-hour future window would

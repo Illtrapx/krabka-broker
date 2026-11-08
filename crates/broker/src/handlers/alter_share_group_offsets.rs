@@ -702,54 +702,10 @@ mod tests {
             .await;
     }
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_alter_share_offsets.feature",
-        name = "Disabled API refuses the whole reset"
-    )]
-    #[tokio::test]
-    async fn share_offset_reset_case_0(share_offset_alteration: ShareOffsetAlteration) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_alter_share_offsets.feature",
-        name = "Denied group refuses the whole reset"
-    )]
-    #[tokio::test]
-    async fn share_offset_reset_case_1(share_offset_alteration: ShareOffsetAlteration) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_alter_share_offsets.feature",
-        name = "Unknown topic preserves partition identities"
-    )]
-    #[tokio::test]
-    async fn share_offset_reset_case_2(share_offset_alteration: ShareOffsetAlteration) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_alter_share_offsets.feature",
-        name = "Group Read alone permits offset reset"
-    )]
-    #[tokio::test]
-    async fn share_offset_reset_case_3(share_offset_alteration: ShareOffsetAlteration) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_alter_share_offsets.feature",
-        name = "Group Alter without Read refuses reset and preserves stored state"
-    )]
-    #[tokio::test]
-    async fn share_offset_reset_case_4(share_offset_alteration: ShareOffsetAlteration) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_alter_share_offsets.feature",
-        name = "Topic Read denial preserves stored state"
-    )]
-    #[tokio::test]
-    async fn share_offset_reset_case_5(share_offset_alteration: ShareOffsetAlteration) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_alter_share_offsets.feature",
-        name = "Authorized unknown topic reports missing partition"
-    )]
-    #[tokio::test]
-    async fn share_offset_reset_case_6(share_offset_alteration: ShareOffsetAlteration) {}
+    krabka_bdd::scenarios!(
+        "tests/features/handler_alter_share_offsets.feature",
+        fixtures = [share_offset_alteration: ShareOffsetAlteration],
+    );
 
     /// Issue #944: an empty `group_id` is refused with `INVALID_GROUP_ID`
     /// (24), and a `group_id` already locked to another protocol type is

@@ -120,5 +120,5 @@ mod tests {
         assert!(resolve_max_message_bytes(&image_with(None), "ghost", default) == default);
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/config_keys/message_size.feature", fixtures = [message_size: MessageSizeValidation]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/config_keys/message_size.feature", fixtures = [message_size: MessageSizeValidation]);
 }

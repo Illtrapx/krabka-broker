@@ -150,7 +150,10 @@ mod tests {
         check!(feature_discovery.finalized.as_ref() == Some(&expected));
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/handlers/api_versions/feature_keys.feature", fixtures = [feature_discovery: FeatureDiscoveryContract]);
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/handlers/api_versions/feature_keys.feature",
+        fixtures = [feature_discovery: FeatureDiscoveryContract],
+    );
 
     #[test]
     fn finalized_feature_keys_keep_levels_above_zero() {

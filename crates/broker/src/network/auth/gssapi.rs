@@ -483,7 +483,7 @@ mod tests {
         check!(gssapi_short_name.mapped.get() == Some(None));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/network/auth/gssapi.feature",
         fixtures = [gssapi_short_name: GssapiShortName]
     );

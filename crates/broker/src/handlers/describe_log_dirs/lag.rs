@@ -202,31 +202,11 @@ mod tests {
         );
         assert2::check!(directory_lag.lag.unwrap() == expected);
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_log_directory_lag/lag.feature",
-        name = "Current lag is unknown without a local log and otherwise clamps at zero"
-    )]
-    #[tokio::test]
-    async fn offset_lag_matches_kafka(
-        directory_lag: LogDirectoryLagScenario,
-        topic: String,
-        expected: i64,
-    ) {
-        let _ = (directory_lag, topic, expected);
-    }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_log_directory_lag/lag.feature",
-        name = "Future lag compares current and future ends without clamping"
-    )]
-    #[tokio::test]
-    async fn future_offset_lag_matches_kafka(
-        directory_lag: LogDirectoryLagScenario,
-        topic: String,
-        records: i32,
-        expected: i64,
-    ) {
-        let _ = (directory_lag, topic, records, expected);
-    }
+
+    krabka_bdd::scenarios!(
+        "tests/features/handler_log_directory_lag/lag.feature",
+        fixtures = [directory_lag: LogDirectoryLagScenario],
+    );
 
     /// Builds a `FutureLogState` whose future log has LEO `future_count`.
     fn future_state_with_leo(dir: &Path, future_count: RecordCount) -> Arc<FutureLogState> {

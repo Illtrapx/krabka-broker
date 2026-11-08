@@ -747,7 +747,10 @@ mod tests {
         assert!(m.member_epoch == 5);
         assert!(m.previous_member_epoch == 0);
     }
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use {
+        rstest_bdd::datatable::Rows,
+        rstest_bdd_macros::{DataTableRow, given, then, when},
+    };
     #[derive(Default)]
     struct ConsumerBehavior {
         group: Option<GroupState>,
@@ -891,6 +894,41 @@ mod tests {
             .expect("group prepared")
             .reconcile_member("m1", Some(&[(T, vec![0])].into()), false, &topics);
     }
+    /// One earlier heartbeat of m1; `-` in `target epoch` keeps the target.
+    #[derive(DataTableRow)]
+    struct EarlierReconciliation {
+        #[datatable(column = "target epoch")]
+        target_epoch: String,
+        target: String,
+        owned: String,
+        joining: bool,
+    }
+    #[given("m1 has already reconciled through these heartbeats")]
+    fn earlier_reconciliations(
+        consumer_group: &mut ConsumerBehavior,
+        #[datatable] rows: Rows<EarlierReconciliation>,
+    ) {
+        let topics = Topics(vec![NamedTopic { name: "t", id: T }]);
+        let group = consumer_group.group.as_mut().expect("group prepared");
+        for row in rows {
+            if row.target_epoch != "-" {
+                group.group_epoch = row.target_epoch.parse().expect("target epoch");
+                group.install_target(
+                    [(
+                        "m1".to_owned(),
+                        [(T, partition_numbers(&row.target))].into(),
+                    )]
+                    .into(),
+                );
+            }
+            let owned = if row.owned == "none" {
+                HashMap::new()
+            } else {
+                [(T, partition_numbers(&row.owned))].into()
+            };
+            group.reconcile_member("m1", Some(&owned), row.joining, &topics);
+        }
+    }
     #[when("m1 temporarily leaves as a static member")]
     fn consumer_static_release(consumer_group: &mut ConsumerBehavior) {
         consumer_group
@@ -914,12 +952,8 @@ mod tests {
         let group = consumer_group.group.as_ref().expect("group prepared");
         assert!(sorted_epoch_pairs(group.members["m1"].assignment_epochs.get(&T)) == expected);
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/consumer_state/group.feature",tags="not @commit-coverage-reference",fixtures=[consumer_group:ConsumerBehavior]);
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/consumer_state/group.feature",
-        name = "Offset commits enforce member generation and per-partition assignment epoch fences (1: member native, instance absent)"
-    )]
-    fn offset_commit_follows_kafka_consumer_group_rule(consumer_group: ConsumerBehavior) {
-        let _ = consumer_group;
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/coordinator/unified/consumer_state/group.feature",
+        fixtures = [consumer_group: ConsumerBehavior],
+    );
 }

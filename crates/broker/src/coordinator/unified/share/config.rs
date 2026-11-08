@@ -238,7 +238,7 @@ mod tests {
         assert!(actual == expected);
         assert!(matches!(broker.for_group(None), Cow::Borrowed(_)));
     }
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct ShareDefaults {
         overrides: BTreeMap<String, String>,
@@ -287,5 +287,5 @@ mod tests {
 
         assert!(share_defaults.config.as_ref() == Some(&expected));
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/share/config.feature",fixtures=[share_defaults:ShareDefaults]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/share/config.feature",fixtures=[share_defaults:ShareDefaults]);
 }

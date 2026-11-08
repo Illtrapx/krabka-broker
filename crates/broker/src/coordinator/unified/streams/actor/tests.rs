@@ -2341,7 +2341,7 @@ fn streams_offset_validation(streams_offset_fence: &StreamsOffsetFence, code: i1
             == &expected
     );
 }
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/coordinator/unified/streams/actor/tests/offset_validation.feature",
     fixtures = [streams_offset_fence: StreamsOffsetFence],
 );
@@ -2404,31 +2404,17 @@ fn streams_subscription_set(streams_subscriptions: &StreamsSubscriptions, topics
             == &SubscribedTopics::Named(topics.into_iter().collect())
     );
 }
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/coordinator/unified/streams/actor/tests/subscriptions.feature",
     fixtures = [streams_subscriptions: StreamsSubscriptions],
 );
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/unified/streams/actor/tests/epochs.feature",
-    name = "member epoch rule matches kafka"
-)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn member_epoch_rule_matches_kafka(
-    streams_actor_behavior: StreamsActorBehavior,
-    environment: String,
-    requests: String,
-    expected: String,
-    codes: String,
-) {
-    let _ = (
-        streams_actor_behavior,
-        environment,
-        requests,
-        expected,
-        codes,
-    );
-}
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/coordinator/unified/streams/actor/tests/epochs.feature",
+    fixtures = [streams_actor_behavior: StreamsActorBehavior],
+    runtime = "tokio-multi-thread",
+    workers = 2,
+);
 
 #[rstest_bdd_macros::then("the acknowledged streams setup member epochs are {epochs}")]
 fn streams_setup_epochs(streams_actor_behavior: &StreamsActorBehavior, epochs: String) {
@@ -2444,75 +2430,33 @@ fn streams_setup_epochs(streams_actor_behavior: &StreamsActorBehavior, epochs: S
     );
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/unified/streams/actor/tests/internal_topics.feature",
-    name = "a join sizes the internal topics as kafka does"
-)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn a_join_sizes_the_internal_topics_as_kafka_does(
-    streams_actor_behavior: StreamsActorBehavior,
-    environment: String,
-    copartitioned: String,
-    topics: String,
-    expected: String,
-) {
-    let _ = (
-        streams_actor_behavior,
-        environment,
-        copartitioned,
-        topics,
-        expected,
-    );
-}
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/coordinator/unified/streams/actor/tests/internal_topics.feature",
+    fixtures = [streams_actor_behavior: StreamsActorBehavior],
+    runtime = "tokio-multi-thread",
+    workers = 2,
+);
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/unified/streams/actor/tests/statuses.feature",
-    name = "the heartbeat status list follows kafka"
-)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn the_heartbeat_status_list_follows_kafka(
-    streams_actor_behavior: StreamsActorBehavior,
-    environment: String,
-    requests: String,
-    expected: String,
-    codes: String,
-) {
-    let _ = (
-        streams_actor_behavior,
-        environment,
-        requests,
-        expected,
-        codes,
-    );
-}
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/coordinator/unified/streams/actor/tests/statuses.feature",
+    fixtures = [streams_actor_behavior: StreamsActorBehavior],
+    runtime = "tokio-multi-thread",
+    workers = 2,
+);
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/unified/streams/actor/tests/responses.feature",
-    name = "the heartbeat response carries what kafka sends"
-)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn the_heartbeat_response_carries_what_kafka_sends(
-    streams_actor_behavior: StreamsActorBehavior,
-    environment: String,
-    requests: String,
-    expected: String,
-) {
-    let _ = (streams_actor_behavior, environment, requests, expected);
-}
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/coordinator/unified/streams/actor/tests/responses.feature",
+    fixtures = [streams_actor_behavior: StreamsActorBehavior],
+    runtime = "tokio-multi-thread",
+    workers = 2,
+);
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/unified/streams/actor/tests/static_members.feature",
-    name = "a static member follows kafka static membership"
-)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn a_static_member_follows_kafka_static_membership(
-    streams_actor_behavior: StreamsActorBehavior,
-    requests: String,
-    expected: String,
-    members: String,
-) {
-    let _ = (streams_actor_behavior, requests, expected, members);
-}
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/coordinator/unified/streams/actor/tests/static_members.feature",
+    fixtures = [streams_actor_behavior: StreamsActorBehavior],
+    runtime = "tokio-multi-thread",
+    workers = 2,
+);
 
 use {
     crate::coordinator::unified::streams::topology::InternalTopicSpec,
@@ -2596,6 +2540,16 @@ fn fresh_streams_actor(streams_actor_behavior: &mut StreamsActorBehavior, enviro
     }
     streams_actor_behavior.handle = Some(coordinator.get_or_create_streams("g"));
     streams_actor_behavior.coordinator = Some(coordinator);
+}
+
+#[rstest_bdd_macros::given(
+    "a fresh streams actor for at most two members over a one-partition input topic with unstable versions enabled"
+)]
+fn fresh_two_member_static_streams_actor(streams_actor_behavior: &mut StreamsActorBehavior) {
+    fresh_streams_actor(
+        streams_actor_behavior,
+        r#"{"topics":[["in",1,1]],"max_size":2,"unstable":true}"#.to_owned(),
+    );
 }
 
 #[rstest_bdd_macros::when("the actor receives these heartbeat requests {requests}")]
@@ -2794,6 +2748,15 @@ fn streams_initial_response(streams_actor_behavior: &StreamsActorBehavior, expec
             .first()
             .expect("initial heartbeat executed")
             == &expected.native()
+    );
+}
+#[rstest_bdd_macros::then(
+    "the initial streams heartbeat assigns member m1 input partition 0 at epoch 2"
+)]
+fn streams_initial_single_task_response(streams_actor_behavior: &StreamsActorBehavior) {
+    streams_initial_response(
+        streams_actor_behavior,
+        r#"{"code":0,"message":null,"member":"m1","epoch":2,"heartbeat_ms":5000,"task_ms":60000,"lag":10000,"active":[["0",[0]]],"standby":[],"warmup":[],"status":[],"endpoint_epoch":0,"endpoints":null}"#.to_owned(),
     );
 }
 #[rstest_bdd_macros::then(

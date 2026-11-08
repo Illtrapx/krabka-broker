@@ -5,10 +5,10 @@ Feature: ShareFetch and ShareAcknowledge validate request identity before openin
     When the consumer sends ShareFetch at epoch 0 followed by ShareAcknowledge at epoch 1
     Then the complete ShareFetch response has error <fetch> and ShareAcknowledge has error <acknowledge>
     Examples:
-      | group          | member        | fetch | acknowledge |
-      | readable-group | 36 characters | 0     | 0           |
-      | null           | 36 characters | 42    | 42          |
-      | readable-group | null          | 42    | 42          |
-      | readable-group | empty         | 42    | 42          |
-      | readable-group | 37 characters | 42    | 42          |
-      | other-group    | empty         | 30    | 30          |
+      | case                             | group          | member        | fetch | acknowledge |
+      | valid identity                   | readable-group | 36 characters | 0     | 0           |
+      | null group                       | null           | 36 characters | 42    | 42          |
+      | null member                      | readable-group | null          | 42    | 42          |
+      | empty member                     | readable-group | empty         | 42    | 42          |
+      | member id too long               | readable-group | 37 characters | 42    | 42          |
+      | group denied before member check | other-group    | empty         | 30    | 30          |

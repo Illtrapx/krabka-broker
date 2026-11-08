@@ -293,57 +293,8 @@ mod tests {
         );
     }
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/write.feature",
-        name = "A matching state epoch applies the delivery delta"
-    )]
-    #[tokio::test]
-    async fn write_state_answers_as_kafka(write_state_story: WriteStateStory) {
-        drop(write_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/write.feature",
-        name = "An uninitialized key refuses the write"
-    )]
-    #[tokio::test]
-    async fn write_state_answers_as_kafka1(write_state_story: WriteStateStory) {
-        drop(write_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/write.feature",
-        name = "An old state epoch is fenced"
-    )]
-    #[tokio::test]
-    async fn write_state_answers_as_kafka2(write_state_story: WriteStateStory) {
-        drop(write_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/write.feature",
-        name = "A resigned coordinator refuses the write"
-    )]
-    #[tokio::test]
-    async fn write_state_answers_as_kafka3(write_state_story: WriteStateStory) {
-        drop(write_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/write.feature",
-        name = "An empty group returns no rows"
-    )]
-    #[tokio::test]
-    async fn write_state_answers_as_kafka4(write_state_story: WriteStateStory) {
-        drop(write_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/write.feature",
-        name = "An empty partition list returns no rows"
-    )]
-    #[tokio::test]
-    async fn write_state_answers_as_kafka5(write_state_story: WriteStateStory) {
-        drop(write_state_story);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/share_coordinator/handlers/write.feature",
+        fixtures = [write_state_story: WriteStateStory],
+    );
 }

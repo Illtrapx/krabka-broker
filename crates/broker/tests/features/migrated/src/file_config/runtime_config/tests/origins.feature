@@ -6,7 +6,7 @@ Feature: Runtime configuration tracks Kafka static key provenance across overlay
       [runtime]
       """
     When the runtime files are applied in order to a default broker
-    Then the supplied Kafka configuration key origins are JSON []
+    Then the broker records no supplied Kafka configuration key origins
 
   Scenario: A runtime-only cleaner setting has no Kafka key
     Given a runtime configuration file contains:
@@ -15,7 +15,7 @@ Feature: Runtime configuration tracks Kafka static key provenance across overlay
       cleaner_interval = "7s"
       """
     When the runtime files are applied in order to a default broker
-    Then the supplied Kafka configuration key origins are JSON []
+    Then the broker records no supplied Kafka configuration key origins
 
   Scenario: Supplied coordinator fields record their Kafka keys
     Given a runtime configuration file contains:
@@ -26,7 +26,7 @@ Feature: Runtime configuration tracks Kafka static key provenance across overlay
       streams_group_rack_aware_assignment_tags = ["rack"]
       """
     When the runtime files are applied in order to a default broker
-    Then the supplied Kafka configuration key origins are JSON ["group.consumer.session.timeout.ms","group.share.max.size","group.streams.rack.aware.assignment.tags"]
+    Then the supplied Kafka configuration key origins are group.consumer.session.timeout.ms, group.share.max.size, group.streams.rack.aware.assignment.tags
 
   Scenario: A second runtime overlay adds to existing origins
     Given a runtime configuration file contains:
@@ -40,4 +40,4 @@ Feature: Runtime configuration tracks Kafka static key provenance across overlay
       socket_send_buffer = "1MiB"
       """
     When the runtime files are applied in order to a default broker
-    Then the supplied Kafka configuration key origins are JSON ["group.consumer.session.timeout.ms","socket.send.buffer.bytes"]
+    Then the supplied Kafka configuration key origins are group.consumer.session.timeout.ms, socket.send.buffer.bytes

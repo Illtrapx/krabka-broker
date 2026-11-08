@@ -8,6 +8,6 @@ Feature: Kafka broker configuration descriptors
     Then the broker descriptor is sensitive <sensitive>, read-only <read_only>, with wire type <wire_type>
 
     Examples:
-      | key | sensitive | read_only | wire_type |
-      | ssl.keystore.password | true | false | 9 |
-      | log.dirs | false | true | 7 |
+      | case                         | key | sensitive | read_only | wire_type |
+      | a sensitive dynamic password | ssl.keystore.password | true | false | 9 |
+      | a read-only list             | log.dirs | false | true | 7 |

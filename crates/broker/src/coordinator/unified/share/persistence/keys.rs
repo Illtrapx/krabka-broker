@@ -80,7 +80,7 @@ mod tests {
         crate::coordinator::unified::{
             codec_observations::KafkaMetadataKey, test_support::wire_bytes,
         },
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
     };
     type ShareMetadataKeyScenario = KafkaMetadataKey;
     #[rstest::fixture]
@@ -139,5 +139,5 @@ mod tests {
         let want = wire_bytes(&[&hex]);
         input.assert_kafka_bytes(&want);
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/share/persistence/keys.feature",fixtures=[input:ShareMetadataKeyScenario]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/share/persistence/keys.feature",fixtures=[input:ShareMetadataKeyScenario]);
 }

@@ -98,7 +98,7 @@ mod tests {
     }
     use {
         crate::coordinator::unified::test_support::wire_bytes,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
     };
     #[derive(Default)]
     struct ConsumerKeyEncoding {
@@ -143,5 +143,5 @@ mod tests {
         assert!(&consumer_key.encoded.as_ref().expect("key encoded")[..] == &want[..]);
         assert!(consumer_key.decoded == consumer_key.key);
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/keys.feature",fixtures=[consumer_key:ConsumerKeyEncoding]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/keys.feature",fixtures=[consumer_key:ConsumerKeyEncoding]);
 }

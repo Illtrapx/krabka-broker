@@ -712,7 +712,7 @@ mod tests {
         check!(state.resolved_regex("b.*").is_some());
         assert!(delete_unsubscribed_regexes(&mut state).is_empty());
     }
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct RegexRefresh {
         state: Option<GroupState>,
@@ -774,5 +774,5 @@ mod tests {
         check!(regex_refresh.update == Some(expected));
         check!((regex_refresh.calls.expect("heartbeat handled") == 1) == resolves);
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/actor/regex_resolution.feature",fixtures=[regex_refresh:RegexRefresh]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/actor/regex_resolution.feature",fixtures=[regex_refresh:RegexRefresh]);
 }

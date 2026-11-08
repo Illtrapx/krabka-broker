@@ -8,11 +8,11 @@ Feature: Kafka maximum record-batch configuration domain
     Then the max.message.bytes override is accepted <accepted>
 
     Examples:
-      | value        | accepted |
-      | "0"          | true     |
-      | "1048588"    | true     |
-      | "2147483647" | true     |
-      | "-1"         | false    |
-      | "2147483648" | false    |
-      | "abc"        | false    |
-      | ""           | false    |
+      | case               | value        | accepted |
+      | zero               | "0"          | true     |
+      | the default        | "1048588"    | true     |
+      | the largest int    | "2147483647" | true     |
+      | a negative size    | "-1"         | false    |
+      | past the int range | "2147483648" | false    |
+      | not a number       | "abc"        | false    |
+      | an empty value     | ""           | false    |

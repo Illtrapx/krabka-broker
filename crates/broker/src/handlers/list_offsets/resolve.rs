@@ -1425,7 +1425,10 @@ mod tests {
     fn check_watermark_candidate(lagging_watermark: &LaggingWatermarkScenario, expected: bool) {
         assert!(lagging_watermark.fenced.unwrap() == expected);
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_lagging_watermark",fixtures=[lagging_watermark:LaggingWatermarkScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_lagging_watermark",
+        fixtures = [lagging_watermark: LaggingWatermarkScenario],
+    );
 
     /// KIP-207 over the wire, one row per request shape, in the two states
     /// `Partition.fetchOffsetForTimestamp` distinguishes: the high watermark

@@ -591,7 +591,7 @@ mod tests {
         check!(expired == vec!["late".to_owned()]);
         check!(g.pending_members.keys().collect::<Vec<_>>() == vec!["waiting"]);
     }
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct JoinExpiry {
         group: Option<ClassicGroup>,
@@ -656,5 +656,5 @@ mod tests {
         };
         check!(join_expiry.expired.as_ref() == Some(&expected));
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/classic_state/membership.feature",fixtures=[join_expiry:JoinExpiry]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/classic_state/membership.feature",fixtures=[join_expiry:JoinExpiry]);
 }

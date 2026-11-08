@@ -368,7 +368,7 @@ mod tests {
         check!(cordoning_request.resolved == Some(Err(message)));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/cordoned_log_dirs.feature",
         fixtures = [cordoning_request: CordoningRequest]
     );

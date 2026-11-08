@@ -14,7 +14,7 @@ Feature: Kafka cluster identity interchange
     Then the request identity is accepted <accepted>
 
     Examples:
-      | requested                            | accepted |
-      | AAAAAAAAAAAAAAAAAAAA_w                | true     |
-      | 00000000-0000-0000-0000-0000000000ff   | true     |
-      | different                            | false    |
+      | case                  | requested                            | accepted |
+      | Kafka base64 spelling | AAAAAAAAAAAAAAAAAAAA_w               | true     |
+      | Java UUID spelling    | 00000000-0000-0000-0000-0000000000ff | true     |
+      | a different cluster   | different                            | false    |

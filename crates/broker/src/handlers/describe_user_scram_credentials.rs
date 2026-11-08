@@ -466,7 +466,10 @@ mod tests {
                 })
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_describe_scram",fixtures=[describe_scram:DescribeScramScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_describe_scram",
+        fixtures = [describe_scram: DescribeScramScenario],
+    );
 
     #[yare::parameterized(
         scram_sha256 = { SaslMechanism::ScramSha256, 1 },

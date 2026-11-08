@@ -233,7 +233,10 @@ mod tests {
                 })
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_delete_topic_messages",fixtures=[delete_topic_message:DeleteTopicMessageScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_delete_topic_messages",
+        fixtures = [delete_topic_message: DeleteTopicMessageScenario],
+    );
 
     /// A shuffle keeps every row, a fixed seed gives a fixed order, and
     /// different seeds reach different orders.

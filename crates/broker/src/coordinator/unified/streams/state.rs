@@ -624,7 +624,7 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/coordinator/unified/streams/state/initial_group.feature",
         fixtures = [new_streams_group: NewStreamsGroup]
     );
@@ -767,7 +767,7 @@ mod tests {
         use {
             super::*,
             rstest_bdd::datatable::Rows,
-            rstest_bdd_macros::{DataTableRow, given, scenarios, then, when},
+            rstest_bdd_macros::{DataTableRow, given, then, when},
         };
         #[derive(Default)]
         struct MemberReconciliation {
@@ -910,6 +910,6 @@ mod tests {
                 }
             );
         }
-        scenarios!("tests/features/migrated/src/coordinator/unified/streams/state.feature",fixtures=[reconciliation:MemberReconciliation]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/state.feature",fixtures=[reconciliation:MemberReconciliation]);
     }
 }

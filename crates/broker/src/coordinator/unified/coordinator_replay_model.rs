@@ -297,7 +297,7 @@ impl Model for ReplayModel {
     }
 }
 
-use rstest_bdd_macros::{given, scenarios, then, when};
+use rstest_bdd_macros::{given, then, when};
 #[derive(Default)]
 struct ReplayExploration {
     model: Option<ReplayModel>,
@@ -343,4 +343,4 @@ fn coordinator_replay_properties(replay_exploration: &ReplayExploration, states:
     );
     checker.assert_properties();
 }
-scenarios!("tests/features/migrated/src/coordinator/unified/coordinator_replay_model.feature",fixtures=[replay_exploration:ReplayExploration]);
+krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/coordinator_replay_model.feature",fixtures=[replay_exploration:ReplayExploration]);

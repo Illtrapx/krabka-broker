@@ -301,7 +301,7 @@ fn authorized_metadata_rows(
             == expected
     );
 }
-#[rstest_bdd_macros::then("only these requested missing topics are created: \"{created}\"")]
+#[rstest_bdd_macros::then("only these requested missing topics are created: {created}")]
 async fn metadata_creation_effects(
     metadata_authorization: &mut MetadataAuthorizationScenario,
     created: String,
@@ -312,7 +312,7 @@ async fn metadata_creation_effects(
         .expect("started broker");
     let created = created
         .split(',')
-        .filter(|name| !name.is_empty() && *name != "<empty>")
+        .filter(|name| !name.is_empty() && *name != "none")
         .collect::<Vec<_>>();
     for name in &created {
         fixture.broker.wait_until_partition_present(name, 0).await;
@@ -463,65 +463,7 @@ async fn quiet_probes_leave_no_denial_behind_and_a_named_refusal_does() {
     fixture.broker.shutdown().await;
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_metadata_authorization.feature",
-    name = "cluster Create auto-creates a missing topic and answers 3"
-)]
-#[tokio::test]
-async fn metadata_authorization_case_0(metadata_authorization: MetadataAuthorizationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_metadata_authorization.feature",
-    name = "topic Create alone auto-creates a missing topic"
-)]
-#[tokio::test]
-async fn metadata_authorization_case_1(metadata_authorization: MetadataAuthorizationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_metadata_authorization.feature",
-    name = "no Create answers 29 with the zero id"
-)]
-#[tokio::test]
-async fn metadata_authorization_case_2(metadata_authorization: MetadataAuthorizationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_metadata_authorization.feature",
-    name = "no auto-creation asked needs no Create"
-)]
-#[tokio::test]
-async fn metadata_authorization_case_3(metadata_authorization: MetadataAuthorizationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_metadata_authorization.feature",
-    name = "an invalid name answers 17 and is not created"
-)]
-#[tokio::test]
-async fn metadata_authorization_case_4(metadata_authorization: MetadataAuthorizationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_metadata_authorization.feature",
-    name = "rows are described, then denied Create, then denied Describe"
-)]
-#[tokio::test]
-async fn metadata_authorization_case_5(metadata_authorization: MetadataAuthorizationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_metadata_authorization.feature",
-    name = "a repeated name answers one row"
-)]
-#[tokio::test]
-async fn metadata_authorization_case_6(metadata_authorization: MetadataAuthorizationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_metadata_authorization.feature",
-    name = "the missing topic row carries its authorized operations"
-)]
-#[tokio::test]
-async fn metadata_authorization_case_7(metadata_authorization: MetadataAuthorizationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_metadata_authorization.feature",
-    name = "auto.create.topics.enable = false answers 3 and creates nothing"
-)]
-#[tokio::test]
-async fn metadata_authorization_case_8(metadata_authorization: MetadataAuthorizationScenario) {}
+krabka_bdd::scenarios!(
+    "tests/features/handler_metadata_authorization.feature",
+    fixtures = [metadata_authorization: MetadataAuthorizationScenario],
+);

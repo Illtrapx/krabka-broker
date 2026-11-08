@@ -239,7 +239,7 @@ mod tests {
     }
     use {
         rstest_bdd::datatable::Rows,
-        rstest_bdd_macros::{DataTableRow, given, scenarios, then, when},
+        rstest_bdd_macros::{DataTableRow, given, then, when},
     };
     #[derive(Default)]
     struct OffsetDeletionGuard {
@@ -327,5 +327,5 @@ mod tests {
         };
         check!(deletion_guard.decision.as_ref() == Some(&expected));
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/actor/offset_delete.feature",fixtures=[deletion_guard:OffsetDeletionGuard]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/actor/offset_delete.feature",fixtures=[deletion_guard:OffsetDeletionGuard]);
 }

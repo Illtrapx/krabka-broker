@@ -414,7 +414,22 @@ mod tests {
                 })]
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_consumer_heartbeat_validation",fixtures=[consumer_heartbeat:ConsumerHeartbeatScenario]);
+    /// The refusal of a message whose Kafka text itself names alternatives,
+    /// given as a doc string so the step stays free of `or`.
+    #[rstest_bdd_macros::then(
+        "consumer heartbeat validation refuses with code {code} and this message:"
+    )]
+    fn check_invalid_consumer_heartbeat_message(
+        consumer_heartbeat: &ConsumerHeartbeatScenario,
+        code: i16,
+        docstring: String,
+    ) {
+        check_invalid_consumer_heartbeat(consumer_heartbeat, code, docstring.trim().to_owned());
+    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_consumer_heartbeat_validation",
+        fixtures = [consumer_heartbeat: ConsumerHeartbeatScenario],
+    );
     #[rstest_bdd_macros::given(
         "the consumer coordinator has a share marker a live share actor and a streams marker"
     )]

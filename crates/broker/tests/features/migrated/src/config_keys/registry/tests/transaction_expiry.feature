@@ -9,6 +9,6 @@ Feature: Kafka transactional-ID expiry configuration defaults
     And the registered key is read-only to dynamic alterations
 
     Examples:
-      | key | value |
-      | transactional.id.expiration.ms | "604800000" |
-      | transaction.remove.expired.transaction.cleanup.interval.ms | "3600000" |
+      | case                        | key | value |
+      | the transactional id expiry | transactional.id.expiration.ms | "604800000" |
+      | the expiry cleanup interval | transaction.remove.expired.transaction.cleanup.interval.ms | "3600000" |

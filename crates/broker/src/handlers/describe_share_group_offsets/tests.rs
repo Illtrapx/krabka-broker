@@ -155,25 +155,9 @@ async fn describe_share_offsets_results(
         .await;
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_describe_share_offsets.feature",
-    name = "Disabled API retains every requested group"
-)]
-#[tokio::test]
-async fn describe_share_offset_case_0(share_offsets_description: ShareOffsetsDescription) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_describe_share_offsets.feature",
-    name = "Group ACL denial preserves its identity"
-)]
-#[tokio::test]
-async fn describe_share_offset_case_1(share_offsets_description: ShareOffsetsDescription) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_describe_share_offsets.feature",
-    name = "Missing topics report uninitialized data without errors"
-)]
-#[tokio::test]
-async fn describe_share_offset_case_2(share_offsets_description: ShareOffsetsDescription) {}
+krabka_bdd::scenarios!(
+    "tests/features/handler_describe_share_offsets.feature",
+    fixtures = [share_offsets_description: ShareOffsetsDescription],
+);
 
 use crate::test_support::ControllerPeerAllowed;

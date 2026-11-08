@@ -400,18 +400,27 @@ mod tests {
             .expect_err("invalid policy refused");
         assert!(actual == docstring.trim());
     }
-    #[rstest_bdd_macros::then("the Streams rack tags are exactly {tags}")]
-    fn streams_rack_tags(coordinator_properties: &CoordinatorProperties, tags: String) {
+    fn assert_streams_rack_tags(coordinator_properties: &CoordinatorProperties, expected: &[&str]) {
         let config = coordinator_properties
             .applied
             .as_ref()
             .expect("properties applied")
             .as_ref()
             .expect("valid rack tags");
-        let expected: Vec<String> = serde_json::from_str(&tags).expect("JSON array of rack tags");
         assert!(config.streams_group.rack_aware_assignment_tags == expected);
     }
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/file_config/runtime_coordinators.feature", fixtures = [coordinator_properties: CoordinatorProperties]);
+
+    #[rstest_bdd_macros::then("the Streams rack tags are exactly {tags}")]
+    fn streams_rack_tags(coordinator_properties: &CoordinatorProperties, tags: String) {
+        let expected: Vec<_> = tags.split(", ").collect();
+        assert_streams_rack_tags(coordinator_properties, &expected);
+    }
+
+    #[rstest_bdd_macros::then("the broker has no Streams rack tags")]
+    fn no_streams_rack_tags(coordinator_properties: &CoordinatorProperties) {
+        assert_streams_rack_tags(coordinator_properties, &[]);
+    }
+    krabka_bdd::scenarios!("tests/features/migrated/src/file_config/runtime_coordinators.feature", fixtures = [coordinator_properties: CoordinatorProperties]);
 
     /// Kafka's `group.streams.min.session.timeout.ms` and its three siblings
     /// move the bounds, and the session timeout and the heartbeat interval

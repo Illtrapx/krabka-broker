@@ -299,7 +299,7 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/heartbeat/fencing.feature",
         fixtures = [registration_transition: RegistrationTransition]
     );

@@ -7,18 +7,18 @@ Feature: Registered Kafka topic names retain both acceptance and refusal example
     Then the key is recognized, its legal sample is accepted, and its illegal sample is refused
 
     Examples:
-      | key | legal | illegal |
-      | segment.ms | "60000" | "0" |
-      | segment.index.bytes | "10485760" | "3" |
-      | segment.jitter.ms | "0" | "-1" |
-      | min.compaction.lag.ms | "0" | "-1" |
-      | max.compaction.lag.ms | "9223372036854775807" | "0" |
-      | min.cleanable.dirty.ratio | "0.5" | "2.0" |
-      | file.delete.delay.ms | "60000" | "-1" |
-      | flush.messages | "10000" | "0" |
-      | flush.ms | "1000" | "-1" |
-      | index.interval.bytes | "4096" | "-1" |
-      | preallocate | "true" | "yes" |
-      | message.timestamp.type | "LogAppendTime" | "WallClock" |
-      | message.timestamp.after.max.ms | "3600000" | "-1" |
-      | message.timestamp.before.max.ms | "3600000" | "-1" |
+      | case                                        | key                             | legal                 | illegal     |
+      | the segment.ms samples                      | segment.ms                      | "60000"               | "0"         |
+      | the segment.index.bytes samples             | segment.index.bytes             | "10485760"            | "3"         |
+      | the segment.jitter.ms samples               | segment.jitter.ms               | "0"                   | "-1"        |
+      | the min.compaction.lag.ms samples           | min.compaction.lag.ms           | "0"                   | "-1"        |
+      | the max.compaction.lag.ms samples           | max.compaction.lag.ms           | "9223372036854775807" | "0"         |
+      | the min.cleanable.dirty.ratio samples       | min.cleanable.dirty.ratio       | "0.5"                 | "2.0"       |
+      | the file.delete.delay.ms samples            | file.delete.delay.ms            | "60000"               | "-1"        |
+      | the flush.messages samples                  | flush.messages                  | "10000"               | "0"         |
+      | the flush.ms samples                        | flush.ms                        | "1000"                | "-1"        |
+      | the index.interval.bytes samples            | index.interval.bytes            | "4096"                | "-1"        |
+      | the preallocate samples                     | preallocate                     | "true"                | "yes"       |
+      | the message.timestamp.type samples          | message.timestamp.type          | "LogAppendTime"       | "WallClock" |
+      | the message.timestamp.after.max.ms samples  | message.timestamp.after.max.ms  | "3600000"             | "-1"        |
+      | the message.timestamp.before.max.ms samples | message.timestamp.before.max.ms | "3600000"             | "-1"        |

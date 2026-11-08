@@ -1413,15 +1413,7 @@ async fn streams_commit_response(streams_offset_commit: &mut StreamsOffsetCommit
         .shutdown()
         .await;
 }
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/txn/handlers/txn_offset_commit/integration_tests.feature",
-    name = "Validate transactional streams membership including a respawned actor"
-)]
-#[tokio::test]
-async fn txn_offset_commit_to_a_streams_group_follows_kafka(
-    streams_offset_commit: StreamsOffsetCommit,
-    input: String,
-    code: i16,
-) {
-    let _ = (streams_offset_commit, input, code);
-}
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/txn/handlers/txn_offset_commit/integration_tests.feature",
+    fixtures = [streams_offset_commit: StreamsOffsetCommit],
+);

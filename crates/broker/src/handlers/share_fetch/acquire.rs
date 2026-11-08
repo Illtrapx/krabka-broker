@@ -1042,18 +1042,10 @@ mod tests {
                 == offline
         );
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_read_errors/errors.feature",
-        name = "A failed log read maps to the Kafka partition error for its cause"
-    )]
-    #[tokio::test]
-    async fn a_failed_share_read_answers_its_kafka_row_and_fences_only_disk_faults(
-        share_read_failure: ShareReadFailureScenario,
-        failure: String,
-        code: i16,
-        offline: bool,
-    ) {
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_share_read_errors/errors.feature",
+        fixtures = [share_read_failure: ShareReadFailureScenario],
+    );
 
     /// What a share consumer gets from a partition row.
     #[derive(Debug, PartialEq, Eq)]

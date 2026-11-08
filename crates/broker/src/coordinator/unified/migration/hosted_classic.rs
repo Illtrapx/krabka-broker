@@ -551,7 +551,7 @@ mod tests {
         }
     }
     use {
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
         serde::Deserialize,
         serde_json::{Value, json},
     };
@@ -781,5 +781,5 @@ mod tests {
                 == expected
         );
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/migration/hosted_classic.feature",fixtures=[hosted_classic:HostedClassic]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/migration/hosted_classic.feature",fixtures=[hosted_classic:HostedClassic]);
 }

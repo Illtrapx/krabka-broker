@@ -815,4 +815,7 @@ fn heartbeat_transition_records(broker_transition: &BrokerTransitionScenario, re
             == &expected
     );
 }
-rstest_bdd_macros::scenarios!("tests/features/handler_broker_heartbeat_transitions.feature", fixtures = [broker_transition: BrokerTransitionScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_broker_heartbeat_transitions.feature",
+    fixtures = [broker_transition: BrokerTransitionScenario],
+);

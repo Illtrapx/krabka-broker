@@ -13,7 +13,7 @@ Feature: Kafka RE2J client pattern admission
       (?x)txn
       """
     When the broker compiles the pattern for a full Kafka match
-    Then pattern compilation reports Kafka's invalid or unsupported Perl syntax message
+    Then pattern compilation reports Kafka's Perl syntax error message
 
   Scenario: Flag-shaped text inside a character class remains literal
     Given the client-supplied RE2J pattern is:

@@ -981,5 +981,8 @@ mod tests {
             .collect();
         check!(incremental_shape.outcomes.as_ref().unwrap() == &expected);
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_incremental_config_shape",fixtures=[incremental_shape:IncrementalShapeScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_incremental_config_shape",
+        fixtures = [incremental_shape: IncrementalShapeScenario],
+    );
 }

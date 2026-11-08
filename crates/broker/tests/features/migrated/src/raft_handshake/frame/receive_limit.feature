@@ -6,8 +6,8 @@ Feature: Controller SASL receive size is checked before payload allocation
     Then frame admission reaches <outcome>
 
     Examples:
-      | size | outcome |
-      | 4096 | payload reading after an admitted prefix |
-      | 4097 | SASL receive-size failure |
-      | 4294967295 | SASL receive-size failure |
-      | 2147483648 | SASL receive-size failure |
+      | case                         | size       | outcome                                  |
+      | exactly at the limit         | 4096       | payload reading after an admitted prefix |
+      | one byte over the limit      | 4097       | SASL receive-size failure                |
+      | the largest unsigned size    | 4294967295 | SASL receive-size failure                |
+      | a size with the sign bit set | 2147483648 | SASL receive-size failure                |

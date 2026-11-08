@@ -325,75 +325,10 @@ async fn acknowledgement_order_results(
         .await;
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_share_ack_validation_order.feature",
-    name = "Authorized valid acknowledgements settle acquired records"
-)]
-#[tokio::test]
-async fn acknowledgement_order_case_0(acknowledgement_order: AcknowledgementOrderScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_share_ack_validation_order.feature",
-    name = "Topic denial precedes state mutation"
-)]
-#[tokio::test]
-async fn acknowledgement_order_case_1(acknowledgement_order: AcknowledgementOrderScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_share_ack_validation_order.feature",
-    name = "Batch validation precedes acknowledge ACL checks"
-)]
-#[tokio::test]
-async fn acknowledgement_order_case_2(acknowledgement_order: AcknowledgementOrderScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_share_ack_validation_order.feature",
-    name = "Reversed offsets are invalid"
-)]
-#[tokio::test]
-async fn acknowledgement_order_case_3(acknowledgement_order: AcknowledgementOrderScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_share_ack_validation_order.feature",
-    name = "Overlapping batches are invalid"
-)]
-#[tokio::test]
-async fn acknowledgement_order_case_4(acknowledgement_order: AcknowledgementOrderScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_share_ack_validation_order.feature",
-    name = "A missing acknowledge type is invalid"
-)]
-#[tokio::test]
-async fn acknowledgement_order_case_5(acknowledgement_order: AcknowledgementOrderScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_share_ack_validation_order.feature",
-    name = "Per-offset type counts must match the range"
-)]
-#[tokio::test]
-async fn acknowledgement_order_case_6(acknowledgement_order: AcknowledgementOrderScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_share_ack_validation_order.feature",
-    name = "Unknown acknowledge types are invalid"
-)]
-#[tokio::test]
-async fn acknowledgement_order_case_7(acknowledgement_order: AcknowledgementOrderScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_share_ack_validation_order.feature",
-    name = "Renew requires the renewal request flag"
-)]
-#[tokio::test]
-async fn acknowledgement_order_case_8(acknowledgement_order: AcknowledgementOrderScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_share_ack_validation_order.feature",
-    name = "Metadata validation rejects a missing partition"
-)]
-#[tokio::test]
-async fn acknowledgement_order_case_9(acknowledgement_order: AcknowledgementOrderScenario) {}
+krabka_bdd::scenarios!(
+    "tests/features/handler_share_ack_validation_order.feature",
+    fixtures = [acknowledgement_order: AcknowledgementOrderScenario],
+);
 
 /// A denied topic row without acknowledgements in a request without any
 /// acknowledgement answers only the fetch error.

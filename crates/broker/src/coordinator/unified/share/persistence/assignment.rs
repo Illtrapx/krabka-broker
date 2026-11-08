@@ -103,7 +103,7 @@ mod tests {
             test_support::wire_bytes,
         },
         assert2::assert,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
     };
 
     #[test]
@@ -198,7 +198,7 @@ mod tests {
 
             assert!(&stored_value.encoded.as_ref().expect("record encoded")[..] == &want[..]);
         }
-        scenarios!("tests/features/migrated/src/coordinator/unified/share/persistence/assignment.feature",tags="@target_assignment_member",fixtures=[stored_value: EncodedValue]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/share/persistence/assignment.feature",fixtures=[stored_value: EncodedValue]);
     }
     mod bdd_current_member_assignment {
         use {super::*, assert2::assert};
@@ -246,6 +246,6 @@ mod tests {
 
             assert!(&stored_value.encoded.as_ref().expect("record encoded")[..] == &want[..]);
         }
-        scenarios!("tests/features/migrated/src/coordinator/unified/share/persistence/assignment.feature",tags="@current_member_assignment",fixtures=[stored_value: EncodedValue]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/share/persistence/assignment_current.feature",fixtures=[stored_value: EncodedValue]);
     }
 }

@@ -455,5 +455,8 @@ mod tests {
     ) {
         check!(topic_config_order.result.as_ref().unwrap() == &Err((code, message)));
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_topic_config_order",fixtures=[topic_config_order:TopicConfigOrderScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_topic_config_order",
+        fixtures = [topic_config_order: TopicConfigOrderScenario],
+    );
 }

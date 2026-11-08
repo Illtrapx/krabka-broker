@@ -2203,89 +2203,10 @@ async fn topic_creation_observations(
     started.broker.shutdown().await;
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "A duplicated name creates nothing"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_0(topic_creation_rows: TopicCreationRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "A duplicated name is also invalid in a dry run"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_1(topic_creation_rows: TopicCreationRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "Controller rows precede duplicate-name refusals"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_2(topic_creation_rows: TopicCreationRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "Existing topics precede config validation"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_3(topic_creation_rows: TopicCreationRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "Existing topics precede partition count validation"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_4(topic_creation_rows: TopicCreationRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "Existing topics precede replication factor validation"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_5(topic_creation_rows: TopicCreationRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "Existing topics precede config validation in dry runs"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_6(topic_creation_rows: TopicCreationRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "Null config values are invalid"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_7(topic_creation_rows: TopicCreationRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "All null configs are named in dry-run refusal"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_8(topic_creation_rows: TopicCreationRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "Explicit assignments require sentinel replication factor"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_9(topic_creation_rows: TopicCreationRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "One topic over the partition request limit refuses creation"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_10(topic_creation_rows: TopicCreationRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_topic_rows.feature",
-    name = "The aggregate partition limit refuses every original row including duplicates"
-)]
-#[tokio::test]
-async fn topic_creation_rows_case_11(topic_creation_rows: TopicCreationRows) {}
+krabka_bdd::scenarios!(
+    "tests/features/handler_create_topic_rows.feature",
+    fixtures = [topic_creation_rows: TopicCreationRows],
+);
 
 /// Kafka's `createTopics` reaches `ConfigurationControlManager.validateAlterConfig`
 /// through `incrementalAlterConfig`, which refuses a config value longer than

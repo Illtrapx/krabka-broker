@@ -330,7 +330,7 @@ mod tests {
         assert!(replica_reassignment.completed.get() == Some(expected));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/reassignment/policy.feature",
         fixtures = [replica_reassignment: ReplicaReassignment]
     );

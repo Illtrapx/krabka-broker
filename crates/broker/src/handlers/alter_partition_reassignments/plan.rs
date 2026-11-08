@@ -576,7 +576,10 @@ mod tests {
     ) {
         check!(reassignment_plan.result.as_ref().unwrap() == &Err(RowError { code, message }));
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_reassignment_plans",fixtures=[reassignment_plan:ReassignmentPlanScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_reassignment_plans",
+        fixtures = [reassignment_plan: ReassignmentPlanScenario],
+    );
 
     #[test]
     fn the_replication_factor_check_counts_the_set_the_partition_is_headed_for() {

@@ -231,7 +231,7 @@ mod tests {
         use {
             super::*,
             crate::coordinator::unified::codec_observations::KafkaDecodedRecord,
-            rstest_bdd_macros::{given, scenarios, then, when},
+            rstest_bdd_macros::{given, then, when},
         };
         type RecordCompatibility =
             KafkaDecodedRecord<ShareGroupStatePartitionMetadataValue, BrokerError>;
@@ -289,6 +289,6 @@ mod tests {
         )]
         fn complete_record_layout(record: &RecordCompatibility) { record.assert_compatible(); }
 
-        scenarios!("tests/features/migrated/src/coordinator/unified/share/persistence/partition_metadata.feature",tags="@state_partition_metadata",fixtures=[record:RecordCompatibility]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/share/persistence/partition_metadata.feature",fixtures=[record:RecordCompatibility]);
     }
 }

@@ -2,13 +2,23 @@
 //! windows, answers `QuotaUtils.throttleTime`, keeps its samples across a new
 //! bound.
 
-use {super::*, assert2::check};
+use {
+    super::{QuotaWindow, RlmQuotaManager},
+    assert2::check,
+    rstest_bdd::datatable::Rows,
+};
 
 #[derive(Default)]
 struct RemoteLogQuota {
     quota: Option<RlmQuotaManager>,
     throttle_ms: Option<i64>,
     acquisition: Option<Result<(), i64>>,
+}
+
+impl RemoteLogQuota {
+    fn manager(&self) -> &RlmQuotaManager {
+        self.quota.as_ref().expect("quota manager was configured")
+    }
 }
 
 #[rstest::fixture]
@@ -24,13 +34,45 @@ fn supplied_remote_log_quota(remote_log_quota: &mut RemoteLogQuota, rate: i64) {
     remote_log_quota.quota = Some(RlmQuotaManager::new(rate, QuotaWindow::default()));
 }
 
-#[rstest_bdd_macros::when("the manager records {bytes} remote-log bytes at millisecond {at}")]
+#[rstest_bdd_macros::given("the manager has recorded {bytes} remote-log bytes at millisecond {at}")]
 fn record_remote_log_quota(remote_log_quota: &RemoteLogQuota, bytes: u64, at: i64) {
+    remote_log_quota.manager().record_at(bytes, at);
+}
+
+#[derive(rstest_bdd_macros::DataTableRow)]
+struct RecordedBytes {
+    millisecond: i64,
+    bytes: u64,
+}
+
+#[rstest_bdd_macros::given("the manager has recorded these remote-log bytes:")]
+fn record_remote_log_quota_history(
+    remote_log_quota: &RemoteLogQuota,
+    #[datatable] rows: Rows<RecordedBytes>,
+) {
+    for row in rows {
+        remote_log_quota
+            .manager()
+            .record_at(row.bytes, row.millisecond);
+    }
+}
+
+#[rstest_bdd_macros::given("the manager has acquired {bytes} remote-log bytes at millisecond {at}")]
+fn acquired_remote_log_quota(remote_log_quota: &RemoteLogQuota, bytes: u64, at: i64) {
     remote_log_quota
-        .quota
-        .as_ref()
-        .expect("quota manager was configured")
-        .record_at(bytes, at);
+        .manager()
+        .try_acquire_at(bytes, at)
+        .expect("the quota admits the acquisition");
+}
+
+#[rstest_bdd_macros::given(
+    "the manager has been refused {bytes} remote-log bytes at millisecond {at}"
+)]
+fn refused_remote_log_quota(remote_log_quota: &RemoteLogQuota, bytes: u64, at: i64) {
+    remote_log_quota
+        .manager()
+        .try_acquire_at(bytes, at)
+        .expect_err("the quota refuses the acquisition");
 }
 
 #[rstest_bdd_macros::when("the manager samples the remote-log throttle at millisecond {at}")]
@@ -44,7 +86,7 @@ fn sample_remote_log_quota(remote_log_quota: &mut RemoteLogQuota, at: i64) {
     );
 }
 
-#[rstest_bdd_macros::when("the remote-log byte-rate bound is changed to {rate}")]
+#[rstest_bdd_macros::given("the remote-log byte-rate bound has been changed to {rate}")]
 fn update_remote_log_quota(remote_log_quota: &RemoteLogQuota, rate: i64) {
     remote_log_quota
         .quota
@@ -81,7 +123,7 @@ fn refused_remote_log_acquisition(remote_log_quota: &RemoteLogQuota, millisecond
     check!(remote_log_quota.acquisition == Some(Err(milliseconds)));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/remote_log_manager/quota/tests.feature",
     fixtures = [remote_log_quota: RemoteLogQuota]
 );

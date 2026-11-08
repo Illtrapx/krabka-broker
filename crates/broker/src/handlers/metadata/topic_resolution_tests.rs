@@ -446,32 +446,10 @@ async fn check_topic_resolution_failure(topic_resolution: &mut TopicResolutionSc
         .check_resolution_response(Expect::Failed(code))
         .await;
 }
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_metadata_topic_resolution/resolution.feature",
-    name = "Names and UUIDs resolve according to the requested Kafka version"
-)]
-#[tokio::test]
-async fn topic_ids_follow_kafka_version_rules(
-    topic_resolution: TopicResolutionScenario,
-    version: i16,
-    rows: String,
-    expected: String,
-) {
-    let _ = (topic_resolution, version, rows, expected);
-}
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_metadata_topic_resolution/resolution.feature",
-    name = "Invalid UUID or null-name combinations fail the complete versioned request"
-)]
-#[tokio::test]
-async fn invalid_topic_id_requests(
-    topic_resolution: TopicResolutionScenario,
-    version: i16,
-    rows: String,
-    code: i16,
-) {
-    let _ = (topic_resolution, version, rows, code);
-}
+krabka_bdd::scenarios!(
+    "tests/features/handler_metadata_topic_resolution/resolution.feature",
+    fixtures = [topic_resolution: TopicResolutionScenario],
+);
 
 /// A denied id row carries a null name and the real id. A denied name row
 /// carries the name and the zero id. An unknown id needs no authorization, and

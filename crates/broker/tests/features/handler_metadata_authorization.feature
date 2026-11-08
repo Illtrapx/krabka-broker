@@ -1,4 +1,3 @@
-# Quoted <empty> denotes a zero-length Kafka string; an empty created-topic list contains no names.
 Feature: Metadata authorization, automatic creation and ordered topic rows
 
   Scenario: cluster Create auto-creates a missing topic and answers 3
@@ -13,7 +12,7 @@ Feature: Metadata authorization, automatic creation and ordered topic rows
     Then metadata returns these complete ordered topic rows
       | name | result | operations |
       | authz-cluster-create | 3 | -2147483648 |
-    And only these requested missing topics are created: "authz-cluster-create"
+    And only these requested missing topics are created: authz-cluster-create
 
   Scenario: topic Create alone auto-creates a missing topic
     Given a metadata broker with automatic topic creation true and protocol version 12
@@ -27,7 +26,7 @@ Feature: Metadata authorization, automatic creation and ordered topic rows
     Then metadata returns these complete ordered topic rows
       | name | result | operations |
       | authz-topic-create | 3 | -2147483648 |
-    And only these requested missing topics are created: "authz-topic-create"
+    And only these requested missing topics are created: authz-topic-create
 
   Scenario: no Create answers 29 with the zero id
     Given a metadata broker with automatic topic creation true and protocol version 12
@@ -40,7 +39,7 @@ Feature: Metadata authorization, automatic creation and ordered topic rows
     Then metadata returns these complete ordered topic rows
       | name | result | operations |
       | authz-no-create | 29 | -2147483648 |
-    And only these requested missing topics are created: "<empty>"
+    And only these requested missing topics are created: none
 
   Scenario: no auto-creation asked needs no Create
     Given a metadata broker with automatic topic creation true and protocol version 12
@@ -53,7 +52,7 @@ Feature: Metadata authorization, automatic creation and ordered topic rows
     Then metadata returns these complete ordered topic rows
       | name | result | operations |
       | authz-no-auto | 3 | -2147483648 |
-    And only these requested missing topics are created: "<empty>"
+    And only these requested missing topics are created: none
 
   Scenario: an invalid name answers 17 and is not created
     Given a metadata broker with automatic topic creation true and protocol version 12
@@ -67,7 +66,7 @@ Feature: Metadata authorization, automatic creation and ordered topic rows
     Then metadata returns these complete ordered topic rows
       | name | result | operations |
       | authz bad name | 17 | -2147483648 |
-    And only these requested missing topics are created: "<empty>"
+    And only these requested missing topics are created: none
 
   Scenario: rows are described, then denied Create, then denied Describe
     Given a metadata broker with automatic topic creation true and protocol version 12
@@ -85,7 +84,7 @@ Feature: Metadata authorization, automatic creation and ordered topic rows
       | authz-existing | full | -2147483648 |
       | authz-order-no-create | 29 | -2147483648 |
       | authz-hidden | 29 | -2147483648 |
-    And only these requested missing topics are created: "<empty>"
+    And only these requested missing topics are created: none
 
   Scenario: a repeated name answers one row
     Given a metadata broker with automatic topic creation true and protocol version 12
@@ -103,7 +102,7 @@ Feature: Metadata authorization, automatic creation and ordered topic rows
       | name | result | operations |
       | authz-existing | full | -2147483648 |
       | authz-twice | 3 | -2147483648 |
-    And only these requested missing topics are created: "<empty>"
+    And only these requested missing topics are created: none
 
   Scenario: the missing topic row carries its authorized operations
     Given a metadata broker with automatic topic creation true and protocol version 10
@@ -120,7 +119,7 @@ Feature: Metadata authorization, automatic creation and ordered topic rows
       | name | result | operations |
       | authz-existing | full | 256 |
       | authz-ops-missing | 3 | 288 |
-    And only these requested missing topics are created: "<empty>"
+    And only these requested missing topics are created: none
 
   Scenario: auto.create.topics.enable = false answers 3 and creates nothing
     Given a metadata broker with automatic topic creation false and protocol version 12
@@ -134,4 +133,4 @@ Feature: Metadata authorization, automatic creation and ordered topic rows
     Then metadata returns these complete ordered topic rows
       | name | result | operations |
       | authz-auto-create-disabled | 3 | -2147483648 |
-    And only these requested missing topics are created: "<empty>"
+    And only these requested missing topics are created: none

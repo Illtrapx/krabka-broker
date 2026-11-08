@@ -339,7 +339,7 @@ mod persisted_group_behavior {
         assert2::check,
         bytes::Bytes,
         rstest_bdd::{Slot, datatable::Rows},
-        rstest_bdd_macros::{DataTableRow, given, scenarios, then, when},
+        rstest_bdd_macros::{DataTableRow, given, then, when},
         serde_json::{Value, json},
         std::{mem, sync::Arc},
     };
@@ -482,24 +482,31 @@ mod persisted_group_behavior {
         }));
         compacted_recovery.cache.set(cached);
     }
-    #[then(
-        "the complete recovered seed or exact startup error is as follows and successful replay has the same cached seed"
-    )]
+    fn observed_recovery(compacted_recovery: &CompactedGroupRecovery) -> Value {
+        match compacted_recovery
+            .recovered
+            .as_ref()
+            .expect("bootstrap replay completed")
+        {
+            Ok(seed) => json!({"seed":seed.as_ref().map(RecoveredSeed::snapshot)}),
+            Err(error) => json!({"error":error}),
+        }
+    }
+    #[then("the complete recovered seed is as follows and the cache holds the same seed")]
     fn recovered_group_state(compacted_recovery: &CompactedGroupRecovery, docstring: String) {
         let expected: Value =
-            serde_json::from_str(&docstring).expect("literal independent full seed or exact error");
+            serde_json::from_str(&docstring).expect("literal independent full seed");
+        check!(observed_recovery(compacted_recovery) == expected);
         let recovered = compacted_recovery
             .recovered
             .as_ref()
             .expect("bootstrap replay completed");
-        let observed = match recovered {
-            Ok(seed) => json!({"seed":seed.as_ref().map(RecoveredSeed::snapshot)}),
-            Err(error) => json!({"error":error}),
-        };
-        check!(observed == expected);
-        if let Ok(seed) = recovered {
-            check!(compacted_recovery.cache.get().as_ref() == Some(seed));
-        }
+        check!(compacted_recovery.cache.get().as_ref() == recovered.as_ref().ok());
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/replay.feature",fixtures=[compacted_recovery:CompactedGroupRecovery]);
+    #[then("startup fails with exactly this error")]
+    fn recovery_startup_error(compacted_recovery: &CompactedGroupRecovery, docstring: String) {
+        let expected: Value = serde_json::from_str(&docstring).expect("literal exact error");
+        check!(observed_recovery(compacted_recovery) == expected);
+    }
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/replay.feature",fixtures=[compacted_recovery:CompactedGroupRecovery]);
 }

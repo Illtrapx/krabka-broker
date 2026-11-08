@@ -1,8 +1,7 @@
 Feature: Share initialization preserves Kafka release and trunk fencing snapshot semantics
 
   Scenario: Equal epoch and offset under Kafka4.4
-    Given Share initialization uses Kafka4.4 rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses Kafka4.4 initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 0 | 5 | 10 |
@@ -15,8 +14,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | 1 | 5 | 0 | 10 | 0 | 1700000000000 | 1700000000000 | [] |
 
   Scenario: Equal epoch with a new offset under Kafka4.4
-    Given Share initialization uses Kafka4.4 rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses Kafka4.4 initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 0 | 5 | 20 |
@@ -29,8 +27,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | 1 | 5 | 0 | 20 | 0 | 1700000000000 | 1700000000000 | [] |
 
   Scenario: An older state epoch under Kafka4.4
-    Given Share initialization uses Kafka4.4 rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses Kafka4.4 initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 0 | 4 | 10 |
@@ -42,8 +39,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: An uninitialized start offset on a new key under Kafka4.4
-    Given Share initialization uses Kafka4.4 rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses Kafka4.4 initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 1 | 1 | -1 |
@@ -56,8 +52,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | 0 | 1 | 0 | -1 | -1 | 1700000000000 | 1700000000000 | [] |
 
   Scenario: A negative partition under Kafka4.4
-    Given Share initialization uses Kafka4.4 rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses Kafka4.4 initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | -1 | 1 | 0 |
@@ -69,8 +64,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: A negative state epoch under Kafka4.4
-    Given Share initialization uses Kafka4.4 rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses Kafka4.4 initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 0 | -1 | 0 |
@@ -82,8 +76,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: A partition beyond the topic under Kafka4.4
-    Given Share initialization uses Kafka4.4 rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses Kafka4.4 initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 3 | 1 | 0 |
@@ -95,8 +88,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: A topic absent from the image under Kafka4.4
-    Given Share initialization uses Kafka4.4 rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses Kafka4.4 initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 21212121-2121-2121-2121-212121212121 | 0 | 1 | 0 |
@@ -108,8 +100,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: An empty group id under Kafka4.4
-    Given Share initialization uses Kafka4.4 rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses Kafka4.4 initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       |  | 20202020-2020-2020-2020-202020202020 | 0 | 6 | 0 |
@@ -120,8 +111,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: A resigned coordinator under Kafka4.4
-    Given Share initialization uses Kafka4.4 rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is false
+    Given a resigned Share coordinator uses Kafka4.4 initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 0 | 6 | 0 |
@@ -133,8 +123,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: Equal epoch and offset under trunk
-    Given Share initialization uses trunk rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses trunk initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 0 | 5 | 10 |
@@ -146,8 +135,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: Equal epoch with a new offset under trunk
-    Given Share initialization uses trunk rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses trunk initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 0 | 5 | 20 |
@@ -160,8 +148,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | 1 | 5 | 0 | 20 | 0 | 1700000000000 | 1700000000000 | [] |
 
   Scenario: An older state epoch under trunk
-    Given Share initialization uses trunk rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses trunk initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 0 | 4 | 10 |
@@ -173,8 +160,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: An uninitialized start offset on a new key under trunk
-    Given Share initialization uses trunk rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses trunk initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 1 | 1 | -1 |
@@ -187,8 +173,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | 0 | 1 | 0 | -1 | -1 | 1700000000000 | 1700000000000 | [] |
 
   Scenario: A negative partition under trunk
-    Given Share initialization uses trunk rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses trunk initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | -1 | 1 | 0 |
@@ -200,8 +185,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: A negative state epoch under trunk
-    Given Share initialization uses trunk rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses trunk initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 0 | -1 | 0 |
@@ -213,8 +197,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: A partition beyond the topic under trunk
-    Given Share initialization uses trunk rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses trunk initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 3 | 1 | 0 |
@@ -226,8 +209,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: A topic absent from the image under trunk
-    Given Share initialization uses trunk rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses trunk initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 21212121-2121-2121-2121-212121212121 | 0 | 1 | 0 |
@@ -239,8 +221,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: An empty group id under trunk
-    Given Share initialization uses trunk rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is true
+    Given a led Share coordinator uses trunk initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       |  | 20202020-2020-2020-2020-202020202020 | 0 | 6 | 0 |
@@ -251,8 +232,7 @@ Feature: Share initialization preserves Kafka release and trunk fencing snapshot
       | snapshot_epoch | state_epoch | leader_epoch | start_offset | delivery_complete_count | create_timestamp | write_timestamp | batches |
 
   Scenario: A resigned coordinator under trunk
-    Given Share initialization uses trunk rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
-    And the InitializeShareGroupState coordinator leadership is false
+    Given a resigned Share coordinator uses trunk initialization rules at clock 1700000000000 with topic 20202020-2020-2020-2020-202020202020 having 3 partitions and group g partition 0 at state epoch 5 start 10
     When InitializeShareGroupState applies this request and observes its durable state
       | group | topic | partition | state_epoch | start_offset |
       | g | 20202020-2020-2020-2020-202020202020 | 0 | 6 | 0 |

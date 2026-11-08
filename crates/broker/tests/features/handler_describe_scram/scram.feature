@@ -9,7 +9,7 @@ Feature: DescribeUserScramCredentials ordering and authorization responses
     When the denied SCRAM description response is constructed
     Then the denied response has <rows> anonymous credential-free error rows under cluster authorization failure
     Examples:
-      | users           | rows |
-      | null            | 0    |
-      | empty           | 0    |
-      | alice,bob,alice | 3    |
+      | case            | users           | rows |
+      | all users       | null            | 0    |
+      | no users        | empty           | 0    |
+      | a repeated user | alice,bob,alice | 3    |

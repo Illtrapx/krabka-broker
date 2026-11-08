@@ -745,7 +745,10 @@ mod tests {
         check!(produce_timestamp.window.as_ref() == Some(&TimestampWindow { low, high }));
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/handlers/produce/topic_settings.feature", fixtures = [produce_timestamp: ProduceTimestampContract]);
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/handlers/produce/topic_settings.feature",
+        fixtures = [produce_timestamp: ProduceTimestampContract],
+    );
 
     /// Kafka's own default policy: `CreateTime`, no bound on how old a record
     /// may be, and one hour of tolerance on how far ahead of the broker's

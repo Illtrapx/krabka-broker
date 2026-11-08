@@ -769,7 +769,7 @@ mod tests {
             "regex match flows into membership set"
         );
     }
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct SubscriptionRefresh {
         group: Option<GroupState>,
@@ -813,5 +813,5 @@ mod tests {
         check!(group.metadata_hash() == metadata_hash(group, current));
         check!(!group.metadata_refresh_requested());
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/reconciler.feature",fixtures=[refresh:SubscriptionRefresh]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/reconciler.feature",fixtures=[refresh:SubscriptionRefresh]);
 }

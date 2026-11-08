@@ -279,7 +279,7 @@ fn offsets_decision(offsets_policy: &OffsetsPolicy, expected: String) {
     assert!(offsets_policy.decision.as_ref().expect("policy evaluated") == &expected);
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/txn/handlers/add_offset_commits_to_txn/tests/policy.feature",
     fixtures = [offsets_policy: OffsetsPolicy],
 );
@@ -363,17 +363,8 @@ async fn offsets_log_result(logged_offsets: &LoggedOffsets, code: i16, mutation:
     }
 }
 
-/// The coordinator answers with Kafka's code and appends only a state change.
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/txn/handlers/add_offset_commits_to_txn/tests/log.feature",
-    name = "Durable AddOffsets decisions"
-)]
-#[tokio::test]
-async fn add_offsets_answers_kafka_codes_and_appends_only_a_change(
-    logged_offsets: LoggedOffsets,
-    input: String,
-    code: i16,
-    mutation: String,
-) {
-    let _ = (logged_offsets, input, code, mutation);
-}
+// The coordinator answers with Kafka's code and appends only a state change.
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/txn/handlers/add_offset_commits_to_txn/tests/log.feature",
+    fixtures = [logged_offsets: LoggedOffsets],
+);

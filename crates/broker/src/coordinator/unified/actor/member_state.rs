@@ -1023,7 +1023,7 @@ mod tests {
             "custom assignor must be invoked at least once",
         );
     }
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct SubscriptionRegex {
         pattern: String,
@@ -1048,5 +1048,5 @@ mod tests {
     fn unsupported_regex_flag(subscription_regex: &SubscriptionRegex) {
         check!(subscription_regex.validation.as_ref()==Some(&Err("SubscribedTopicRegex `(?x)abc` is not a valid regular expression: invalid or unsupported Perl syntax.".to_owned())));
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/actor/member_state.feature",fixtures=[subscription_regex:SubscriptionRegex]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/actor/member_state.feature",fixtures=[subscription_regex:SubscriptionRegex]);
 }

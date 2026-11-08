@@ -10,12 +10,12 @@ Feature: Kafka feature update compatibility and diagnostic precedence
     Then the feature compatibility diagnostic is <message>
 
     Examples:
-      | minimum | maximum | level | message |
-      | 0 | 1 | 1 | null |
-      | 0 | 1 | 9 | "Broker 2 only supports versions 0-1" |
-      | 1 | 1 | 2 | "Broker 2 only supports versions 1" |
-      | 0 | 0 | 1 | "Broker 2 does not support this feature." |
-      | 0 | 0 | 0 | null |
+      | case                             | minimum | maximum | level | message                                 |
+      | level within range               | 0       | 1       | 1     | null                                    |
+      | level above range                | 0       | 1       | 9     | Broker 2 only supports versions 0-1     |
+      | single supported level           | 1       | 1       | 2     | Broker 2 only supports versions 1       |
+      | feature unsupported              | 0       | 0       | 1     | Broker 2 does not support this feature. |
+      | disabling an unsupported feature | 0       | 0       | 0     | null                                    |
 
   Scenario: Every registered node supports the requested feature
     Given the feature-update cluster uses metadata version 30
@@ -27,24 +27,24 @@ Feature: Kafka feature update compatibility and diagnostic precedence
     Given the feature-update cluster uses metadata version 30
     And broker 2 advertises group.version as absent
     When controller 1 checks cluster support for no.such.feature level 1
-    Then the feature compatibility diagnostic is "Local controller 1 does not support this feature."
+    Then the feature compatibility diagnostic is Local controller 1 does not support this feature.
 
   Scenario: Local range refusals precede registration checks
     Given the feature-update cluster uses metadata version 30
     When controller 1 checks cluster support for group.version level 9
-    Then the feature compatibility diagnostic is "Local controller 1 only supports versions 0-1"
+    Then the feature compatibility diagnostic is Local controller 1 only supports versions 0-1
 
   Scenario: A registered broker without the feature prevents the update
     Given the feature-update cluster uses metadata version 30
     And broker 2 advertises group.version as absent
     When controller 1 checks cluster support for group.version level 1
-    Then the feature compatibility diagnostic is "Broker 2 does not support this feature."
+    Then the feature compatibility diagnostic is Broker 2 does not support this feature.
 
   Scenario: A registered peer controller without the feature prevents the update
     Given the feature-update cluster uses metadata version 30
     And controller 3 advertises group.version as absent
     When controller 1 checks cluster support for group.version level 1
-    Then the feature compatibility diagnostic is "Controller 3 does not support this feature."
+    Then the feature compatibility diagnostic is Controller 3 does not support this feature.
 
   Scenario: The local controller uses its supported ranges rather than its own registration
     Given the feature-update cluster uses metadata version 30
@@ -64,4 +64,4 @@ Feature: Kafka feature update compatibility and diagnostic precedence
     And controller 3 advertises group.version as present
     And the feature-update quorum voters are 1,3,4
     When controller 1 checks cluster support for group.version level 1
-    Then the feature compatibility diagnostic is "controller 4 has not registered, and may not support this feature"
+    Then the feature compatibility diagnostic is controller 4 has not registered, and may not support this feature

@@ -73,7 +73,7 @@ mod tests {
             test_support::wire_bytes,
         },
         assert2::assert,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
     };
 
     /// i16 version | i32 `Epoch` | i64 `MetadataHash` | uvarint tagged count, as
@@ -191,5 +191,5 @@ mod tests {
     }
     #[then("the Share epoch bytes match Kafka exactly and all epoch fields are recovered")]
     fn epoch_golden(epochs: &ShareEpochCompatibility) { epochs.assert_compatible(); }
-    scenarios!("tests/features/migrated/src/coordinator/unified/share/persistence/epochs.feature",fixtures=[epochs:ShareEpochCompatibility]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/share/persistence/epochs.feature",fixtures=[epochs:ShareEpochCompatibility]);
 }

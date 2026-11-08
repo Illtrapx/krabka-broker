@@ -484,19 +484,11 @@ mod tests {
             .shutdown()
             .await;
     }
-    #[cfg(unix)]
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_replica_log_destination.feature",
-        name = "Exact path spelling and future directory length determine refusal"
-    )]
-    #[tokio::test]
-    async fn destination_and_topic_name_validation_matches_kafka(
-        replica_destination: ReplicaDestinationScenario,
-        destination: String,
-        topic: String,
-        error: i16,
-    ) {
-    }
+
+    krabka_bdd::scenarios!(
+        "tests/features/handler_replica_log_destination.feature",
+        fixtures = [replica_destination: ReplicaDestinationScenario],
+    );
 
     fn host_orders(broker: &Broker) -> Arc<Partition> {
         let primary = broker.config.log_dir.clone();

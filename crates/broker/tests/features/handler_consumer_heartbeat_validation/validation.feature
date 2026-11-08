@@ -4,9 +4,9 @@ Feature: ConsumerGroupHeartbeat validates member identity join fields and assign
     When the consumer heartbeat is validated with default coordinator settings
     Then consumer heartbeat validation accepts the request
     Examples:
-      | phase   |
-      | joining |
-      | steady  |
+      | case             | phase   |
+      | a joining member | joining |
+      | a steady member  | steady  |
 
   Scenario: Version zero may mint the joining member ID
     Given a consumer joining heartbeat uses API version 0
@@ -66,7 +66,10 @@ Feature: ConsumerGroupHeartbeat validates member identity join fields and assign
     Given a consumer joining heartbeat uses API version 1
     And the consumer heartbeat field subscription is null
     When the consumer heartbeat is validated with default coordinator settings
-    Then consumer heartbeat validation refuses with code 42 message Either SubscribedTopicNames or SubscribedTopicRegex must be non-null when (re-)joining.
+    Then consumer heartbeat validation refuses with code 42 and this message:
+      """
+      Either SubscribedTopicNames or SubscribedTopicRegex must be non-null when (re-)joining.
+      """
 
   Scenario: Invalid heartbeat fields retain complete Kafka refusal messages: phase=steady, version=1, field=member epoch (10)
     Given a consumer steady heartbeat uses API version 1

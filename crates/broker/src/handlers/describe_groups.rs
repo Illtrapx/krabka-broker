@@ -685,5 +685,8 @@ mod tests {
     fn check_classic_group_state(group_state_name: &GroupStateNameScenario, expected: String) {
         assert!(group_state_name.name.as_ref().unwrap() == &expected);
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_classic_group_state",fixtures=[group_state_name:GroupStateNameScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_classic_group_state",
+        fixtures = [group_state_name: GroupStateNameScenario],
+    );
 }

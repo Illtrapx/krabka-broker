@@ -384,6 +384,7 @@ mod tests {
             app1_producer_quota, image_with_quotas, producer_quota_image, quota_record as rec,
         },
         assert2::{assert, check},
+        krabka_bdd::table,
         krabka_metadata::{ClientQuotaRecord, MetadataImage},
         proptest::{bool::ANY, collection},
         std::net::IpAddr,
@@ -1086,38 +1087,46 @@ mod tests {
         ProducerQuotaPrecedence::default()
     }
 
-    #[rstest_bdd_macros::given("the cluster has no configured producer quotas")]
-    fn empty_producer_quota_image(producer_quota_precedence: &mut ProducerQuotaPrecedence) {
-        producer_quota_precedence.image = Some(img_with(Vec::new()));
+    /// One configured producer quota. A `-` component is absent from the
+    /// entity, and `default` is Kafka's default entity of that type.
+    #[derive(krabka_bdd::TableRow)]
+    struct ConfiguredProducerQuota {
+        user: Option<String>,
+        #[column("client id")]
+        client_id: Option<String>,
+        #[column("bytes per second")]
+        rate: f64,
     }
 
-    #[rstest_bdd_macros::given(
-        "producer quota entity JSON {entity} permits {rate} bytes per second"
-    )]
-    fn supplied_producer_quota_entity(
+    /// The entity name of a quota table cell: `default` is the default entity.
+    fn quota_entity_name(cell: String) -> Option<String> { (cell != "default").then_some(cell) }
+
+    #[rstest_bdd_macros::given("the cluster has these producer quotas:")]
+    fn configured_producer_quotas(
         producer_quota_precedence: &mut ProducerQuotaPrecedence,
-        entity: String,
-        rate: f64,
+        datatable: Vec<Vec<String>>,
     ) {
         use krabka_metadata::{MetadataRecord, QuotaEntity};
-        let entity: EntityKey = serde_json::from_str(&entity)
-            .expect("explicit quota entity components with nullable defaults");
-        let record = ClientQuotaRecord {
-            entity: entity
+        let mut image = img_with(Vec::new());
+        let quotas =
+            table::rows::<ConfiguredProducerQuota>(&datatable).expect("a producer quota table");
+        for quota in quotas {
+            let entity = [("user", quota.user), ("client-id", quota.client_id)]
                 .into_iter()
-                .map(|(entity_type, entity_name)| QuotaEntity {
-                    entity_type,
-                    entity_name,
+                .filter_map(|(entity_type, cell)| {
+                    cell.map(|cell| QuotaEntity {
+                        entity_type: entity_type.to_owned(),
+                        entity_name: quota_entity_name(cell),
+                    })
                 })
-                .collect(),
-            config_key: "producer_byte_rate".to_owned(),
-            config_value: Some(rate),
-        };
-        producer_quota_precedence
-            .image
-            .as_mut()
-            .expect("cluster quota image was given")
-            .apply(&MetadataRecord::V1ClientQuota(record));
+                .collect();
+            image.apply(&MetadataRecord::V1ClientQuota(ClientQuotaRecord {
+                entity,
+                config_key: "producer_byte_rate".to_owned(),
+                config_value: Some(quota.rate),
+            }));
+        }
+        producer_quota_precedence.image = Some(image);
     }
 
     #[rstest_bdd_macros::when("the producer quota for user alice and client app is resolved")]
@@ -1133,20 +1142,59 @@ mod tests {
         ));
     }
 
-    #[rstest_bdd_macros::then("the quota uses bucket JSON {bucket} at {rate} bytes per second")]
-    fn expected_producer_quota_precedence(
+    fn assert_producer_quota_bucket(
         producer_quota_precedence: &ProducerQuotaPrecedence,
-        bucket: String,
+        bucket: &[(&str, &str)],
         rate: f64,
     ) {
-        let bucket: EntityKey =
-            serde_json::from_str(&bucket).expect("independent canonical metric-tag bucket key");
+        let bucket: EntityKey = bucket
+            .iter()
+            .map(|(entity_type, name)| ((*entity_type).to_owned(), Some((*name).to_owned())))
+            .collect();
         check!(
             producer_quota_precedence.matched.get() == Some(Some(MatchedQuota::new(bucket, rate)))
         );
     }
 
-    rstest_bdd_macros::scenarios!(
+    #[rstest_bdd_macros::then(
+        "the quota charges the bucket of user {user} and client {client} at {rate} bytes per second"
+    )]
+    fn charged_user_client_bucket(
+        producer_quota_precedence: &ProducerQuotaPrecedence,
+        user: String,
+        client: String,
+        rate: f64,
+    ) {
+        assert_producer_quota_bucket(
+            producer_quota_precedence,
+            &[("client-id", &client), ("user", &user)],
+            rate,
+        );
+    }
+
+    #[rstest_bdd_macros::then(
+        "the quota charges the bucket of user {user} alone at {rate} bytes per second"
+    )]
+    fn charged_user_bucket(
+        producer_quota_precedence: &ProducerQuotaPrecedence,
+        user: String,
+        rate: f64,
+    ) {
+        assert_producer_quota_bucket(producer_quota_precedence, &[("user", &user)], rate);
+    }
+
+    #[rstest_bdd_macros::then(
+        "the quota charges the bucket of client {client} alone at {rate} bytes per second"
+    )]
+    fn charged_client_bucket(
+        producer_quota_precedence: &ProducerQuotaPrecedence,
+        client: String,
+        rate: f64,
+    ) {
+        assert_producer_quota_bucket(producer_quota_precedence, &[("client-id", &client)], rate);
+    }
+
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/quota/lookup.feature",
         fixtures = [producer_quota_precedence: ProducerQuotaPrecedence]
     );

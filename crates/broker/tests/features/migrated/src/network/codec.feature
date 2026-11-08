@@ -5,7 +5,7 @@ Feature: Kafka network frame limits
   Scenario: The network codec is configured for Kafka's 100-MiB ceiling
     Given the network codec uses Kafka's default maximum frame size
     When the network codec's configured frame limit is read
-    Then the configured frame limit is 100 MiB or 104857600 bytes
+    Then the configured frame limit is 100 MiB, which is 104857600 bytes
 
   Scenario: A nine-MiB payload is accepted intact
     Given the network codec uses Kafka's default maximum frame size

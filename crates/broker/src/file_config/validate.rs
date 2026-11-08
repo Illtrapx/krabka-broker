@@ -628,7 +628,7 @@ mod tests {
                 .is_err_and(|message| message.contains(&format!("{field}: must")))
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/file_config/validate.feature", fixtures = [metadata_log_property: MetadataLogProperty]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/file_config/validate.feature", fixtures = [metadata_log_property: MetadataLogProperty]);
 
     #[test]
     fn existing_file_inputs_reject_invalid_refined_values() {

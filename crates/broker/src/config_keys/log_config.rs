@@ -497,7 +497,7 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/config_keys/log_config.feature",
         fixtures = [log_configuration: AppliedLogConfiguration]
     );

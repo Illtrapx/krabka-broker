@@ -302,7 +302,7 @@ mod tests {
         }
     }
     use {
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
         std::iter,
     };
     #[derive(Default)]
@@ -336,7 +336,7 @@ mod tests {
             assert!((800..1200).contains(&sample));
         }
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/streams/description/backoff.feature",fixtures=[retry_jitter:RetryJitter]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/description/backoff.feature",fixtures=[retry_jitter:RetryJitter]);
 }
 
 #[cfg(test)]

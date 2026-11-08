@@ -299,7 +299,7 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/future_log/truncation.feature",
         fixtures = [future_epoch_exchange: FutureEpochExchange]
     );

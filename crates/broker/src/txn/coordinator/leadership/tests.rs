@@ -337,7 +337,7 @@ fn expected_transaction_load_error(
     assert!(transaction_partition_load.response.get() == Some(expected));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/txn/coordinator/leadership/tests.feature",
     fixtures = [transaction_partition_load: TransactionPartitionLoad]
 );

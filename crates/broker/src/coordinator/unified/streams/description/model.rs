@@ -262,7 +262,7 @@ mod tests {
     use {
         describe::topology_description::TopologyDescription as DescribedTopology,
         push::topology_description::TopologyDescription as PushTopology,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
     };
     #[derive(Default)]
     struct TopologyPush {
@@ -406,5 +406,5 @@ mod tests {
                 == Some(&message)
         );
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/streams/description/model.feature",fixtures=[topology_push:TopologyPush]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/description/model.feature",fixtures=[topology_push:TopologyPush]);
 }

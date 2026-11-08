@@ -371,14 +371,11 @@ mod tests {
             .shutdown()
             .await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_describe_transactions/transactions.feature",
-        name = "Each requested transaction receives its own Kafka state row"
-    )]
-    #[tokio::test]
-    async fn each_row_carries_kafkas_code(transaction_rows: TransactionRowsScenario) {
-        let _ = transaction_rows;
-    }
+
+    krabka_bdd::scenarios!(
+        "tests/features/handler_describe_transactions/transactions.feature",
+        fixtures = [transaction_rows: TransactionRowsScenario],
+    );
 
     /// A topic ACL: the topic it names and the operation it grants.
     struct TopicGrant {

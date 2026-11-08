@@ -377,7 +377,7 @@ mod tests {
         assert!(sasl_handshake.last_start == last_after);
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/network/auth/handshake.feature",
         fixtures = [sasl_handshake: SaslHandshakeScenario]
     );

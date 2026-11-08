@@ -8,11 +8,11 @@ Feature: SASL dispatch diagnostics use Kafka API and principal vocabulary
     Then the exception API name is <name>
 
     Examples:
-      | key | name |
-      | 0 | PRODUCE |
-      | 2 | LIST_OFFSETS |
-      | 23 | OFFSET_FOR_LEADER_EPOCH |
-      | 50 | DESCRIBE_USER_SCRAM_CREDENTIALS |
+      | case                        | key | name                            |
+      | a one-word name             | 0   | PRODUCE                         |
+      | a two-word name             | 2   | LIST_OFFSETS                    |
+      | a four-word name            | 23  | OFFSET_FOR_LEADER_EPOCH         |
+      | a SCRAM credentials API     | 50  | DESCRIBE_USER_SCRAM_CREDENTIALS |
 
   Scenario: A resolved SCRAM principal joins other Kafka user audit rows
     Given user alice authenticated through SCRAM-SHA-512

@@ -269,85 +269,10 @@ async fn check_offset_commit_group(
     assert!(commit_group.group_exists.unwrap() == exists);
     commit_group.started.take().unwrap().broker.shutdown().await;
 }
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_commit_group_fencing/group.feature",
-    name = "Group kind membership generation and protocol version determine commit fencing: state=missing, version=9, member=empty (1)"
-)]
-#[tokio::test]
-async fn commit_is_fenced_by_kafka_group_rule(commit_group: CommitGroupScenario) {
-    let _ = (commit_group,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_commit_group_fencing/group.feature",
-    name = "Group kind membership generation and protocol version determine commit fencing: state=missing, version=9, member=m1 (2)"
-)]
-#[tokio::test]
-async fn commit_is_fenced_by_kafka_group_rule_case_2(commit_group: CommitGroupScenario) {
-    let _ = (commit_group,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_commit_group_fencing/group.feature",
-    name = "Group kind membership generation and protocol version determine commit fencing: state=missing, version=8, member=m1 (3)"
-)]
-#[tokio::test]
-async fn commit_is_fenced_by_kafka_group_rule_case_3(commit_group: CommitGroupScenario) {
-    let _ = (commit_group,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_commit_group_fencing/group.feature",
-    name = "Group kind membership generation and protocol version determine commit fencing: state=classic stable with member m1 at generation 3, version=8, member=empty (4)"
-)]
-#[tokio::test]
-async fn commit_is_fenced_by_kafka_group_rule_case_4(commit_group: CommitGroupScenario) {
-    let _ = (commit_group,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_commit_group_fencing/group.feature",
-    name = "Group kind membership generation and protocol version determine commit fencing: state=classic stable with member m1 at generation 3, version=9, member=empty (5)"
-)]
-#[tokio::test]
-async fn commit_is_fenced_by_kafka_group_rule_case_5(commit_group: CommitGroupScenario) {
-    let _ = (commit_group,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_commit_group_fencing/group.feature",
-    name = "Group kind membership generation and protocol version determine commit fencing: state=classic stable with member m1 at generation 3, version=9, member=m1 (6)"
-)]
-#[tokio::test]
-async fn commit_is_fenced_by_kafka_group_rule_case_6(commit_group: CommitGroupScenario) {
-    let _ = (commit_group,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_commit_group_fencing/group.feature",
-    name = "Group kind membership generation and protocol version determine commit fencing: state=an empty consumer group, version=9, member=empty (7)"
-)]
-#[tokio::test]
-async fn commit_is_fenced_by_kafka_group_rule_case_7(commit_group: CommitGroupScenario) {
-    let _ = (commit_group,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_commit_group_fencing/group.feature",
-    name = "Group kind membership generation and protocol version determine commit fencing: state=a streams group whose actor stopped, version=9, member=empty (8)"
-)]
-#[tokio::test]
-async fn commit_is_fenced_by_kafka_group_rule_case_8(commit_group: CommitGroupScenario) {
-    let _ = (commit_group,);
-}
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_offset_commit_group_fencing/group.feature",
-    name = "Group kind membership generation and protocol version determine commit fencing: state=a consumer group whose actor stopped, version=9, member=empty (9)"
-)]
-#[tokio::test]
-async fn commit_is_fenced_by_kafka_group_rule_case_9(commit_group: CommitGroupScenario) {
-    let _ = (commit_group,);
-}
+krabka_bdd::scenarios!(
+    "tests/features/handler_offset_commit_group_fencing/group.feature",
+    fixtures = [commit_group: CommitGroupScenario],
+);
 
 /// Allows everything but `Read` on the topic `DENIED_TOPIC`.
 #[derive(Debug)]

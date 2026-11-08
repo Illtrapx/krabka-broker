@@ -696,7 +696,7 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/replicator/fetch_loop.feature",
         fixtures = [default_replication_fetch: DefaultReplicationFetch]
     );

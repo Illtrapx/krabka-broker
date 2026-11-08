@@ -680,9 +680,24 @@ mod tests {
         check!(dynamic_broker.validation == Some(Err((codes::INVALID_REQUEST, message))));
     }
 
-    #[rstest_bdd_macros::given("broker 1 receives the quoted BROKER resource name {name}")]
+    #[rstest_bdd_macros::then(
+        "the dynamic broker configuration is rejected with INVALID_REQUEST and this message:"
+    )]
+    fn refused_dynamic_change_message(dynamic_broker: &DynamicBrokerScenario, docstring: String) {
+        check!(
+            dynamic_broker.validation
+                == Some(Err((codes::INVALID_REQUEST, docstring.trim().to_owned())))
+        );
+    }
+
+    #[rstest_bdd_macros::given("broker 1 receives the BROKER resource name {name}")]
     fn broker_resource_name(dynamic_broker: &mut DynamicBrokerScenario, name: String) {
-        dynamic_broker.resource = serde_json::from_str(&name).expect("the resource name is quoted");
+        dynamic_broker.resource = name;
+    }
+
+    #[rstest_bdd_macros::given("broker 1 receives an empty BROKER resource name")]
+    fn empty_broker_resource_name(dynamic_broker: &mut DynamicBrokerScenario) {
+        dynamic_broker.resource = String::new();
     }
 
     #[rstest_bdd_macros::when("the BROKER resource name is resolved")]
@@ -707,7 +722,7 @@ mod tests {
         check!(dynamic_broker.node == Some(Err((codes::INVALID_REQUEST, message))));
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/config_keys/broker_dynamic", fixtures = [dynamic_broker: DynamicBrokerScenario]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/config_keys/broker_dynamic", fixtures = [dynamic_broker: DynamicBrokerScenario]);
 
     /// #907: the broker keys of Kafka trunk's topic keys are `KafkaConfig`
     /// keys only on trunk. Under Kafka 4.3.1 they are unknown broker keys,

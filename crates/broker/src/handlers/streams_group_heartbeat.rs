@@ -638,7 +638,7 @@ mod tests {
         streams_creation.group = group;
     }
     #[rstest_bdd_macros::then(
-        "the streams heartbeat returns code {code}, message \"{message}\" and streams group existence {exists}"
+        "the streams heartbeat returns code {code}, streams group existence {exists} and message {message}"
     )]
     async fn streams_group_creation_result(
         streams_creation: &mut StreamsGroupCreation,
@@ -667,20 +667,10 @@ mod tests {
         );
         started.broker.shutdown().await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_streams_group_creation.feature",
-        name = "Only a join to a free group identity creates a streams group"
-    )]
-    #[tokio::test]
-    async fn handle_finds_or_creates_the_streams_group_as_kafka_does(
-        streams_creation: StreamsGroupCreation,
-        group: String,
-        epoch: i32,
-        code: i16,
-        message: String,
-        exists: bool,
-    ) {
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_streams_group_creation.feature",
+        fixtures = [streams_creation: StreamsGroupCreation],
+    );
 
     /// Kafka's `GroupCoordinatorService` refuses an invalid request before the
     /// coordinator runs it, so the response carries only the error and the

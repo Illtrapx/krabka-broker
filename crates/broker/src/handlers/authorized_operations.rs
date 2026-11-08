@@ -521,5 +521,8 @@ mod tests {
             assert!(got == want, "include = {include}");
         }
     }
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/handlers/authorized_operations.feature", fixtures = [authorization_contract: AuthorizationContract]);
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/handlers/authorized_operations.feature",
+        fixtures = [authorization_contract: AuthorizationContract],
+    );
 }

@@ -4,6 +4,6 @@ Feature: DescribeQuorum supplies Kafka explanations for whole-request errors
     When the top-level quorum error response is built
     Then the quorum response carries the requested error and Kafka message <message>
     Examples:
-      | code | message                                                                                                                                                                                                                                            |
-      | 31   | Cluster authorization failed.                                                                                                                                                                                                                      |
-      | 6    | For requests intended only for the leader, this error indicates that the broker is not the current leader. For requests intended for any replica, this error indicates that the broker is not a replica of the topic partition.                    |
+      | case                          | code | message                                                                                                                                                                                                                         |
+      | cluster authorization failure | 31   | Cluster authorization failed.                                                                                                                                                                                                   |
+      | not the leader                | 6    | For requests intended only for the leader, this error indicates that the broker is not the current leader. For requests intended for any replica, this error indicates that the broker is not a replica of the topic partition. |

@@ -1859,43 +1859,10 @@ mod tests {
         expected.sort_unstable();
         check!(hosted_classic_join.members_after.as_ref() == Some(&expected));
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/actor/classic_join.feature",
-        name = "An empty consumer group becomes classic"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn classic_join_against_a_consumer_group_follows_kafka(
-        hosted_classic_join: HostedClassicJoin,
-    ) {
-    }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/actor/classic_join.feature",
-        name = "A live consumer group refuses classic members when migration is disabled"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn classic_consumer_join_admission_1(hosted_classic_join: HostedClassicJoin) {}
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/actor/classic_join.feature",
-        name = "Bidirectional migration admits a dynamic classic member through member-id allocation"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn classic_consumer_join_admission_2(hosted_classic_join: HostedClassicJoin) {}
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/actor/classic_join.feature",
-        name = "An assigned static member cannot claim an unheld instance"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn a_static_classic_rejoin_with_a_member_id_is_checked_as_kafka_does(
-        hosted_classic_join: HostedClassicJoin,
-    ) {
-    }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/actor/classic_join.feature",
-        name = "Another member cannot claim the held static instance"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn another_classic_member_cannot_claim_a_held_instance(
-        hosted_classic_join: HostedClassicJoin,
-    ) {
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/coordinator/unified/actor/classic_join.feature",
+        fixtures = [hosted_classic_join: HostedClassicJoin],
+        runtime = "tokio-multi-thread",
+        workers = 2,
+    );
 }

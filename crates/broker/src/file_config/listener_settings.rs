@@ -991,7 +991,7 @@ connections_max_idle = "5s"
         assert!(config.connections_max_idle_overrides.is_empty());
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/file_config/listener_settings.feature",
         fixtures = [listener_idle_file: ListenerIdleFile]
     );

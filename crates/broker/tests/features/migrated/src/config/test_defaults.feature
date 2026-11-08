@@ -8,8 +8,8 @@ Feature: Internal topic durability for test clusters
     Then offsets, transactions, barriers, and share state replicate <replication> times with transaction and share minimum ISR <minimum>
 
     Examples:
-      | brokers | replication | minimum |
-      | 1       | 1           | 1       |
-      | 2       | 2           | 1       |
-      | 3       | 3           | 2       |
-      | 5       | 3           | 2       |
+      | case                              | brokers | replication | minimum |
+      | a single broker                   | 1       | 1           | 1       |
+      | two brokers                       | 2       | 2           | 1       |
+      | three brokers reach the defaults  | 3       | 3           | 2       |
+      | five brokers stay at the defaults | 5       | 3           | 2       |

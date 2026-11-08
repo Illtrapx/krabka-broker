@@ -9,10 +9,10 @@ Feature: Effective minimum ISR resolution
     Then the effective minimum ISR is <minimum>
 
     Examples:
-      | topic | cluster | replicas | minimum |
-      | unset | unset   | 3        | 1       |
-      | unset | 2       | 3        | 2       |
-      | 3     | 2       | 3        | 3       |
-      | many  | unset   | 3        | 1       |
-      | 5     | unset   | 3        | 3       |
-      | unset | 9       | 2        | 2       |
+      | case                                       | topic | cluster | replicas | minimum |
+      | the Kafka default                          | unset | unset   | 3        | 1       |
+      | the cluster setting                        | unset | 2       | 3        | 2       |
+      | a topic setting beats the cluster          | 3     | 2       | 3        | 3       |
+      | a non-numeric topic setting                | many  | unset   | 3        | 1       |
+      | a topic setting is capped at replication   | 5     | unset   | 3        | 3       |
+      | a cluster setting is capped at replication | unset | 9       | 2        | 2       |

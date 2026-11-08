@@ -410,5 +410,8 @@ mod tests {
         };
         assert!(directory_plan.plan.as_ref().unwrap() == &expected);
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_directory_assignment_plan",fixtures=[directory_plan:DirectoryPlanScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_directory_assignment_plan",
+        fixtures = [directory_plan: DirectoryPlanScenario],
+    );
 }

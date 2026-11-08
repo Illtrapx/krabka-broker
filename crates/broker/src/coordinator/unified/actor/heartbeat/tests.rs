@@ -735,7 +735,7 @@ use {
     },
     krabka_protocol::owned::common::consumer_group_heartbeat_response::topic_partitions::TopicPartitions as IdentityAssignmentPartition,
     rstest_bdd::datatable::Rows,
-    rstest_bdd_macros::{DataTableRow, given, scenarios, then, when},
+    rstest_bdd_macros::{DataTableRow, given, then, when},
     serde::Deserialize,
     std::sync::Arc,
 };
@@ -913,7 +913,7 @@ fn consumer_identity_result(consumer_identity: &ConsumerIdentityBehavior, docstr
 }
 mod identity_scenarios {
     use super::*;
-    scenarios!("tests/features/migrated/src/coordinator/unified/actor/heartbeat/tests.feature",tags="@consumer-identity",fixtures=[consumer_identity:ConsumerIdentityBehavior]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/actor/heartbeat/tests/identity.feature",fixtures=[consumer_identity:ConsumerIdentityBehavior]);
 }
 #[derive(Default)]
 struct ClassicHeartbeatMigration {
@@ -1025,48 +1025,9 @@ fn classic_heartbeat_migration_result(
     check!(response.error_message == expected.error_message);
     check!(classic_heartbeat_migration.tombstone == Some(expected.classic_tombstone));
 }
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/unified/actor/heartbeat/tests.feature",
-    name = "An offset-only classic group upgrades even with migration disabled"
-)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn a_heartbeat_replaces_or_upgrades_a_classic_group_as_kafka_does(
-    classic_heartbeat_migration: ClassicHeartbeatMigration,
-) {
-}
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/unified/actor/heartbeat/tests.feature",
-    name = "An empty connect group is replaced by a consumer group"
-)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn consumer_classic_heartbeat_migration_1(
-    classic_heartbeat_migration: ClassicHeartbeatMigration,
-) {
-}
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/unified/actor/heartbeat/tests.feature",
-    name = "A live classic group refuses a consumer join when online upgrade is disabled"
-)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn consumer_classic_heartbeat_migration_2(
-    classic_heartbeat_migration: ClassicHeartbeatMigration,
-) {
-}
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/unified/actor/heartbeat/tests.feature",
-    name = "A live classic group upgrades when online upgrade is allowed"
-)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn consumer_classic_heartbeat_migration_3(
-    classic_heartbeat_migration: ClassicHeartbeatMigration,
-) {
-}
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/unified/actor/heartbeat/tests.feature",
-    name = "A steady heartbeat cannot create a consumer group over an offset-only group"
-)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn consumer_classic_heartbeat_migration_4(
-    classic_heartbeat_migration: ClassicHeartbeatMigration,
-) {
-}
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/coordinator/unified/actor/heartbeat/tests/classic_migration.feature",
+    fixtures = [classic_heartbeat_migration: ClassicHeartbeatMigration],
+    runtime = "tokio-multi-thread",
+    workers = 2,
+);

@@ -79,5 +79,5 @@ mod tests {
         assert!(identity.accepted == Some(accepted));
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/cluster_id.feature", fixtures = [identity: ClusterIdentity]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/cluster_id.feature", fixtures = [identity: ClusterIdentity]);
 }

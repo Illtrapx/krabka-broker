@@ -294,7 +294,7 @@ mod tests {
     }
     use {
         crate::coordinator::unified::test_support::wire_bytes,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
     };
     #[derive(Debug, PartialEq)]
     enum StreamsEpochRecord {
@@ -398,5 +398,5 @@ mod tests {
         );
         assert!(streams_epochs.decoded == streams_epochs.value);
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/epochs.feature",fixtures=[streams_epochs:StreamsEpochCodec]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/persistence/epochs.feature",fixtures=[streams_epochs:StreamsEpochCodec]);
 }

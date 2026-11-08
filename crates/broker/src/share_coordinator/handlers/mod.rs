@@ -242,10 +242,10 @@ pub mod test_support {
         read_share_group_state_summary_response::ReadShareGroupStateSummaryResponse => read_share_group_state_summary_response::ReadStateSummaryResult, read_share_group_state_summary_response::PartitionResult;
     }
 
-    /// A group ID in steps may be a plain name or a JSON string (including "").
+    /// The group ID a step names: a plain name, or `with an empty id` for "".
     pub fn group_name_literal(text: String) -> String {
-        if text.starts_with('"') {
-            serde_json::from_str(&text).expect("JSON group ID literal")
+        if text == "with an empty id" {
+            String::new()
         } else {
             text
         }

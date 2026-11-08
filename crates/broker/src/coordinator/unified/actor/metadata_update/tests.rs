@@ -403,15 +403,9 @@ async fn persist_group_metadata_hash(written_hash: &mut WrittenMetadataHash) {
 fn kafka_written_group_hash(written_hash: &WrittenMetadataHash, hash: i64) {
     check!(written_hash.written == Some((2, hash)));
 }
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/migrated/src/coordinator/unified/actor/metadata_update/tests.feature",
-    name = "A consumer group writes the Kafka topic metadata hash"
-)]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn the_written_metadata_hash_is_kafkas(
-    written_hash: WrittenMetadataHash,
-    topic_exists: bool,
-    hash: i64,
-) {
-    let _ = (written_hash, topic_exists, hash);
-}
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/coordinator/unified/actor/metadata_update/tests.feature",
+    fixtures = [written_hash: WrittenMetadataHash],
+    runtime = "tokio-multi-thread",
+    workers = 2,
+);

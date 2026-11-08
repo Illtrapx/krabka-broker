@@ -953,7 +953,7 @@ fn exact_topic_refusal(topic_value: &TopicValueScenario, message: String) {
     check!(topic_value.validation == Some(Err(message)));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/config_keys/validation/tests/values",
     fixtures = [topic_value: TopicValueScenario]
 );
@@ -1039,13 +1039,18 @@ fn refused_topic_combination(topic_map: &TopicMapScenario, message: String) {
     check!(topic_map.combination == Some(Err(message)));
 }
 
+#[rstest_bdd_macros::then("the topic combination refusal is this exact Kafka message:")]
+fn refused_topic_combination_message(topic_map: &TopicMapScenario, docstring: String) {
+    check!(topic_map.combination == Some(Err(docstring.trim().to_owned())));
+}
+
 #[rstest_bdd_macros::then("both released and unstable modes inherit {expected}")]
 fn inherited_trunk_topic_default(topic_map: &TopicMapScenario, expected: String) {
     check!(topic_map.released_default.get() == Some(Some(expected.clone())));
     check!(topic_map.trunk_default.get() == Some(Some(expected)));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/config_keys/validation/tests/maps",
     fixtures = [topic_map: TopicMapScenario]
 );

@@ -351,5 +351,5 @@ mod tests {
         assert!(c.bootstrap_mode == BootstrapMode::Bootstrap);
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/config/test_defaults.feature", fixtures = [internal_topics: InternalTopicScenario]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/config/test_defaults.feature", fixtures = [internal_topics: InternalTopicScenario]);
 }

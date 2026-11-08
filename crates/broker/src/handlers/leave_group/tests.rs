@@ -151,21 +151,10 @@ async fn check_leave_group_response(
     );
     started.broker.shutdown().await;
 }
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_leave_group/leave.feature",
-    name = "Missing and invalid groups use Kafka version-specific member errors"
-)]
-#[tokio::test]
-async fn leave_group_answers_kafka_shapes_for_missing_and_invalid_groups(
-    leave_group: LeaveGroupScenario,
-    version: i16,
-    group: String,
-    identities: String,
-    code: i16,
-    members: String,
-) {
-    let _ = (leave_group, version, group, identities, code, members);
-}
+krabka_bdd::scenarios!(
+    "tests/features/handler_leave_group/leave.feature",
+    fixtures = [leave_group: LeaveGroupScenario],
+);
 
 /// The `Read` check on the group runs first, so a denied principal gets
 /// `GROUP_AUTHORIZATION_FAILED` even for an empty group id.

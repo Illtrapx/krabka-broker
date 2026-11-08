@@ -47,7 +47,7 @@ mod tests {
         super::*,
         crate::coordinator::unified::test_support::wire_bytes,
         assert2::assert,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
     };
 
     /// `ConsumerGroupMetadataValue` as Kafka 4.3.1's generated writer lays it
@@ -125,5 +125,5 @@ mod tests {
     }
     #[then("the consumer epoch bytes match Kafka exactly and all epoch fields are recovered")]
     fn epoch_golden(epochs: &ConsumerEpochCompatibility) { epochs.assert_compatible(); }
-    scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/epochs.feature",fixtures=[epochs:ConsumerEpochCompatibility]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/epochs.feature",fixtures=[epochs:ConsumerEpochCompatibility]);
 }

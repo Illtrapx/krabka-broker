@@ -442,7 +442,7 @@ mod tests {
         check!(fetch_classification.cache.len() == 0);
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/fetch_session/classify.feature",
         fixtures = [fetch_classification: FetchClassification]
     );

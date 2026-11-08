@@ -185,7 +185,10 @@ Feature: Kafka dynamic broker configuration admission
       | group.consumer.assignment.interval.ms | "15001" |
     And the change targets the cluster default
     When dynamic broker validation runs with unstable API versions enabled
-    Then the dynamic broker configuration is rejected with INVALID_REQUEST and message group.consumer.assignment.interval.ms must be less than or equal to group.consumer.max.assignment.interval.ms
+    Then the dynamic broker configuration is rejected with INVALID_REQUEST and this message:
+      """
+      group.consumer.assignment.interval.ms must be less than or equal to group.consumer.max.assignment.interval.ms
+      """
 
   Scenario: Share assignment interval above the maximum
     Given the dynamic broker properties are:
@@ -193,7 +196,10 @@ Feature: Kafka dynamic broker configuration admission
       | group.share.assignment.interval.ms | " 60000 " |
     And the change targets a named broker
     When dynamic broker validation runs with unstable API versions enabled
-    Then the dynamic broker configuration is rejected with INVALID_REQUEST and message group.share.assignment.interval.ms must be less than or equal to group.share.max.assignment.interval.ms
+    Then the dynamic broker configuration is rejected with INVALID_REQUEST and this message:
+      """
+      group.share.assignment.interval.ms must be less than or equal to group.share.max.assignment.interval.ms
+      """
 
   Scenario: Streams assignment interval above the maximum
     Given the dynamic broker properties are:
@@ -201,7 +207,10 @@ Feature: Kafka dynamic broker configuration admission
       | group.streams.assignment.interval.ms | "20000" |
     And the change targets the cluster default
     When dynamic broker validation runs with unstable API versions enabled
-    Then the dynamic broker configuration is rejected with INVALID_REQUEST and message group.streams.assignment.interval.ms must be less than or equal to group.streams.max.assignment.interval.ms
+    Then the dynamic broker configuration is rejected with INVALID_REQUEST and this message:
+      """
+      group.streams.assignment.interval.ms must be less than or equal to group.streams.max.assignment.interval.ms
+      """
 
   Scenario: Consumer interval is checked before share
     Given the dynamic broker properties are:
@@ -210,7 +219,10 @@ Feature: Kafka dynamic broker configuration admission
       | group.consumer.assignment.interval.ms | "20000" |
     And the change targets the cluster default
     When dynamic broker validation runs with unstable API versions enabled
-    Then the dynamic broker configuration is rejected with INVALID_REQUEST and message group.consumer.assignment.interval.ms must be less than or equal to group.consumer.max.assignment.interval.ms
+    Then the dynamic broker configuration is rejected with INVALID_REQUEST and this message:
+      """
+      group.consumer.assignment.interval.ms must be less than or equal to group.consumer.max.assignment.interval.ms
+      """
 
   Scenario: Negative assignment interval fails the type check first
     Given the dynamic broker properties are:

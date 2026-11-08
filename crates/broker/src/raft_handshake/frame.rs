@@ -394,54 +394,10 @@ mod tests {
         }
     }
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/raft_handshake/frame/valid_requests.feature",
-        name = "Read a valid Kafka header and payload"
-    )]
-    #[tokio::test]
-    async fn decoded_controller_request(
-        handshake_request_frame: HandshakeRequestFrame,
-        frame: String,
-        key: i16,
-        version: i16,
-        correlation: i32,
-        body: String,
-    ) {
-        let _ = (
-            handshake_request_frame,
-            frame,
-            key,
-            version,
-            correlation,
-            body,
-        );
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/raft_handshake/frame/malformed_requests.feature",
-        name = "Refuse a malformed Kafka request header"
-    )]
-    #[tokio::test]
-    async fn refused_controller_request(
-        handshake_request_frame: HandshakeRequestFrame,
-        case: String,
-        frame: String,
-    ) {
-        let _ = (handshake_request_frame, case, frame);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/raft_handshake/frame/receive_limit.feature",
-        name = "Check the inclusive SASL receive-size limit before payload reads"
-    )]
-    #[tokio::test]
-    async fn controller_request_receive_limit(
-        handshake_request_frame: HandshakeRequestFrame,
-        size: u32,
-        outcome: String,
-    ) {
-        let _ = (handshake_request_frame, size, outcome);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/raft_handshake/frame",
+        fixtures = [handshake_request_frame: HandshakeRequestFrame],
+    );
 
     #[tokio::test]
     async fn write_response_uses_expected_header_versions() {

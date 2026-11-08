@@ -642,19 +642,10 @@ mod tests {
         assert!(produce_ack.row.as_ref().expect("completed wait") == &expected);
         assert!(produce_ack.queried_topics.as_slice() == [produce_ack.admitted_topic]);
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_produce_ack_completion.feature",
-        name = "Durability and current metadata decide acknowledgement"
-    )]
-    #[tokio::test]
-    async fn an_acks_all_wait_ends_with_kafkas_completion_code(
-        produce_ack: ProduceAckScenario,
-        isr: String,
-        target: i64,
-        minimum: String,
-        error: i16,
-    ) {
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_produce_ack_completion.feature",
+        fixtures = [produce_ack: ProduceAckScenario],
+    );
 
     #[tokio::test]
     async fn leadership_change_finishes_old_acks_before_publishing_the_new_target() {

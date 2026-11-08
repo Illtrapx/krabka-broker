@@ -46,4 +46,7 @@ fn expected_result(legacy_delete: &LegacyDelete, code: i16, message: String) {
     );
 }
 
-rstest_bdd_macros::scenarios!("tests/features/handler_legacy_delete.feature", fixtures = [legacy_delete: LegacyDelete]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_legacy_delete.feature",
+    fixtures = [legacy_delete: LegacyDelete],
+);

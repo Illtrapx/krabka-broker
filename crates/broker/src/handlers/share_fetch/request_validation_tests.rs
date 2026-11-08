@@ -210,20 +210,10 @@ async fn check_share_request_ids(
         .shutdown()
         .await;
 }
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_share_request_identity/identity.feature",
-    name = "Null group authorization and member validity are checked in Kafka order"
-)]
-#[tokio::test]
-async fn group_and_member_ids_are_checked_in_kafka_order(
-    share_request_identity: ShareRequestIdentityScenario,
-    group: String,
-    member: String,
-    fetch: i16,
-    acknowledge: i16,
-) {
-    let _ = (share_request_identity, group, member, fetch, acknowledge);
-}
+krabka_bdd::scenarios!(
+    "tests/features/handler_share_request_identity/identity.feature",
+    fixtures = [share_request_identity: ShareRequestIdentityScenario],
+);
 
 /// Kafka's `ShareFetch` does not look the member up in the group
 /// coordinator, so a group with a live share actor that does not know the

@@ -403,16 +403,8 @@ mod tests {
             .shutdown()
             .await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_list_reassignments/list.feature",
-        name = "Reassignment listings preserve request order occurrences and ongoing status"
-    )]
-    #[tokio::test]
-    async fn success_response_lists_what_kafka_lists(
-        reassignment_listing: ReassignmentListingScenario,
-        filter: String,
-        expected: String,
-    ) {
-        let _ = (reassignment_listing, filter, expected);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_list_reassignments/list.feature",
+        fixtures = [reassignment_listing: ReassignmentListingScenario],
+    );
 }

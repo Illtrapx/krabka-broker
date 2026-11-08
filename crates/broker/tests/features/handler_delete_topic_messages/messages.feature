@@ -4,10 +4,10 @@ Feature: DeleteTopics response rows carry Kafka default messages
     When the DeleteTopics result row is rendered
     Then the topic identity and error remain intact with message <message>
     Examples:
-      | code | message                                           |
-      | 0    | null                                              |
-      | 29   | Topic authorization failed.                       |
-      | 3    | This server does not host this topic-partition.   |
-      | 100  | This server does not host this topic ID.           |
-      | 89   | The throttling quota has been exceeded.           |
-      | 41   | null                                              |
+      | case                          | code | message                                         |
+      | success                       | 0    | null                                            |
+      | topic authorization failure   | 29   | Topic authorization failed.                     |
+      | unknown topic name            | 3    | This server does not host this topic-partition. |
+      | unknown topic id              | 100  | This server does not host this topic ID.        |
+      | throttling quota exceeded     | 89   | The throttling quota has been exceeded.         |
+      | request-wide controller error | 41   | null                                            |

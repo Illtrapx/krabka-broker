@@ -1156,7 +1156,7 @@ mod tests {
         assert!(build_join_result(&g, "m1").members.len() == 2);
         assert!(build_join_result(&g, "m2").members.is_empty());
     }
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct MemberIdBootstrap {
         request: Option<JoinGroupRequest>,
@@ -1192,5 +1192,5 @@ mod tests {
     fn known_member_required(member_bootstrap: &MemberIdBootstrap, required: bool) {
         check!(member_bootstrap.required == Some(required));
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/classic_ops/join.feature",fixtures=[member_bootstrap:MemberIdBootstrap]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/classic_ops/join.feature",fixtures=[member_bootstrap:MemberIdBootstrap]);
 }

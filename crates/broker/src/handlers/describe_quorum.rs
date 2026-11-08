@@ -176,7 +176,10 @@ mod tests {
                 }
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_describe_quorum",fixtures=[quorum_error:QuorumErrorScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_describe_quorum",
+        fixtures = [quorum_error: QuorumErrorScenario],
+    );
 
     /// The refusal survives the wire at v2+, where `ErrorMessage` exists,
     /// with the message intact rather than null.

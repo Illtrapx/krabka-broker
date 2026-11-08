@@ -389,7 +389,7 @@ mod tests {
     /// member count, upgrade enabled, consumer max size, expected result).
     use {
         rstest_bdd::{Slot, datatable::Rows},
-        rstest_bdd_macros::{DataTableRow, given, scenarios, then, when},
+        rstest_bdd_macros::{DataTableRow, given, then, when},
     };
     #[derive(Default)]
     struct OnlineUpgrade {
@@ -522,5 +522,5 @@ mod tests {
             maximum,
         ));
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/migration/upgrade.feature",fixtures=[upgrade:OnlineUpgrade]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/migration/upgrade.feature",fixtures=[upgrade:OnlineUpgrade]);
 }

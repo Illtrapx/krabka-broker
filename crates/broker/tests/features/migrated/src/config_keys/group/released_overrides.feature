@@ -113,7 +113,10 @@ Feature: Kafka released group overrides honor broker bounds and types
     Given the broker uses default group configuration bounds
     And group override share.renew.acknowledge.enable is maybe
     When the group alteration is validated with released API rules
-    Then the group alteration is refused with Invalid value maybe for configuration share.renew.acknowledge.enable: Expected value to be either true or false
+    Then the group alteration refusal message is:
+      """
+      Invalid value maybe for configuration share.renew.acknowledge.enable: Expected value to be either true or false
+      """
 
   Scenario: Validate streams.session.timeout.ms=90000
     Given the broker uses default group configuration bounds
@@ -125,7 +128,10 @@ Feature: Kafka released group overrides honor broker bounds and types
     Given the broker uses default group configuration bounds
     And group override streams.num.standby.replicas is 3
     When the group alteration is validated with released API rules
-    Then the group alteration is refused with streams.num.standby.replicas must be less than or equal to 2
+    Then the group alteration refusal message is:
+      """
+      streams.num.standby.replicas must be less than or equal to 2
+      """
 
   Scenario: Validate streams.assignment.interval.ms=20000
     Given the broker uses default group configuration bounds

@@ -740,7 +740,7 @@ mod tests {
         check!(forwarded_envelope.embedded == Some(Ok(())));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/envelope",
         fixtures = [forwarded_envelope: ForwardedEnvelopeScenario]
     );

@@ -528,6 +528,7 @@ mod tests {
             test_support::KafkaErrorCode,
         },
         assert2::assert,
+        krabka_bdd::table,
         uuid::Uuid,
     };
 
@@ -1059,51 +1060,119 @@ mod tests {
         telemetry_timeline.image = Some(image);
         telemetry_timeline.assignment = Some(assignment);
     }
-    #[derive(serde::Deserialize)]
+    /// The push a scenario sends: its subscription id is the assigned one
+    /// combined by XOR with `id_xor`, so zero sends the assigned id unchanged.
+    #[derive(Clone, Copy, krabka_bdd::TableRow)]
     struct TelemetryPush {
+        #[column("id xor")]
         id_xor: i32,
+        #[column("compression supported")]
         compression_supported: bool,
+        #[column("payload bytes")]
         payload_len: usize,
         terminating: bool,
     }
-    #[rstest_bdd_macros::when("the client pushes at {at} milliseconds with {request}")]
-    fn timed_telemetry_push(telemetry_timeline: &mut TelemetryTimeline, at: u64, request: String) {
-        let request: TelemetryPush = serde_json::from_str(&request).expect("push request");
-        let assignment = telemetry_timeline
-            .assignment
-            .as_ref()
-            .expect("assigned subscription");
-        let check = PushCheck {
-            subscription_id: assignment.subscription_id ^ request.id_xor,
-            compression_supported: request.compression_supported,
-            payload_len: request.payload_len,
-            terminating: request.terminating,
-            unstable: UnstableApiVersions::Disabled,
-        };
-        telemetry_timeline.outcome = Some(Outcome::Push(
-            telemetry_timeline.manager.authorize_push_at(
-                telemetry_timeline
-                    .image
-                    .as_ref()
-                    .expect("subscription metadata"),
-                &telemetry_timeline.attributes,
+
+    #[derive(Clone, Copy, krabka_bdd::StepParam)]
+    enum TelemetryRequestKind {
+        Push,
+        Get,
+    }
+
+    /// One request of a client's earlier telemetry history. A `get` row
+    /// leaves the push columns empty.
+    #[derive(krabka_bdd::TableRow)]
+    struct EarlierTelemetryRequest {
+        at: u64,
+        request: TelemetryRequestKind,
+        #[column("id xor")]
+        id_xor: Option<i32>,
+        #[column("compression supported")]
+        compression_supported: Option<bool>,
+        #[column("payload bytes")]
+        payload_len: Option<usize>,
+        terminating: Option<bool>,
+    }
+
+    impl EarlierTelemetryRequest {
+        fn push(&self) -> TelemetryPush {
+            TelemetryPush {
+                id_xor: self.id_xor.expect("a push row names its id xor"),
+                compression_supported: self
+                    .compression_supported
+                    .expect("a push row says whether compression is supported"),
+                payload_len: self
+                    .payload_len
+                    .expect("a push row names its payload bytes"),
+                terminating: self
+                    .terminating
+                    .expect("a push row says whether it terminates"),
+            }
+        }
+    }
+
+    impl TelemetryTimeline {
+        fn push_at(&self, at: u64, request: TelemetryPush) -> Outcome {
+            let assignment = self.assignment.as_ref().expect("assigned subscription");
+            let check = PushCheck {
+                subscription_id: assignment.subscription_id ^ request.id_xor,
+                compression_supported: request.compression_supported,
+                payload_len: request.payload_len,
+                terminating: request.terminating,
+                unstable: UnstableApiVersions::Disabled,
+            };
+            Outcome::Push(self.manager.authorize_push_at(
+                self.image.as_ref().expect("subscription metadata"),
+                &self.attributes,
                 check,
-                telemetry_timeline.origin + Duration::from_millis(at),
-            ),
-        ));
+                self.origin + Duration::from_millis(at),
+            ))
+        }
+
+        fn get_at(&self, at: u64) -> Outcome {
+            Outcome::Get(self.manager.get_subscription_at(
+                self.image.as_ref().expect("subscription metadata"),
+                &self.attributes,
+                self.origin + Duration::from_millis(at),
+            ))
+        }
+    }
+
+    #[rstest_bdd_macros::given("the client has already sent these telemetry requests:")]
+    fn earlier_telemetry_requests(
+        telemetry_timeline: &mut TelemetryTimeline,
+        datatable: Vec<Vec<String>>,
+    ) {
+        let requests = table::rows::<EarlierTelemetryRequest>(&datatable)
+            .expect("an earlier telemetry request table");
+        for request in requests {
+            match request.request {
+                TelemetryRequestKind::Push => {
+                    telemetry_timeline.push_at(request.at, request.push());
+                }
+                TelemetryRequestKind::Get => {
+                    telemetry_timeline.get_at(request.at);
+                }
+            }
+        }
+    }
+
+    #[rstest_bdd_macros::when("the client pushes at {at} milliseconds with:")]
+    fn timed_telemetry_push(
+        telemetry_timeline: &mut TelemetryTimeline,
+        at: u64,
+        datatable: Vec<Vec<String>>,
+    ) {
+        let request = table::rows::<TelemetryPush>(&datatable)
+            .expect("a telemetry push table")
+            .into_iter()
+            .next()
+            .expect("one telemetry push");
+        telemetry_timeline.outcome = Some(telemetry_timeline.push_at(at, request));
     }
     #[rstest_bdd_macros::when("the client requests its subscription at {at} milliseconds")]
     fn timed_subscription_get(telemetry_timeline: &mut TelemetryTimeline, at: u64) {
-        telemetry_timeline.outcome = Some(Outcome::Get(
-            telemetry_timeline.manager.get_subscription_at(
-                telemetry_timeline
-                    .image
-                    .as_ref()
-                    .expect("subscription metadata"),
-                &telemetry_timeline.attributes,
-                telemetry_timeline.origin + Duration::from_millis(at),
-            ),
-        ));
+        telemetry_timeline.outcome = Some(telemetry_timeline.get_at(at));
     }
     #[rstest_bdd_macros::then("the telemetry push returns Kafka code {code}")]
     fn timed_push_response(telemetry_timeline: &TelemetryTimeline, code: i16) {
@@ -1247,7 +1316,7 @@ mod tests {
         assert!(kept == Some((old.subscription_id, 1)));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/client_metrics/manager.feature",
         fixtures = [telemetry_timeline: TelemetryTimeline],
     );

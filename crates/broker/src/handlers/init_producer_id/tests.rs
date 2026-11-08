@@ -304,6 +304,16 @@ async fn recover_two_phase_transaction(
         );
     }
 }
+/// The state the recovery step leaves, for a scenario whose action comes
+/// after it.
+#[rstest_bdd_macros::given(
+    "two clients have recovered the prepared transaction with a 500ms timeout and keepPreparedTxn enabled"
+)]
+async fn two_phase_transaction_recovered(
+    transaction_initialization: &mut TransactionInitializationScenario,
+) {
+    recover_two_phase_transaction(transaction_initialization).await;
+}
 #[rstest_bdd_macros::then(
     "both recoveries retain the ongoing identity and the second recovery increments the recovery producer epoch"
 )]
@@ -398,55 +408,10 @@ async fn completed_recovered_transaction(
         .await;
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_transaction_initialization.feature",
-    name = "Positive client timeout is stored unchanged"
-)]
-#[tokio::test]
-async fn transaction_initialization_case_0(
-    transaction_initialization: TransactionInitializationScenario,
-) {
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_transaction_initialization.feature",
-    name = "Timeout above the broker maximum is refused"
-)]
-#[tokio::test]
-async fn transaction_initialization_case_1(
-    transaction_initialization: TransactionInitializationScenario,
-) {
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_transaction_initialization.feature",
-    name = "Two-phase commit stores the sentinel timeout"
-)]
-#[tokio::test]
-async fn transaction_initialization_case_2(
-    transaction_initialization: TransactionInitializationScenario,
-) {
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_transaction_initialization.feature",
-    name = "Zero timeout is refused"
-)]
-#[tokio::test]
-async fn transaction_initialization_case_3(
-    transaction_initialization: TransactionInitializationScenario,
-) {
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_transaction_initialization.feature",
-    name = "Prepared recovery fences stale identities and commits idempotently"
-)]
-#[tokio::test]
-async fn transaction_initialization_case_4(
-    transaction_initialization: TransactionInitializationScenario,
-) {
-}
+krabka_bdd::scenarios!(
+    "tests/features/handler_transaction_initialization.feature",
+    fixtures = [transaction_initialization: TransactionInitializationScenario],
+);
 
 /// krabka-io/krabka-broker#784: Kafka 4.3.1 gates KIP-939 on
 /// `transaction.two.phase.commit.enable`, not on a `transaction.version`

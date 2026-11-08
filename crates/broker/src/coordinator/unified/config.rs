@@ -803,7 +803,7 @@ mod tests {
         assert!(max_size > 200);
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/coordinator/unified/config.feature",
         fixtures = [member_limit: ConsumerMemberLimit]
     );

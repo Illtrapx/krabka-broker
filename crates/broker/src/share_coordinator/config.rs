@@ -129,7 +129,7 @@ mod tests {
         assert!(share_coordinator_defaults.selected.as_ref() == Some(&expected));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/share_coordinator/config.feature",
         fixtures = [share_coordinator_defaults: ShareCoordinatorDefaults]
     );

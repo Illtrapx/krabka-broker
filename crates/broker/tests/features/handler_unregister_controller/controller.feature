@@ -4,7 +4,7 @@ Feature: UnregisterBroker runs only against the active controller image
     When node 1 decides whether controller unregistration can run locally
     Then controller routing returns error <code> with message <message>
     Examples:
-      | leader  | code | message                                          |
-      | 1       | 0    | no refusal                                       |
-      | 3       | 41   | The active controller appears to be node 3.       |
-      | unknown | 41   | No controller appears to be active.               |
+      | case                   | leader  | code | message                                     |
+      | local node is active   | 1       | 0    | no refusal                                  |
+      | another node is active | 3       | 41   | The active controller appears to be node 3. |
+      | no active controller   | unknown | 41   | No controller appears to be active.         |

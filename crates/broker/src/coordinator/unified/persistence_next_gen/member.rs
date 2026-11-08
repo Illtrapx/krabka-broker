@@ -256,7 +256,7 @@ mod tests {
             super::*,
             crate::coordinator::unified::codec_observations::KafkaEncodedRecord,
             assert2::assert,
-            rstest_bdd_macros::{given, scenarios, then, when},
+            rstest_bdd_macros::{given, then, when},
         };
         type EncodedValue = KafkaEncodedRecord<MemberMetadataValue>;
         #[rstest::fixture]
@@ -342,6 +342,6 @@ mod tests {
                     == &stored_value.golden[..]
             );
         }
-        scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/member.feature",tags="@member_metadata or @classic_sub_state",fixtures=[stored_value: EncodedValue]);
+        krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/member.feature",fixtures=[stored_value: EncodedValue]);
     }
 }

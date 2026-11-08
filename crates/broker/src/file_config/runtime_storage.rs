@@ -335,7 +335,7 @@ mod tests {
         assert!(message_size_file.applied.get() == Some(None));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/file_config/runtime_storage.feature",
         fixtures = [message_size_file: MessageSizeFile]
     );

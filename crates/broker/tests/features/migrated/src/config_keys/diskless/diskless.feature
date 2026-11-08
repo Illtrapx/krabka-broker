@@ -18,9 +18,9 @@ Feature: Per-topic diskless configuration resolution
     Then diskless mode is enabled <enabled>
 
     Examples:
-      | value | enabled |
-      | false | false   |
-      | true  | true    |
+      | case              | value | enabled |
+      | an explicit false | false | false   |
+      | an explicit true  | true  | true    |
 
   Scenario: Surrounding whitespace and uppercase preserve a true override
     Given the diskless topic override is uppercase TRUE padded with spaces

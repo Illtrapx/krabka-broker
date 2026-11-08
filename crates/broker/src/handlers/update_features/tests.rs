@@ -171,93 +171,10 @@ async fn check_feature_update_state(feature_update: &mut UpdateFeatureScenario, 
     );
     started.broker.shutdown().await;
 }
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_update_feature_atomicity/update.feature",
-    name = "Whole requests update features atomically and respect protocol result shape: version=1, updates=group.version:0:2;share.version:9:1, validate=false (1)"
-)]
-#[tokio::test]
-async fn requests_apply_atomically_with_kafkas_response_shape(
-    feature_update: UpdateFeatureScenario,
-) {
-    let _ = (feature_update,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_update_feature_atomicity/update.feature",
-    name = "Whole requests update features atomically and respect protocol result shape: version=2, updates=group.version:0:2;share.version:9:1, validate=false (2)"
-)]
-#[tokio::test]
-async fn requests_apply_atomically_with_kafkas_response_shape_case_2(
-    feature_update: UpdateFeatureScenario,
-) {
-    let _ = (feature_update,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_update_feature_atomicity/update.feature",
-    name = "Whole requests update features atomically and respect protocol result shape: version=0, updates=group.version:1:1, validate=false (3)"
-)]
-#[tokio::test]
-async fn requests_apply_atomically_with_kafkas_response_shape_case_3(
-    feature_update: UpdateFeatureScenario,
-) {
-    let _ = (feature_update,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_update_feature_atomicity/update.feature",
-    name = "Whole requests update features atomically and respect protocol result shape: version=1, updates=group.version:0:2, validate=false (4)"
-)]
-#[tokio::test]
-async fn requests_apply_atomically_with_kafkas_response_shape_case_4(
-    feature_update: UpdateFeatureScenario,
-) {
-    let _ = (feature_update,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_update_feature_atomicity/update.feature",
-    name = "Whole requests update features atomically and respect protocol result shape: version=2, updates=group.version:0:2, validate=false (5)"
-)]
-#[tokio::test]
-async fn requests_apply_atomically_with_kafkas_response_shape_case_5(
-    feature_update: UpdateFeatureScenario,
-) {
-    let _ = (feature_update,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_update_feature_atomicity/update.feature",
-    name = "Whole requests update features atomically and respect protocol result shape: version=2, updates=group.version:0:2, validate=true (6)"
-)]
-#[tokio::test]
-async fn requests_apply_atomically_with_kafkas_response_shape_case_6(
-    feature_update: UpdateFeatureScenario,
-) {
-    let _ = (feature_update,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_update_feature_atomicity/update.feature",
-    name = "Whole requests update features atomically and respect protocol result shape: version=1, updates=none, validate=false (7)"
-)]
-#[tokio::test]
-async fn requests_apply_atomically_with_kafkas_response_shape_case_7(
-    feature_update: UpdateFeatureScenario,
-) {
-    let _ = (feature_update,);
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_update_feature_atomicity/update.feature",
-    name = "Whole requests update features atomically and respect protocol result shape: version=1, updates=group.version:9:1;group.version:0:2, validate=false (8)"
-)]
-#[tokio::test]
-async fn requests_apply_atomically_with_kafkas_response_shape_case_8(
-    feature_update: UpdateFeatureScenario,
-) {
-    let _ = (feature_update,);
-}
+krabka_bdd::scenarios!(
+    "tests/features/handler_update_feature_atomicity/update.feature",
+    fixtures = [feature_update: UpdateFeatureScenario],
+);
 
 async fn wait_for_group_version_off(broker: &Broker) {
     time::timeout(Duration::from_secs(5), async {

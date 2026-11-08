@@ -585,9 +585,8 @@ mod tests {
         }
     }
 
-    #[derive(Default)]
     struct BootstrapStorage {
-        root: Option<tempfile::TempDir>,
+        root: tempfile::TempDir,
         supplied_files: BTreeMap<String, String>,
         configured_cluster: Option<Uuid>,
         initialized: Option<Result<LocalIdentity, BrokerError>>,
@@ -598,12 +597,7 @@ mod tests {
     impl BootstrapStorage {
         fn directory(&self, role: &str) -> PathBuf {
             match role {
-                "meta" | "data-a" | "data-b" => self
-                    .root
-                    .as_ref()
-                    .expect("storage root was given")
-                    .path()
-                    .join(role),
+                "meta" | "data-a" | "data-b" => self.root.path().join(role),
                 _ => panic!("unknown log directory role {role}"),
             }
         }
@@ -611,13 +605,16 @@ mod tests {
 
     #[rstest::fixture]
     fn bootstrap_storage() -> BootstrapStorage {
-        // Each storage layout starts without files or initialization observations.
-        BootstrapStorage::default()
-    }
-
-    #[rstest_bdd_macros::given("a fresh unformatted broker storage root")]
-    fn fresh_bootstrap_storage(bootstrap_storage: &mut BootstrapStorage) {
-        bootstrap_storage.root = Some(tempfile::tempdir().expect("fresh broker log root"));
+        // Each storage layout starts from a fresh unformatted root, without
+        // files or initialization observations.
+        BootstrapStorage {
+            root: tempfile::tempdir().expect("fresh broker log root"),
+            supplied_files: BTreeMap::new(),
+            configured_cluster: None,
+            initialized: None,
+            properties: None,
+            directory_id: None,
+        }
     }
 
     #[rstest_bdd_macros::given("the {directory} log directory contains meta.properties:")]
@@ -747,9 +744,10 @@ mod tests {
         );
     }
 
-    #[rstest_bdd_macros::then("log directory initialization fails with {message}")]
-    fn refused_bootstrap_directories(bootstrap_storage: &BootstrapStorage, message: String) {
-        let expected = message
+    #[rstest_bdd_macros::then("log directory initialization fails with:")]
+    fn refused_bootstrap_directories(bootstrap_storage: &BootstrapStorage, docstring: String) {
+        let expected = docstring
+            .trim()
             .replace(
                 "{meta}",
                 &bootstrap_storage.directory("meta").display().to_string(),
@@ -769,7 +767,7 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/bootstrap",
         fixtures = [bootstrap_storage: BootstrapStorage]
     );

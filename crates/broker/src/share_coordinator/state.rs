@@ -363,7 +363,7 @@ mod tests {
         check!(share_batches.combined.as_ref() == Some(&expected));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/share_coordinator/state/combiner.feature",
         fixtures = [share_batches: ShareBatchCombination]
     );
@@ -401,59 +401,32 @@ mod tests {
         ShareReplayScenario::default()
     }
 
-    #[rstest_bdd_macros::given(
-        "a replay snapshot has snapshot epoch {snapshot}, state epoch {state}, leader epoch {leader}, and record offset {offset}"
-    )]
-    fn replay_snapshot_epochs(
+    #[derive(rstest_bdd_macros::DataTableRow)]
+    struct ReplayRange {
+        record: String,
+        first: i64,
+        last: i64,
+        delivery: String,
+        attempts: i16,
+    }
+
+    #[rstest_bdd_macros::given("a replay snapshot has these fields:")]
+    fn replay_snapshot(
         share_replay: &mut ShareReplayScenario,
-        snapshot: i32,
-        state: i32,
-        leader: i32,
-        offset: i64,
+        #[datatable] rows: Rows<ReplayField>,
     ) {
+        let fields: BTreeMap<_, _> = rows.into_iter().map(|row| (row.field, row.value)).collect();
         share_replay.snapshot = Some(ShareSnapshotValue {
-            snapshot_epoch: snapshot,
-            state_epoch: state,
-            leader_epoch: leader,
-            start_offset: Offset(0),
-            delivery_complete_count: 0,
-            create_timestamp: 0,
-            write_timestamp: 0,
+            snapshot_epoch: replay_field(&fields, "snapshot epoch"),
+            state_epoch: replay_field(&fields, "state epoch"),
+            leader_epoch: replay_field(&fields, "leader epoch"),
+            start_offset: Offset(replay_field(&fields, "start offset")),
+            delivery_complete_count: replay_field(&fields, "completed count"),
+            create_timestamp: replay_field(&fields, "creation time"),
+            write_timestamp: replay_field(&fields, "write time"),
             state_batches: Vec::new(),
         });
-        share_replay.record_offset = Offset(offset);
-    }
-
-    #[rstest_bdd_macros::given(
-        "the replay snapshot starts at {start} with completed count {complete}, creation time {created}, and write time {written}"
-    )]
-    fn replay_snapshot_metadata(
-        share_replay: &mut ShareReplayScenario,
-        start: i64,
-        complete: i32,
-        created: i64,
-        written: i64,
-    ) {
-        let snapshot = share_replay
-            .snapshot
-            .as_mut()
-            .expect("a replay snapshot was given");
-        snapshot.start_offset = Offset(start);
-        snapshot.delivery_complete_count = complete;
-        snapshot.create_timestamp = created;
-        snapshot.write_timestamp = written;
-    }
-
-    #[rstest_bdd_macros::given("the replay snapshot delivery ranges are:")]
-    fn replay_snapshot_ranges(
-        share_replay: &mut ShareReplayScenario,
-        #[datatable] rows: Rows<DeliveryRange>,
-    ) {
-        share_replay
-            .snapshot
-            .as_mut()
-            .expect("a replay snapshot was given")
-            .state_batches = delivery_ranges(rows);
+        share_replay.record_offset = Offset(replay_field(&fields, "record offset"));
     }
 
     #[rstest_bdd_macros::given(
@@ -475,16 +448,34 @@ mod tests {
         });
     }
 
-    #[rstest_bdd_macros::given("the replay update delivery ranges are:")]
-    fn replay_update_ranges(
-        share_replay: &mut ShareReplayScenario,
-        #[datatable] rows: Rows<DeliveryRange>,
-    ) {
-        share_replay
-            .update
-            .as_mut()
-            .expect("a replay update was given")
-            .state_batches = delivery_ranges(rows);
+    #[rstest_bdd_macros::given("the replayed records carry these delivery ranges:")]
+    fn replay_ranges(share_replay: &mut ShareReplayScenario, #[datatable] rows: Rows<ReplayRange>) {
+        for row in rows {
+            let batch = delivery_range(&DeliveryRange {
+                first: row.first,
+                last: row.last,
+                delivery: row.delivery,
+                attempts: row.attempts,
+            });
+            let batches = match row.record.as_str() {
+                "snapshot" => {
+                    &mut share_replay
+                        .snapshot
+                        .as_mut()
+                        .expect("a replay snapshot was given")
+                        .state_batches
+                }
+                "update" => {
+                    &mut share_replay
+                        .update
+                        .as_mut()
+                        .expect("a replay update was given")
+                        .state_batches
+                }
+                other => panic!("unknown replayed record: {other}"),
+            };
+            batches.push(batch);
+        }
     }
 
     #[rstest_bdd_macros::when("the coordinator replays the snapshot followed by the update")]
@@ -552,7 +543,7 @@ mod tests {
         assert!(share_replay.replayed.as_ref() == Some(&expected));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/share_coordinator/state/replay.feature",
         fixtures = [share_replay: ShareReplayScenario]
     );

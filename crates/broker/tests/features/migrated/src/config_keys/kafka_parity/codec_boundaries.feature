@@ -7,11 +7,11 @@ Feature: Kafka compression-level topic bounds
     Then the individual topic alteration is accepted
 
     Examples:
-      | key | value |
-      | compression.gzip.level | "-1" |
-      | compression.gzip.level | "1" |
-      | compression.gzip.level | "9" |
-      | compression.lz4.level | "1" |
-      | compression.lz4.level | "17" |
-      | compression.zstd.level | "-131072" |
-      | compression.zstd.level | "22" |
+      | case                   | key | value |
+      | the gzip default       | compression.gzip.level | "-1" |
+      | the lowest gzip level  | compression.gzip.level | "1" |
+      | the highest gzip level | compression.gzip.level | "9" |
+      | the lowest lz4 level   | compression.lz4.level | "1" |
+      | the highest lz4 level  | compression.lz4.level | "17" |
+      | the lowest zstd level  | compression.zstd.level | "-131072" |
+      | the highest zstd level | compression.zstd.level | "22" |

@@ -198,7 +198,7 @@ mod tests {
         kafka_frame.decoded = Some(codec(kafka_frame.maximum).decode(&mut kafka_frame.input));
     }
 
-    #[rstest_bdd_macros::then("the configured frame limit is 100 MiB or 104857600 bytes")]
+    #[rstest_bdd_macros::then("the configured frame limit is 100 MiB, which is 104857600 bytes")]
     fn kafka_maximum_frame_limit(kafka_frame: &KafkaFrameScenario) {
         assert!(DEFAULT_MAX_FRAME_BYTES == 100 * 1024 * 1024);
         assert!(DEFAULT_MAX_FRAME_BYTES == 104_857_600);
@@ -237,7 +237,7 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/network/codec.feature",
         fixtures = [kafka_frame: KafkaFrameScenario]
     );

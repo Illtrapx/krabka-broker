@@ -816,7 +816,7 @@ mod tests {
             }
         }
     }
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct StoredOffset {
         value: Option<OffsetCommitValue>,
@@ -876,5 +876,5 @@ mod tests {
         };
         assert!(stored_offset.decoded.as_ref() == Some(&expected));
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/persistence.feature",fixtures=[stored_offset:StoredOffset]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/persistence.feature",fixtures=[stored_offset:StoredOffset]);
 }

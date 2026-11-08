@@ -581,33 +581,10 @@ mod tests {
             .shutdown()
             .await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_heartbeat/heartbeat.feature",
-        name = "Malformed member identity join subscription and epoch fields cannot create a group"
-    )]
-    #[tokio::test]
-    async fn handle_refuses_malformed_heartbeats_as_kafka_does(
-        share_heartbeat: ShareHeartbeatScenario,
-        field: String,
-        value: String,
-        message: String,
-    ) {
-        let _ = (share_heartbeat, field, value, message);
-    }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_share_heartbeat/heartbeat.feature",
-        name = "Only a join can create a share group and other group kinds remain distinct"
-    )]
-    #[tokio::test]
-    async fn handle_creates_share_group_only_on_join_as_kafka_does(
-        share_heartbeat: ShareHeartbeatScenario,
-        epoch: i32,
-        group: String,
-        code: i16,
-        message: String,
-    ) {
-        let _ = (share_heartbeat, epoch, group, code, message);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_share_heartbeat/heartbeat.feature",
+        fixtures = [share_heartbeat: ShareHeartbeatScenario],
+    );
 
     #[test]
     fn subscribed_names_describe_denied_table() { denied_table_fixture(); }

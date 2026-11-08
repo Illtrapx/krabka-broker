@@ -7,11 +7,11 @@ Feature: Recover out-of-range follower offsets
     Then the recovery action, lookup order and log bounds are <expected>
 
     Examples:
-      | lookups | expected |
-      | [4,0] | {"action":"continue","asked":[-1],"log_start":0,"log_end":4} |
-      | [20,12] | {"action":"continue","asked":[-1,-2],"log_start":12,"log_end":12} |
-      | [20,3] | {"action":"continue","asked":[-1,-2],"log_start":0,"log_end":6} |
-      | [20,6] | {"action":"continue","asked":[-1,-2],"log_start":0,"log_end":6} |
-      | [6,0] | {"action":"continue","asked":[-1,-2],"log_start":0,"log_end":6} |
-      | [null,0] | {"action":"unexpected-error-backoff","asked":[-1],"log_start":0,"log_end":6} |
-      | [20,null] | {"action":"unexpected-error-backoff","asked":[-1,-2],"log_start":0,"log_end":6} |
+      | case                                 | lookups   | expected                                                                        |
+      | leader ends before the local log end | [4,0]     | {"action":"continue","asked":[-1],"log_start":0,"log_end":4}                    |
+      | leader starts past the local log end | [20,12]   | {"action":"continue","asked":[-1,-2],"log_start":12,"log_end":12}               |
+      | leader starts inside the local log   | [20,3]    | {"action":"continue","asked":[-1,-2],"log_start":0,"log_end":6}                 |
+      | leader starts at the local log end   | [20,6]    | {"action":"continue","asked":[-1,-2],"log_start":0,"log_end":6}                 |
+      | leader ends at the local log end     | [6,0]     | {"action":"continue","asked":[-1,-2],"log_start":0,"log_end":6}                 |
+      | leader end lookup fails              | [null,0]  | {"action":"unexpected-error-backoff","asked":[-1],"log_start":0,"log_end":6}    |
+      | leader start lookup fails            | [20,null] | {"action":"unexpected-error-backoff","asked":[-1,-2],"log_start":0,"log_end":6} |

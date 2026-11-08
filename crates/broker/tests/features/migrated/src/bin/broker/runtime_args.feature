@@ -8,11 +8,11 @@ Feature: Broker-wide Kafka message size limits
     Then the broker-wide message limit is <bytes> bytes
 
     Examples:
-      | value       | bytes      |
-      | 0B          | 0          |
-      | 2048B       | 2048       |
-      | 2147483647B | 2147483647 |
-      | 1MiB        | 1048576    |
+      | case                   | value       | bytes      |
+      | zero bytes             | 0B          | 0          |
+      | a plain byte count     | 2048B       | 2048       |
+      | the signed INT maximum | 2147483647B | 2147483647 |
+      | a binary unit          | 1MiB        | 1048576    |
 
   Scenario Outline: Limits outside Kafka's whole-byte INT domain prevent startup
     Given the operator supplies message limit <value>
@@ -20,8 +20,8 @@ Feature: Broker-wide Kafka message size limits
     Then the invalid message limit is rejected
 
     Examples:
-      | value       | boundary                  |
-      | -1B         | negative                  |
-      | 2147483648B | above signed INT maximum  |
-      | 2GiB        | unit conversion overflows |
-      | 1.5B        | fractional byte           |
+      | case                      | value       |
+      | negative                  | -1B         |
+      | above signed INT maximum  | 2147483648B |
+      | unit conversion overflows | 2GiB        |
+      | fractional byte           | 1.5B        |

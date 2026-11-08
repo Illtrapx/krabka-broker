@@ -906,7 +906,7 @@ mod tests {
         assert!(reported[KEY_INITIAL_REBALANCE_DELAY_MS] == "0");
         assert!(reported[KEY_ASSIGNMENT_INTERVAL_MS] == "250");
     }
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct StreamsConfiguration {
         overrides: BTreeMap<String, String>,
@@ -1051,5 +1051,5 @@ mod tests {
         };
         assert!(actual == expected);
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/streams/config.feature",fixtures=[streams_configuration:StreamsConfiguration]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/streams/config.feature",fixtures=[streams_configuration:StreamsConfiguration]);
 }

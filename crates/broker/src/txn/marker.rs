@@ -238,7 +238,7 @@ mod tests {
         assert!(transaction_marker_response.classification == Some(expected));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/txn/marker.feature",
         fixtures = [transaction_marker_response: TransactionMarkerResponse]
     );

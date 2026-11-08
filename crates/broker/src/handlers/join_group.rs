@@ -330,7 +330,10 @@ mod tests {
             );
         }
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_join_group",fixtures=[join_group:JoinGroupScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_join_group",
+        fixtures = [join_group: JoinGroupScenario],
+    );
 
     /// A response that names its protocol leaves `respond` unchanged.
     #[test]

@@ -6,9 +6,9 @@ Feature: WAL divergence responses distinguish Kafka sentinels from real epochs
     Then the validated WAL divergence is absent
 
     Examples:
-      | epoch | end |
-      | -1 | -1 |
-      | 3 | -1 |
+      | case                                      | epoch | end |
+      | the no-divergence sentinel                | -1    | -1  |
+      | a real epoch with the sentinel end offset | 3     | -1  |
 
   Scenario Outline: A real divergence retains its epoch and offset
     Given the WAL leader advertises diverging epoch <epoch> ending at <end>
@@ -16,9 +16,9 @@ Feature: WAL divergence responses distinguish Kafka sentinels from real epochs
     Then the validated WAL divergence is epoch <epoch> at offset <end>
 
     Examples:
-      | epoch | end |
-      | 3 | 10 |
-      | 0 | 0 |
+      | case                           | epoch | end |
+      | a later epoch                  | 3     | 10  |
+      | the first epoch at offset zero | 0     | 0   |
 
   Scenario: A named end offset cannot carry a negative epoch
     Given the WAL leader advertises diverging epoch -1 ending at 10

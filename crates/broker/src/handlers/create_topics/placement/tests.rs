@@ -294,7 +294,7 @@ fn validate_manual_placement(manual_placement: &mut ManualPlacementScenario) {
         NodeId(2),
     ]));
 }
-#[rstest_bdd_macros::then("manual placement refuses with error {code} and message \"{message}\"")]
+#[rstest_bdd_macros::then("manual placement refuses with error {code} and message {message}")]
 fn refused_manual_placement(
     manual_placement: &ManualPlacementScenario,
     code: i16,
@@ -302,7 +302,10 @@ fn refused_manual_placement(
 ) {
     assert!(manual_placement.result.as_ref().expect("placement result") == &Err((code, message)));
 }
-rstest_bdd_macros::scenarios!("tests/features/handler_manual_topic_placement.feature", fixtures = [manual_placement: ManualPlacementScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_manual_topic_placement.feature",
+    fixtures = [manual_placement: ManualPlacementScenario],
+);
 
 #[test]
 fn site_broker_views_read_the_rack_and_the_witness_role() {

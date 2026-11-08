@@ -24,23 +24,23 @@ Feature: Incremental group configuration follows Kafka controller semantics
     When the group configuration handler stages the request
     Then offset reset validation returns error <code> and stages a record only on success
     Examples:
-      | strategy          | code |
-      | latest            | 0    |
-      | earliest          | 0    |
-      | by_duration:PT1H   | 0    |
-      | by_duration:-PT1H  | 40   |
-      | by_duration:       | 40   |
-      | none              | 40   |
+      | case                 | strategy          | code |
+      | latest               | latest            | 0    |
+      | earliest             | earliest          | 0    |
+      | positive duration    | by_duration:PT1H  | 0    |
+      | negative duration    | by_duration:-PT1H | 40   |
+      | empty duration       | by_duration:      | 40   |
+      | unsupported strategy | none              | 40   |
 
   Scenario Outline: Operation merge and group identity failures precede record construction
     Given group <group> requests operation <operation> on key <key> with value 1
     When the controller merges operations and validates the group resource
     Then the group resource is refused with code <code> and message <message>
     Examples:
-      | group | operation | key                         | code | message                                                                                   |
-      | g     | 0         | not.a.group.key             | 40   | Unknown group config name: not.a.group.key                                                 |
-      | g     | 2         | streams.session.timeout.ms  | 40   | Can't APPEND to key streams.session.timeout.ms because its type is not LIST.                |
-      | empty | 0         | streams.num.standby.replicas | 42   | Default group resources are not allowed.                                                   |
+      | case                   | group | operation | key                          | code | message                                                                      |
+      | unknown key            | g     | 0         | not.a.group.key              | 40   | Unknown group config name: not.a.group.key                                   |
+      | append to scalar key   | g     | 2         | streams.session.timeout.ms   | 40   | Can't APPEND to key streams.session.timeout.ms because its type is not LIST. |
+      | default group resource | empty | 0         | streams.num.standby.replicas | 42   | Default group resources are not allowed.                                     |
 
   Scenario: A valid group operation produces the authoritative configuration record
     Given group g requests operation 0 on key streams.num.standby.replicas with value 1

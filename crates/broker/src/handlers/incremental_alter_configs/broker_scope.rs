@@ -287,7 +287,7 @@ mod tests {
         }
     }
     #[rstest_bdd_macros::given(
-        "broker 1 serves resource \"{resource}\" with ELR enabled {elr} at metadata.version {level}"
+        "broker 1 serves resource {resource} with ELR enabled {elr} at metadata.version {level}"
     )]
     fn broker_configuration_context(
         incremental_broker: &mut IncrementalBrokerConfiguration,
@@ -304,7 +304,7 @@ mod tests {
         ));
         incremental_broker.image = Some(image);
         incremental_broker.resource = make_resource(
-            if resource == "<empty>" { "" } else { &resource },
+            if resource == "default" { "" } else { &resource },
             Vec::new(),
         );
     }
@@ -313,7 +313,7 @@ mod tests {
         incremental_broker.log_dirs = vec![PathBuf::from("/tmp/d1"), PathBuf::from("/tmp/d2")];
     }
     #[rstest_bdd_macros::given(
-        "broker configuration already stores node {node}, key {key} and value \"{value}\""
+        "broker configuration already stores node {node}, key {key} and value {value}"
     )]
     fn stored_incremental_broker_config(
         incremental_broker: &mut IncrementalBrokerConfiguration,
@@ -333,7 +333,7 @@ mod tests {
             .apply(&record(node, &key, Some(&value)));
     }
     #[rstest_bdd_macros::when(
-        "IncrementalAlterConfigs applies operation {operation} to key {key} with value \"{value}\""
+        "IncrementalAlterConfigs applies operation {operation} to key {key} with value {value}"
     )]
     fn alter_incremental_broker_config(
         incremental_broker: &mut IncrementalBrokerConfiguration,
@@ -341,7 +341,7 @@ mod tests {
         key: String,
         value: String,
     ) {
-        let value = if value == "<empty>" {
+        let value = if value == "empty" {
             String::new()
         } else {
             value
@@ -366,7 +366,7 @@ mod tests {
         ));
     }
     #[rstest_bdd_macros::then(
-        "the staged broker config is node {node}, key {key} and value \"{value}\""
+        "the staged broker config is node {node}, key {key} and value {value}"
     )]
     fn staged_incremental_broker_config(
         incremental_broker: &IncrementalBrokerConfiguration,
@@ -392,7 +392,7 @@ mod tests {
         );
     }
     #[rstest_bdd_macros::then(
-        "the incremental broker config is refused with code {code} and message \"{message}\""
+        "the incremental broker config is refused with code {code} and message {message}"
     )]
     fn refused_incremental_broker_config(
         incremental_broker: &IncrementalBrokerConfiguration,
@@ -407,7 +407,21 @@ mod tests {
                 == &Err((code, message))
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_incremental_broker_configuration.feature", fixtures = [incremental_broker: IncrementalBrokerConfiguration]);
+    /// The same refusal, for a Kafka message the step text cannot carry.
+    #[rstest_bdd_macros::then(
+        "the incremental broker config is refused with code {code} and this message"
+    )]
+    fn refused_incremental_broker_config_with_message(
+        incremental_broker: &IncrementalBrokerConfiguration,
+        code: i16,
+        docstring: String,
+    ) {
+        refused_incremental_broker_config(incremental_broker, code, docstring.trim().to_owned());
+    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_incremental_broker_configuration.feature",
+        fixtures = [incremental_broker: IncrementalBrokerConfiguration],
+    );
 
     /// Kafka stores the string the client sent
     /// (`ConfigurationControlManager.incrementalAlterConfigResource` takes the

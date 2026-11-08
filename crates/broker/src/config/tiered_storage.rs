@@ -391,7 +391,7 @@ mod tests {
         assert!(metadata_policy.config.security.is_none());
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/config/tiered_storage",
         fixtures = [metadata_policy: TopicMetadataPolicy]
     );

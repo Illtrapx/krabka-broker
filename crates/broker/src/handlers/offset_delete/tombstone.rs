@@ -117,5 +117,8 @@ mod tests {
     fn check_tombstone_failure(offset_delete_write: &OffsetDeleteWriteScenario, expected: i16) {
         check!(offset_delete_write.operation_error.unwrap() == expected);
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_offset_delete_write",fixtures=[offset_delete_write:OffsetDeleteWriteScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_offset_delete_write",
+        fixtures = [offset_delete_write: OffsetDeleteWriteScenario],
+    );
 }

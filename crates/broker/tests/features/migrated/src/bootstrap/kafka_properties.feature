@@ -1,9 +1,5 @@
 Feature: Broker bootstrap reads Kafka-produced metadata property files
 
-  Background:
-    Given a fresh unformatted broker storage root
-
-
   Scenario: Read Java 21 and later
     Given the meta log directory contains meta.properties:
       """

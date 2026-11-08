@@ -222,7 +222,10 @@ mod tests {
                 }))
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_group_config",fixtures=[group_config:GroupConfigScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_group_config",
+        fixtures = [group_config: GroupConfigScenario],
+    );
 
     /// The handler answers an unknown operation code before any record
     /// builder runs, so none reaches this one through it. Called directly,

@@ -404,26 +404,33 @@ fn runtime_application_refusal(runtime_file_application: &RuntimeFileApplication
     assert!(error.contains(&field));
 }
 
-#[rstest_bdd_macros::then("the supplied Kafka configuration key origins are JSON {keys}")]
-fn runtime_configuration_origins(runtime_file_application: &RuntimeFileApplication, keys: String) {
+fn supplied_kafka_keys(runtime_file_application: &RuntimeFileApplication) -> Vec<&'static str> {
     let config = runtime_file_application
         .applied
         .as_ref()
         .expect("runtime files were applied")
         .as_ref()
         .expect("valid runtime configuration");
-    let actual: Vec<_> = config
+    config
         .static_config_origins
         .supplied_kafka_keys
         .iter()
         .copied()
-        .collect();
-    let expected: Vec<String> =
-        serde_json::from_str(&keys).expect("explicit ordered Kafka key list");
-    assert!(actual == expected);
+        .collect()
 }
 
-rstest_bdd_macros::scenarios!(
+#[rstest_bdd_macros::then("the supplied Kafka configuration key origins are {keys}")]
+fn runtime_configuration_origins(runtime_file_application: &RuntimeFileApplication, keys: String) {
+    let expected: Vec<_> = keys.split(", ").collect();
+    assert!(supplied_kafka_keys(runtime_file_application) == expected);
+}
+
+#[rstest_bdd_macros::then("the broker records no supplied Kafka configuration key origins")]
+fn no_runtime_configuration_origins(runtime_file_application: &RuntimeFileApplication) {
+    assert!(supplied_kafka_keys(runtime_file_application).is_empty());
+}
+
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/file_config/runtime_config/tests",
     fixtures = [runtime_file_application: RuntimeFileApplication]
 );

@@ -8,13 +8,13 @@ Feature: Kafka-compatible key partitioning
     Then the unsigned hash is <hash>
 
     Examples:
-      | key     | hash       |
-      | (empty) | 275646681  |
-      | a       | 2731586172 |
-      | ab      | 316155434  |
-      | abc     | 479470107  |
-      | abcd    | 2971317748 |
-      | abcde   | 461995741  |
+      | case                   | key     | hash       |
+      | an empty key           | (empty) | 275646681  |
+      | a one-byte remainder   | a       | 2731586172 |
+      | a two-byte remainder   | ab      | 316155434  |
+      | a three-byte remainder | abc     | 479470107  |
+      | one whole block        | abcd    | 2971317748 |
+      | a block and one byte   | abcde   | 461995741  |
 
   Scenario Outline: Transaction keys select the same partition as Kafka clients
     Given the Kafka hash key is <key>
@@ -23,8 +23,8 @@ Feature: Kafka-compatible key partitioning
     Then the destination partition is <partition>
 
     Examples:
-      | key            | partitions | partition |
-      | my-tid         | 50         | 43        |
-      | producer-1     | 50         | 45        |
-      | tx-orders-prod | 50         | 26        |
-      | abcde          | 7          | 4         |
+      | case                      | key            | partitions | partition |
+      | a transactional id        | my-tid         | 50         | 43        |
+      | a producer-style id       | producer-1     | 50         | 45        |
+      | a longer transactional id | tx-orders-prod | 50         | 26        |
+      | a small partition count   | abcde          | 7          | 4         |

@@ -277,7 +277,10 @@ fn dispatch_quota_accounting(registry_contract: &RegistryContract) {
     assert!(*observed == expected);
 }
 
-rstest_bdd_macros::scenarios!("tests/features/migrated/src/handlers/registry/tests.feature", fixtures = [registry_contract: RegistryContract]);
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/handlers/registry/tests.feature",
+    fixtures = [registry_contract: RegistryContract],
+);
 
 /// The only krabka-private key in the catalog is `GetReplicaLogInfo` (1020),
 /// and it is inter-broker only, so no listener a client can reach advertises

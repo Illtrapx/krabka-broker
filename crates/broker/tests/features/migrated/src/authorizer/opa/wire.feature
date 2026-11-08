@@ -6,7 +6,7 @@ Feature: OPA policy actions use Kafka ACL operation names
     Then the policy operation name is <name>
 
     Examples:
-      | operation | name |
-      | Read | READ |
-      | Write | WRITE |
-      | TwoPhaseCommit | TWO_PHASE_COMMIT |
+      | case                                 | operation      | name             |
+      | a one-word operation                 | Read           | READ             |
+      | another one-word operation           | Write          | WRITE            |
+      | a multi-word operation is snake case | TwoPhaseCommit | TWO_PHASE_COMMIT |

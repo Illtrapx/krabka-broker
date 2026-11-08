@@ -412,14 +412,10 @@ mod tests {
         assert2::check!(isr_update.response.as_ref().unwrap() == &expected);
         assert2::check!(isr_update.changes.len() == usize::from(code == codes::NONE));
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_isr_validation/isr.feature",
-        name = "A fenced epoch returns only the partition index and error"
-    )]
-    fn error_response_matches_kafkas_default_fields(isr_update: IsrUpdateScenario) {
-        let _ = isr_update;
-    }
-    rstest_bdd_macros::scenarios!("tests/features/handler_isr_validation",tags="not @named_kip_evidence",fixtures=[isr_update:IsrUpdateScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_isr_validation",
+        fixtures = [isr_update: IsrUpdateScenario],
+    );
 
     #[derive(Clone, Copy)]
     enum EpochStateAdmission {

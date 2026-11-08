@@ -807,7 +807,7 @@ mod tests {
             test_support::wire_bytes,
         },
         rstest_bdd::datatable::Rows,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
         std::collections::BTreeMap,
     };
     #[derive(Default)]
@@ -955,5 +955,5 @@ mod tests {
             .collect::<Vec<_>>();
         assert!(durable_transition.keys.as_ref() == Some(&expected));
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/actor/pending_records.feature",fixtures=[durable_transition:DurableTransition]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/actor/pending_records.feature",fixtures=[durable_transition:DurableTransition]);
 }

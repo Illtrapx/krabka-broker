@@ -772,19 +772,10 @@ mod tests {
         );
     }
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/partition/leadership.feature",
-        name = "Each API applies Kafka's leader epoch sentinel rule"
-    )]
-    #[tokio::test]
-    async fn each_api_spells_the_no_epoch_sentinel_the_way_kafka_spells_it(
-        partition_epoch_request: PartitionEpochRequest,
-        epoch: i32,
-        fetch: String,
-        list_offsets: String,
-    ) {
-        let _ = (partition_epoch_request, epoch, fetch, list_offsets);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/partition/leadership.feature",
+        fixtures = [partition_epoch_request: PartitionEpochRequest],
+    );
 
     #[tokio::test]
     async fn test_set_leader_epoch_updates_cached_epoch() {

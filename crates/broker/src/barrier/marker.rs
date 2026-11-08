@@ -244,7 +244,7 @@ mod tests {
         assert!(&key[..] == &[0, 0, 3, 232]);
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/barrier/marker.feature",
         fixtures = [barrier_control_record: BarrierControlRecord]
     );

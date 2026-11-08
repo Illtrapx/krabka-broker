@@ -494,7 +494,10 @@ mod tests {
             .collect();
         assert!(group_listing.listed.as_ref().unwrap() == &expected);
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_list_groups",fixtures=[group_listing:GroupListingScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_list_groups",
+        fixtures = [group_listing: GroupListingScenario],
+    );
 
     #[test]
     fn group_state_as_str_covers_all_classic_states() {

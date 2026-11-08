@@ -242,7 +242,7 @@ proptest! {
 
 use {
     rstest_bdd::datatable::Rows,
-    rstest_bdd_macros::{given, scenarios, then, when},
+    rstest_bdd_macros::{given, then, when},
 };
 #[derive(Default)]
 struct UniformPlacement {
@@ -287,8 +287,11 @@ fn assign_uniform_group(uniform_placement: &mut UniformPlacement) {
         .expect("group and topics prepared");
     uniform_placement.actual = Some(UniformAssignor.assign(&source.spec, &source.topics));
 }
-#[when("the same resolved subscriptions are assigned with the heterogeneous builder")]
-fn assign_explicit_heterogeneous(uniform_placement: &mut UniformPlacement) {
+#[when(
+    "the uniform assignor balances the partitions with the declared builder and with an explicit heterogeneous builder"
+)]
+fn assign_with_both_builders(uniform_placement: &mut UniformPlacement) {
+    assign_uniform_group(uniform_placement);
     let source = uniform_placement.source.as_ref().expect("group prepared");
     let group = GroupSpec {
         subscription_type: HETEROGENEOUS,
@@ -296,8 +299,9 @@ fn assign_explicit_heterogeneous(uniform_placement: &mut UniformPlacement) {
     };
     uniform_placement.heterogeneous = Some(UniformAssignor.assign(&group, &source.topics));
 }
-#[when("the first assignment is reused in all six member orders")]
+#[when("the uniform assignor reassigns from its own first assignment in all six member orders")]
 fn reuse_uniform_assignments(uniform_placement: &mut UniformPlacement) {
+    assign_uniform_group(uniform_placement);
     let source = uniform_placement.source.as_ref().expect("group prepared");
     let first = uniform_placement
         .actual
@@ -348,11 +352,15 @@ fn sticky_reused_assignment(uniform_placement: &UniformPlacement) {
 use crate::coordinator::unified::test_support::partition_assignments::{
     self, ExpectedMemberPartitions, MemberAssignmentInput, TopicPartitionsInput,
 };
-#[given("the uniform subscription builder is {builder}")]
-fn subscription_policy(uniform_placement: &mut UniformPlacement, builder: String) {
+#[given("a {builder} uniform group has these member subscriptions and previous assignments")]
+fn subscription_policy(
+    uniform_placement: &mut UniformPlacement,
+    builder: String,
+    #[datatable] rows: Rows<MemberAssignmentInput>,
+) {
     uniform_placement.source = Some(Case {
         spec: GroupSpec {
-            members: vec![],
+            members: partition_assignments::member_subscriptions(rows),
             subscription_type: partition_assignments::subscription_type(&builder),
         },
         topics: TopicMetadata::default(),
@@ -368,18 +376,6 @@ fn assignment_topic_metadata(
         .as_mut()
         .expect("subscription builder given")
         .topics = partition_assignments::topic_metadata(rows);
-}
-#[given("the uniform members have these subscriptions and previous assignments")]
-fn assignment_member_subscriptions(
-    uniform_placement: &mut UniformPlacement,
-    #[datatable] rows: Rows<MemberAssignmentInput>,
-) {
-    uniform_placement
-        .source
-        .as_mut()
-        .expect("subscription builder given")
-        .spec
-        .members = partition_assignments::member_subscriptions(rows);
 }
 #[then("the complete uniform assignment is")]
 fn complete_assignment(
@@ -402,4 +398,4 @@ fn complete_assignment(
     );
 }
 
-scenarios!("tests/features/migrated/src/coordinator/unified/assignor/uniform/tests.feature",fixtures=[uniform_placement:UniformPlacement]);
+krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/assignor/uniform/tests.feature",fixtures=[uniform_placement:UniformPlacement]);

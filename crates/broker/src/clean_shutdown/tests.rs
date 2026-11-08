@@ -122,7 +122,7 @@ fn malformed_shutdown_document(shutdown_proof: &CleanShutdownScenario) {
         "decode({:?})", shutdown_proof.document);
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/clean_shutdown/tests.feature",
     fixtures = [shutdown_proof: CleanShutdownScenario]
 );

@@ -538,7 +538,7 @@ fn refused_fenced_replica_placement(
     assert!(fenced_replica_placement.refusal.as_ref() == Some(&reason));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/site_placement/tests.feature",
     fixtures = [fenced_replica_placement: FencedReplicaPlacement]
 );

@@ -695,9 +695,7 @@ mod tests {
         check!(error.contains("Kafka string limit"));
     }
 
-    #[rstest_bdd_macros::then(
-        "pattern compilation reports Kafka's invalid or unsupported Perl syntax message"
-    )]
+    #[rstest_bdd_macros::then("pattern compilation reports Kafka's Perl syntax error message")]
     fn kafka_inline_flag_error(kafka_pattern: &KafkaPatternScenario) {
         check!(kafka_pattern.compilation_error.get() == Some(Some(INVALID_PERL_OP.to_owned())));
     }
@@ -707,7 +705,7 @@ mod tests {
         check!(kafka_pattern.unsupported_flag.get() == Some(None));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/re2j.feature",
         fixtures = [kafka_pattern: KafkaPatternScenario]
     );

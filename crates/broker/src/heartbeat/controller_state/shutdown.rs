@@ -276,7 +276,7 @@ mod tests {
         check!(broker_shutdown_heartbeat.next == Some(named_broker_control_state(&expected)));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/heartbeat/controller_state/shutdown.feature",
         fixtures = [broker_shutdown_heartbeat: BrokerShutdownHeartbeat]
     );

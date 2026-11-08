@@ -40,9 +40,27 @@ fn kafka_broker_config_key(broker_catalog: &mut BrokerConfigCatalogScenario, key
     broker_catalog.key = key;
 }
 
-#[rstest_bdd_macros::given("the quoted broker configuration value is {value}")]
+#[rstest_bdd_macros::given("the broker configuration value is {value}")]
 fn kafka_broker_config_value(broker_catalog: &mut BrokerConfigCatalogScenario, value: String) {
-    broker_catalog.value = serde_json::from_str(&value).expect("the config value is quoted");
+    broker_catalog.value = value;
+}
+
+#[rstest_bdd_macros::given("the broker configuration value has {value} between single spaces")]
+fn padded_kafka_broker_config_value(
+    broker_catalog: &mut BrokerConfigCatalogScenario,
+    value: String,
+) {
+    broker_catalog.value = format!(" {value} ");
+}
+
+#[rstest_bdd_macros::given("the broker configuration value has only one space")]
+fn space_kafka_broker_config_value(broker_catalog: &mut BrokerConfigCatalogScenario) {
+    broker_catalog.value = " ".to_owned();
+}
+
+#[rstest_bdd_macros::given("the broker configuration value has no characters")]
+fn empty_kafka_broker_config_value(broker_catalog: &mut BrokerConfigCatalogScenario) {
+    broker_catalog.value = String::new();
 }
 
 #[rstest_bdd_macros::when("the released broker configuration roster is inspected")]
@@ -134,15 +152,27 @@ fn read_only_broker_config(broker_catalog: &BrokerConfigCatalogScenario) {
     check!(broker_catalog.dynamic.get() == Some(Some(Dynamic::ReadOnly)));
 }
 
-#[rstest_bdd_macros::then("the quoted canonical broker value is {expected}")]
+#[rstest_bdd_macros::then("the canonical broker value is {expected}")]
 fn canonical_broker_config_value(broker_catalog: &BrokerConfigCatalogScenario, expected: String) {
-    let expected: String = serde_json::from_str(&expected).expect("the canonical value is quoted");
     check!(broker_catalog.canonical == Some(Ok(expected)));
+}
+
+#[rstest_bdd_macros::then("the canonical broker value has no characters")]
+fn empty_canonical_broker_config_value(broker_catalog: &BrokerConfigCatalogScenario) {
+    check!(broker_catalog.canonical == Some(Ok(String::new())));
 }
 
 #[rstest_bdd_macros::then("broker value validation fails with Kafka message {message}")]
 fn invalid_broker_config_value(broker_catalog: &BrokerConfigCatalogScenario, message: String) {
     check!(broker_catalog.canonical == Some(Err(message)));
+}
+
+#[rstest_bdd_macros::then("broker value validation fails with this Kafka message:")]
+fn invalid_broker_config_value_message(
+    broker_catalog: &BrokerConfigCatalogScenario,
+    docstring: String,
+) {
+    check!(broker_catalog.canonical == Some(Err(docstring.trim().to_owned())));
 }
 
 #[rstest_bdd_macros::then("the configured name resolves to base key {key} with Kafka type {kind}")]
@@ -187,7 +217,7 @@ fn broker_config_descriptor(
     );
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/config_keys/kafka_broker/tests",
     fixtures = [broker_catalog: BrokerConfigCatalogScenario]
 );

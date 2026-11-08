@@ -636,7 +636,7 @@ mod tests {
         assert!(validation.is_ok(), "{validation:?}");
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/config/validate.feature",
         fixtures = [super_users: SuperUserScenario]
     );

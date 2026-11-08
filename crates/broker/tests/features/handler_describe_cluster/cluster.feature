@@ -5,10 +5,10 @@ Feature: DescribeCluster validates endpoint type and represents Kafka cluster id
     When the broker listener handles DescribeCluster
     Then the endpoint refusal is code <code> message <message> with the default broker endpoint and no cluster data
     Examples:
-      | version | endpoint | code | message                                                                                                               |
-      | 2       | 2        | 114  | The request was sent to an endpoint of type BROKER, but we wanted an endpoint of type CONTROLLER                       |
-      | 2       | 0        | 115  | Unsupported endpoint type 0                                                                                           |
-      | 1       | 3        | 115  | Unsupported endpoint type 3                                                                                           |
+      | case                                       | version | endpoint | code | message                                                                                          |
+      | broker endpoint asked of a broker listener | 2       | 2        | 114  | The request was sent to an endpoint of type BROKER, but we wanted an endpoint of type CONTROLLER |
+      | endpoint type zero                         | 2       | 0        | 115  | Unsupported endpoint type 0                                                                      |
+      | unknown endpoint type                      | 1       | 3        | 115  | Unsupported endpoint type 3                                                                      |
 
   Scenario: The cluster identifier uses Kafka unpadded base64
     Given the broker cluster UUID has bytes 1 through 16

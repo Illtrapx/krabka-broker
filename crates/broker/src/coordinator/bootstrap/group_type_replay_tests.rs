@@ -110,7 +110,7 @@ fn replay(records: Vec<LogRecord>) -> Held {
 }
 
 use {
-    rstest_bdd_macros::{given, scenarios, then, when},
+    rstest_bdd_macros::{given, then, when},
     std::mem,
 };
 #[derive(Default)]
@@ -153,4 +153,4 @@ fn loaded_group_type(group_type_load: &GroupTypeLoad, kind: String, message: Str
     };
     check!(group_type_load.held.as_ref() == Some(&expected));
 }
-scenarios!("tests/features/migrated/src/coordinator/bootstrap/group_type_replay_tests.feature",fixtures=[group_type_load:GroupTypeLoad]);
+krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/bootstrap/group_type_replay_tests.feature",fixtures=[group_type_load:GroupTypeLoad]);

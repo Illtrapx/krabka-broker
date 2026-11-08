@@ -4,7 +4,7 @@ Feature: Offset deletion translates storage failures into coordinator responses
     When the offset deletion maps the write failure to its operation response
     Then the offset deletion response error is <expected>
     Examples:
-      | failure                 | write_error | expected |
+      | case                    | write_error | expected |
       | network exception       | 13          | 14       |
       | unknown topic           | 3           | 15       |
       | corrupt message         | 2           | 2        |

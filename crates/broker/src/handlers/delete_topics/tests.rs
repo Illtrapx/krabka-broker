@@ -672,65 +672,10 @@ async fn topic_deletion_authorization_result(
     started.broker.shutdown().await;
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_topic_authorization.feature",
-    name = "Delete permits UUID deletion and reveals the name"
-)]
-#[tokio::test]
-async fn topic_deletion_authorization_case_0(
-    topic_deletion_authorization: TopicDeletionAuthorization,
-) {
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_topic_authorization.feature",
-    name = "Describe reveals a denied UUID name"
-)]
-#[tokio::test]
-async fn topic_deletion_authorization_case_1(
-    topic_deletion_authorization: TopicDeletionAuthorization,
-) {
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_topic_authorization.feature",
-    name = "Without Describe denied UUID deletion hides the name"
-)]
-#[tokio::test]
-async fn topic_deletion_authorization_case_2(
-    topic_deletion_authorization: TopicDeletionAuthorization,
-) {
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_topic_authorization.feature",
-    name = "Describe reveals that a named topic is missing"
-)]
-#[tokio::test]
-async fn topic_deletion_authorization_case_3(
-    topic_deletion_authorization: TopicDeletionAuthorization,
-) {
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_topic_authorization.feature",
-    name = "Without Describe a missing name is not disclosed"
-)]
-#[tokio::test]
-async fn topic_deletion_authorization_case_4(
-    topic_deletion_authorization: TopicDeletionAuthorization,
-) {
-}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_topic_authorization.feature",
-    name = "Describe without Delete cannot remove an existing named topic"
-)]
-#[tokio::test]
-async fn topic_deletion_authorization_case_5(
-    topic_deletion_authorization: TopicDeletionAuthorization,
-) {
-}
+krabka_bdd::scenarios!(
+    "tests/features/handler_delete_topic_authorization.feature",
+    fixtures = [topic_deletion_authorization: TopicDeletionAuthorization],
+);
 
 // ── #743: delete.topic.enable ───────────────────────────────────────
 

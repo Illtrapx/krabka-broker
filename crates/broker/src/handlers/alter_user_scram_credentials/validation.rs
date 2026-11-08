@@ -309,7 +309,10 @@ mod tests {
         assert!(scram_iterations.records.len() == count);
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/handlers/alter_user_scram_credentials/validation.feature", fixtures = [scram_iterations: ScramIterationContract]);
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/handlers/alter_user_scram_credentials/validation.feature",
+        fixtures = [scram_iterations: ScramIterationContract],
+    );
 
     #[test]
     fn process_upsertion_validates_boundaries_and_records_success() {

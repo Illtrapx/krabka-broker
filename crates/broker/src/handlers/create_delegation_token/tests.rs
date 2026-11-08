@@ -138,7 +138,7 @@ async fn token_creation_context(
     token_creation.ceiling = ceiling;
 }
 #[rstest_bdd_macros::given(
-    "the token request has owner type \"{kind}\", owner name \"{name}\", lifetime {lifetime} and renewers {renewers}"
+    "the token request has owner type {kind}, owner name {name}, lifetime {lifetime} and renewers {renewers}"
 )]
 fn token_creation_request(
     token_creation: &mut TokenCreationScenario,
@@ -278,152 +278,10 @@ async fn persisted_token_creation(
     resources.controller.cancel().await;
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Owner construction precedes token credential refusal"
-)]
-#[tokio::test]
-async fn token_creation_case_0(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Owner construction also precedes super-user authorization"
-)]
-#[tokio::test]
-async fn token_creation_case_1(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Token credentials cannot mint tokens"
-)]
-#[tokio::test]
-async fn token_creation_case_2(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Token credentials cannot mint for another owner even as super user"
-)]
-#[tokio::test]
-async fn token_creation_case_3(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Anonymous principals cannot mint tokens"
-)]
-#[tokio::test]
-async fn token_creation_case_4(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Token credential refusal precedes disabled token support"
-)]
-#[tokio::test]
-async fn token_creation_case_5(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Acting as another owner requires authorization"
-)]
-#[tokio::test]
-async fn token_creation_case_6(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Act-as authorization precedes disabled token support"
-)]
-#[tokio::test]
-async fn token_creation_case_7(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Renewers must be User principals"
-)]
-#[tokio::test]
-async fn token_creation_case_8(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Renewer validation precedes disabled token support"
-)]
-#[tokio::test]
-async fn token_creation_case_9(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Disabled token support returns controller timestamps"
-)]
-#[tokio::test]
-async fn token_creation_case_10(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Default lifetime below renew period"
-)]
-#[tokio::test]
-async fn token_creation_case_11(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Zero lifetime takes the ceiling"
-)]
-#[tokio::test]
-async fn token_creation_case_12(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Negative lifetime takes the ceiling"
-)]
-#[tokio::test]
-async fn token_creation_case_13(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Requested lifetime is capped by broker ceiling"
-)]
-#[tokio::test]
-async fn token_creation_case_14(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Requested lifetime below ceiling is retained"
-)]
-#[tokio::test]
-async fn token_creation_case_15(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Naming self needs no act-as permission"
-)]
-#[tokio::test]
-async fn token_creation_case_16(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Empty owner name resolves to requester"
-)]
-#[tokio::test]
-async fn token_creation_case_17(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Super user mints for another user"
-)]
-#[tokio::test]
-async fn token_creation_case_18(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "Super user retains another principal type"
-)]
-#[tokio::test]
-async fn token_creation_case_19(token_creation: TokenCreationScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delegation_token_creation.feature",
-    name = "User renewer is persisted"
-)]
-#[tokio::test]
-async fn token_creation_case_20(token_creation: TokenCreationScenario) {}
+krabka_bdd::scenarios!(
+    "tests/features/handler_delegation_token_creation.feature",
+    fixtures = [token_creation: TokenCreationScenario],
+);
 
 /// KIP-373: `CreateTokens` on `User:<owner>` lets a requester mint a token for
 /// that owner, and for no other (Kafka's `handleCreateTokenRequest`).

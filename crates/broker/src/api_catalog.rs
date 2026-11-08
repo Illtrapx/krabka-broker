@@ -1087,5 +1087,5 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/api_catalog.feature", fixtures = [api_catalog: ReleasedApiCatalog]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/api_catalog.feature", fixtures = [api_catalog: ReleasedApiCatalog]);
 }

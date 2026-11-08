@@ -627,7 +627,7 @@ mod tests {
         }
     }
     #[rstest_bdd_macros::given(
-        "topic orders exists with these stored overrides and the requested topic is \"{name}\""
+        "topic orders exists with these stored overrides and the requested topic is {name}"
     )]
     fn existing_topic_overrides(
         topic_merge: &mut TopicConfigurationMerge,
@@ -640,14 +640,10 @@ mod tests {
             .map(|cells| StoredOverride::new(&cells[0], &cells[1]))
             .collect::<Vec<_>>();
         topic_merge.image = Some(image_with_topic_config("orders", &overrides));
-        topic_merge.name = if name == "<empty>" {
-            String::new()
-        } else {
-            name
-        };
+        topic_merge.name = if name == "empty" { String::new() } else { name };
     }
     #[rstest_bdd_macros::when(
-        "topic configuration merges operation {operation} on {key} with value \"{value}\""
+        "topic configuration merges operation {operation} on {key} with value {value}"
     )]
     fn incremental_topic_operation(
         topic_merge: &mut TopicConfigurationMerge,
@@ -680,10 +676,24 @@ mod tests {
         check!(topic_merge.result.as_ref().expect("merge result") == &Ok(expected));
     }
     #[rstest_bdd_macros::then(
-        "the topic configuration merge refuses with code {code} and message \"{message}\""
+        "the topic configuration merge refuses with code {code} and message {message}"
     )]
     fn refused_topic_merge(topic_merge: &TopicConfigurationMerge, code: i16, message: String) {
         check!(topic_merge.result.as_ref().expect("merge result") == &Err((code, message)));
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_incremental_topic_merge.feature", fixtures = [topic_merge: TopicConfigurationMerge]);
+    /// The same refusal, for a Kafka message the step text cannot carry.
+    #[rstest_bdd_macros::then(
+        "the topic configuration merge refuses with code {code} and this message"
+    )]
+    fn refused_topic_merge_with_message(
+        topic_merge: &TopicConfigurationMerge,
+        code: i16,
+        docstring: String,
+    ) {
+        refused_topic_merge(topic_merge, code, docstring.trim().to_owned());
+    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_incremental_topic_merge.feature",
+        fixtures = [topic_merge: TopicConfigurationMerge],
+    );
 }

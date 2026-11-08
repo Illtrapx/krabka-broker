@@ -240,7 +240,10 @@ fn check_offline_replicas(offline_replica: &OfflineReplicaScenario, expected: St
     };
     assert!(offline_replica.offline.as_ref().unwrap() == &expected);
 }
-rstest_bdd_macros::scenarios!("tests/features/handler_offline_replicas",fixtures=[offline_replica:OfflineReplicaScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_offline_replicas",
+    fixtures = [offline_replica: OfflineReplicaScenario],
+);
 
 /// A replica on a directory its broker no longer lists online neither leads
 /// nor stays in the reported ISR -- and nothing else changes.

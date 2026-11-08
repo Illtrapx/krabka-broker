@@ -419,28 +419,11 @@ mod tests {
             .shutdown()
             .await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_describe_cluster/cluster.feature",
-        name = "Endpoint type errors precede authorization and retain Kafka response defaults"
-    )]
-    #[tokio::test]
-    async fn endpoint_type_errors_match_kafka(
-        describe_cluster: DescribeClusterScenario,
-        version: i16,
-        endpoint: i8,
-        code: i16,
-        message: String,
-    ) {
-        let _ = (describe_cluster, version, endpoint, code, message);
-    }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_describe_cluster/cluster.feature",
-        name = "The cluster identifier uses Kafka unpadded base64"
-    )]
-    #[tokio::test]
-    async fn reports_cluster_id_in_kafka_base64_form(describe_cluster: DescribeClusterScenario) {
-        let _ = describe_cluster;
-    }
+
+    krabka_bdd::scenarios!(
+        "tests/features/handler_describe_cluster/cluster.feature",
+        fixtures = [describe_cluster: DescribeClusterScenario],
+    );
 
     /// KIP-430: the bitfield is filled only when the request opts in. Without
     /// the flag the field keeps the `i32::MIN` "not present" sentinel, which

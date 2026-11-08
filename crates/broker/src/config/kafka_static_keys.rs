@@ -926,7 +926,7 @@ mod tests {
         check!(static_config.stated.as_ref() == Some(&expected));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/config/kafka_static_keys.feature",
         fixtures = [static_config: StaticConfigScenario]
     );

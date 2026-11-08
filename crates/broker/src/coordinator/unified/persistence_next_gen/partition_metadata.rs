@@ -156,7 +156,7 @@ mod tests {
         }
     }
 
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct PartitionMetadataCodec {
         value: Option<PartitionMetadataValue>,
@@ -244,5 +244,5 @@ mod tests {
                 .is_err()
         );
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/partition_metadata.feature",fixtures=[partition_metadata:PartitionMetadataCodec]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/persistence_next_gen/partition_metadata.feature",fixtures=[partition_metadata:PartitionMetadataCodec]);
 }

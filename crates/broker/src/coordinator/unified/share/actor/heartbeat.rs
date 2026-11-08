@@ -439,6 +439,7 @@ mod tests {
             primitives::uuid::Uuid,
             records::RecordBatch,
         },
+        rstest_bdd::datatable::Rows,
         rstest_bdd_macros::{given, then, when},
     };
     #[derive(Default)]
@@ -508,6 +509,33 @@ mod tests {
             .batches()
             .await
             .len();
+    }
+    #[derive(rstest_bdd_macros::DataTableRow)]
+    struct AnsweredShareHeartbeat {
+        member: String,
+        epoch: i32,
+        subscription: bool,
+    }
+    #[given("these Share heartbeats have been answered in order")]
+    async fn answered_share_heartbeats(
+        share_heartbeat: &mut ShareHeartbeatBehavior,
+        #[datatable] rows: Rows<AnsweredShareHeartbeat>,
+    ) {
+        let handle = share_heartbeat
+            .handle
+            .as_ref()
+            .expect("Share group prepared");
+        for row in rows {
+            let request = ShareGroupHeartbeatRequest {
+                group_id: "g".into(),
+                member_id: row.member,
+                member_epoch: row.epoch,
+                subscribed_topic_names: row.subscription.then(|| vec!["t".into()]),
+                ..Default::default()
+            };
+            let response = heartbeat(handle, request).await;
+            check!(response.error_code == codes::NONE);
+        }
     }
     #[given(
         "m1 joined at epoch 2 then m2 and m3 joined and m1 advanced from previous epoch 2 to current epoch 4"
@@ -690,50 +718,10 @@ mod tests {
         };
         check!(share_heartbeat.response.as_ref() == Some(&expected));
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/share/actor/heartbeat.feature",
-        name = "Initialized Share partitions rebalance on joins and omit unchanged assignments"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn heartbeat_assignments_match_kafka(share_heartbeat: ShareHeartbeatBehavior) {
-        let _ = share_heartbeat;
-    }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/share/actor/heartbeat.feature",
-        name = "Uninitialized Share partitions remain unassigned"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn heartbeat_assignments_wait_for_initialization(
-        share_heartbeat: ShareHeartbeatBehavior,
-    ) {
-        let _ = share_heartbeat;
-    }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/share/actor/heartbeat.feature",
-        name = "Known and unknown Share members leave with Kafka durability rules"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn leave_matches_kafka(
-        share_heartbeat: ShareHeartbeatBehavior,
-        member: String,
-        batches: usize,
-        epoch: i32,
-    ) {
-        let _ = share_heartbeat;
-        let _ = (member, batches, epoch);
-    }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/coordinator/unified/share/actor/heartbeat.feature",
-        name = "Share member epoch fencing accepts only rejoin previous or current member epochs"
-    )]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn member_epoch_rule_matches_kafka(
-        share_heartbeat: ShareHeartbeatBehavior,
-        member: String,
-        epoch: i32,
-        outcome: String,
-    ) {
-        let _ = share_heartbeat;
-        let _ = (member, epoch, outcome);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/coordinator/unified/share/actor/heartbeat.feature",
+        fixtures = [share_heartbeat: ShareHeartbeatBehavior],
+        runtime = "tokio-multi-thread",
+        workers = 2,
+    );
 }

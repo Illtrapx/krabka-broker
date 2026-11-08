@@ -130,7 +130,10 @@ fn check_default_transaction_expiry(static_broker_defaults: &StaticBrokerDefault
             ]
     );
 }
-rstest_bdd_macros::scenarios!("tests/features/handler_static_broker_defaults",fixtures=[static_broker_defaults:StaticBrokerDefaultsScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_static_broker_defaults",
+    fixtures = [static_broker_defaults: StaticBrokerDefaultsScenario],
+);
 
 /// The second `apache/kafka:4.3.1` output quoted on the module: the operator's
 /// value heads the chain at `STATIC_BROKER_CONFIG`, and Kafka's default stays

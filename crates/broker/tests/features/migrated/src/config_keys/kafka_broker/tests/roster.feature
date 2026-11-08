@@ -61,12 +61,12 @@ Feature: Kafka released broker configuration catalog
     Then that broker key is startup-only and read-only to dynamic alterations
 
     Examples:
-      | key |
-      | auto.leader.rebalance.enable |
-      | queued.max.requests |
-      | log.cleaner.enable |
-      | authorizer.class.name |
-      | offsets.topic.replication.factor |
-      | log.dirs |
-      | node.id |
-      | unstable.api.versions.enable |
+      | case                      | key |
+      | leader rebalancing        | auto.leader.rebalance.enable |
+      | the request queue         | queued.max.requests |
+      | the log cleaner           | log.cleaner.enable |
+      | the authorizer            | authorizer.class.name |
+      | offsets topic replication | offsets.topic.replication.factor |
+      | log directories           | log.dirs |
+      | the node id               | node.id |
+      | unstable API versions     | unstable.api.versions.enable |

@@ -175,7 +175,10 @@ mod tests {
     ) {
         check!(client_metrics_alteration.handled == Some(Err((code, message))));
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_client_metrics_alteration",fixtures=[client_metrics_alteration:ClientMetricsAlterationScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_client_metrics_alteration",
+        fixtures = [client_metrics_alteration: ClientMetricsAlterationScenario],
+    );
 
     /// Accepted alterations stage the whole merged map, and one that changes
     /// nothing stages no record, as Kafka writes a `ConfigRecord` only for a

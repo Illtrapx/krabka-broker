@@ -1533,7 +1533,10 @@ fn verify_a_group_reports_every_kafka_group_key_with_its_broker_synonym(
     }
 }
 
-rstest_bdd_macros::scenarios!("tests/features/handler_describe_config_resources",fixtures=[config_description:ConfigDescriptionScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_describe_config_resources",
+    fixtures = [config_description: ConfigDescriptionScenario],
+);
 
 #[test]
 fn a_client_metrics_subscription_reports_all_three_keys_typed() {

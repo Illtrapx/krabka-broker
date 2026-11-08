@@ -5,12 +5,12 @@ Feature: ListPartitionReassignments exposes ongoing partitions once per requeste
     When the controller lists the requested reassignments
     Then the complete reassignment listing contains ordered topic partitions <expected>
     Examples:
-      | filter     | expected |
-      | all topics | t:0,1    |
-      | t:none     | none     |
-      | t:1        | t:1      |
-      | t:1,1      | t:1,1    |
-      | t:1,0      | t:1,0    |
-      | t:2        | none     |
-      | u:0        | none     |
-      | t:0;t:1    | t:0;t:1  |
+      | case                     | filter     | expected |
+      | every topic              | all topics | t:0,1    |
+      | topic with no partitions | t:none     | none     |
+      | one ongoing partition    | t:1        | t:1      |
+      | repeated partition       | t:1,1      | t:1,1    |
+      | request order kept       | t:1,0      | t:1,0    |
+      | idle partition           | t:2        | none     |
+      | unknown topic            | u:0        | none     |
+      | topic named twice        | t:0;t:1    | t:0;t:1  |

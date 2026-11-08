@@ -246,7 +246,7 @@ async fn stored_deletion_acls(acl_deletion: &mut AclDeletionScenario, datatable:
     acl_deletion.started = Some(started);
 }
 #[rstest_bdd_macros::when(
-    "admin deletes Topic ACLs with pattern {pattern}, name \"{name}\" and principal \"{principal}\""
+    "admin deletes Topic ACLs with pattern {pattern}, name {name} and principal {principal}"
 )]
 async fn delete_filtered_acls(
     acl_deletion: &mut AclDeletionScenario,
@@ -325,68 +325,10 @@ async fn deleted_acl_observations(
     started.broker.shutdown().await;
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_acl_matching.feature",
-    name = "Empty name and principal match nothing"
-)]
-#[tokio::test]
-async fn delete_acl_matching_case_0(acl_deletion: AclDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_acl_matching.feature",
-    name = "Empty name matches nothing"
-)]
-#[tokio::test]
-async fn delete_acl_matching_case_1(acl_deletion: AclDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_acl_matching.feature",
-    name = "Empty principal matches nothing"
-)]
-#[tokio::test]
-async fn delete_acl_matching_case_2(acl_deletion: AclDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_acl_matching.feature",
-    name = "Null name and principal match every Topic ACL"
-)]
-#[tokio::test]
-async fn delete_acl_matching_case_3(acl_deletion: AclDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_acl_matching.feature",
-    name = "ANY compares a supplied name exactly"
-)]
-#[tokio::test]
-async fn delete_acl_matching_case_4(acl_deletion: AclDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_acl_matching.feature",
-    name = "MATCH includes literal wildcard and covering prefixes"
-)]
-#[tokio::test]
-async fn delete_acl_matching_case_5(acl_deletion: AclDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_acl_matching.feature",
-    name = "MATCH still filters by principal"
-)]
-#[tokio::test]
-async fn delete_acl_matching_case_6(acl_deletion: AclDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_acl_matching.feature",
-    name = "LITERAL with null name selects all literal ACLs"
-)]
-#[tokio::test]
-async fn delete_acl_matching_case_7(acl_deletion: AclDeletionScenario) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_delete_acl_matching.feature",
-    name = "PREFIXED compares the stored prefix exactly"
-)]
-#[tokio::test]
-async fn delete_acl_matching_case_8(acl_deletion: AclDeletionScenario) {}
+krabka_bdd::scenarios!(
+    "tests/features/handler_delete_acl_matching.feature",
+    fixtures = [acl_deletion: AclDeletionScenario],
+);
 
 /// Kafka's `AclControlManager.deleteAcls` matches every filter against the
 /// same ACL set, so both filters list the shared ACL, and it is removed.

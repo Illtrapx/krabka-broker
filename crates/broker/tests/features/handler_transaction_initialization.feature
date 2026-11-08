@@ -20,10 +20,15 @@ Feature: Transaction timeout validation and prepared transaction recovery
     When InitProducerId requests timeout 0 with two-phase commit false
     Then the complete initialization response has code 50 and persisted timeout absent
 
-  Scenario: Prepared recovery fences stale identities and commits idempotently
+  Scenario: Prepared recovery keeps the ongoing identity and bumps the recovery epoch
     Given a transaction-version-2 coordinator with two-phase commit enabled and 8000ms maximum timeout owns txn-2pc
     And the 500ms two-phase transaction has a persisted ongoing producer identity
     When two clients recover the prepared transaction with a 500ms timeout and keepPreparedTxn enabled
     Then both recoveries retain the ongoing identity and the second recovery increments the recovery producer epoch
+
+  Scenario: Commits after prepared recovery fence the older client and stay idempotent
+    Given a transaction-version-2 coordinator with two-phase commit enabled and 8000ms maximum timeout owns txn-2pc
+    And the 500ms two-phase transaction has a persisted ongoing producer identity
+    And two clients have recovered the prepared transaction with a 500ms timeout and keepPreparedTxn enabled
     When the older recovery client commits, then the current recovery client commits and retries
     Then the older client is fenced, the current commit is idempotent and the persisted state is CompleteCommit without a next producer identity

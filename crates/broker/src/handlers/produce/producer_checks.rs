@@ -666,7 +666,7 @@ mod tests {
             coordinator_produce.version,
         ));
     }
-    #[rstest_bdd_macros::then("the Produce row has code {code} and message \"{message}\"")]
+    #[rstest_bdd_macros::then("the Produce row has code {code} and message {message}")]
     fn translated_produce_error(
         coordinator_produce: &CoordinatorProduceRow,
         code: String,
@@ -684,7 +684,10 @@ mod tests {
                 == &expected
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_produce_transaction_errors.feature", fixtures = [coordinator_produce: CoordinatorProduceRow]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_produce_transaction_errors.feature",
+        fixtures = [coordinator_produce: CoordinatorProduceRow],
+    );
 
     /// An idempotent retry, `Decision::Duplicate`, under `acks=all` waits
     /// again for the HW to reach the duplicate's *last offset + 1* before it

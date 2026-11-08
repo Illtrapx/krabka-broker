@@ -806,14 +806,8 @@ mod tests {
             .shutdown()
             .await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_metadata_cluster_id/metadata.feature",
-        name = "Metadata reports the cluster UUID in Kafka representation"
-    )]
-    #[tokio::test]
-    async fn reports_cluster_id_in_kafka_base64_form(
-        metadata_cluster_id: MetadataClusterIdScenario,
-    ) {
-        let _ = metadata_cluster_id;
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/handler_metadata_cluster_id/metadata.feature",
+        fixtures = [metadata_cluster_id: MetadataClusterIdScenario],
+    );
 }

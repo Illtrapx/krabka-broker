@@ -10,9 +10,9 @@ Feature: Kafka feature negotiation compatibility
       | metadata.version | minimum-metadata | production-metadata |
 
     Examples:
-      | version |
-      | 0       |
-      | 3       |
+      | case                    | version |
+      | the first version       | 0       |
+      | the last legacy version | 3       |
 
   Scenario Outline: Modern clients see the complete production feature catalog
     Given the client uses ApiVersions version <version>
@@ -29,9 +29,9 @@ Feature: Kafka feature negotiation compatibility
       | krabka.version                  | 0                | 3                   |
 
     Examples:
-      | version |
-      | 4       |
-      | 5       |
+      | case                     | version |
+      | the first modern version | 4       |
+      | the latest version       | 5       |
 
   Scenario: A fresh image finalizes the minimum metadata version without zero-level features
     Given the broker has a fresh metadata image

@@ -7,12 +7,12 @@ Feature: Kafka retention bytes accepts every representable LONG
     Then the supplied topic value is accepted <accepted>
 
     Examples:
-      | value | accepted |
-      | "-1" | true |
-      | "-2" | true |
-      | "0" | true |
-      | "1073741824" | true |
-      | "-9223372036854775808" | true |
-      | "9223372036854775807" | true |
-      | "9223372036854775808" | false |
-      | "abc" | false |
+      | case                | value | accepted |
+      | unlimited           | "-1" | true |
+      | the local sentinel  | "-2" | true |
+      | zero                | "0" | true |
+      | one gibibyte        | "1073741824" | true |
+      | the smallest long   | "-9223372036854775808" | true |
+      | the largest long    | "9223372036854775807" | true |
+      | past the long range | "9223372036854775808" | false |
+      | not a number        | "abc" | false |

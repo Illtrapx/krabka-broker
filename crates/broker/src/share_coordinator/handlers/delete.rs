@@ -205,14 +205,11 @@ mod tests {
         "deletion appends exactly {records} and keeps seeded partition 0 state {kept}"
     )]
     fn deletion_storage_effect(delete_state_story: &DeleteStateStory, records: String, kept: bool) {
-        let expected: Vec<String> = serde_json::from_str(&records).expect("record kinds");
-        let expected: Vec<_> = expected
-            .into_iter()
-            .map(|kind| match kind.as_str() {
-                "tombstone" => Logged::Tombstone,
-                unknown => panic!("unknown state record {unknown}"),
-            })
-            .collect();
+        let expected = match records.as_str() {
+            "one tombstone" => vec![Logged::Tombstone],
+            "nothing" => vec![],
+            unknown => panic!("unknown appended records {unknown}"),
+        };
         check!(
             delete_state_story
                 .appended
@@ -223,75 +220,8 @@ mod tests {
         check!(delete_state_story.seeded_key_kept == Some(kept));
     }
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/delete.feature",
-        name = "An initialized key is tombstoned"
-    )]
-    #[tokio::test]
-    async fn delete_state_answers_as_kafka(delete_state_story: DeleteStateStory) {
-        drop(delete_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/delete.feature",
-        name = "A missing key writes no tombstone"
-    )]
-    #[tokio::test]
-    async fn delete_state_answers_as_kafka1(delete_state_story: DeleteStateStory) {
-        drop(delete_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/delete.feature",
-        name = "A negative partition is refused"
-    )]
-    #[tokio::test]
-    async fn delete_state_answers_as_kafka2(delete_state_story: DeleteStateStory) {
-        drop(delete_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/delete.feature",
-        name = "A partition beyond the topic is unknown"
-    )]
-    #[tokio::test]
-    async fn delete_state_answers_as_kafka3(delete_state_story: DeleteStateStory) {
-        drop(delete_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/delete.feature",
-        name = "A topic absent from the image is unknown"
-    )]
-    #[tokio::test]
-    async fn delete_state_answers_as_kafka4(delete_state_story: DeleteStateStory) {
-        drop(delete_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/delete.feature",
-        name = "An empty group returns no rows"
-    )]
-    #[tokio::test]
-    async fn delete_state_answers_as_kafka5(delete_state_story: DeleteStateStory) {
-        drop(delete_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/delete.feature",
-        name = "An empty partition list returns no rows"
-    )]
-    #[tokio::test]
-    async fn delete_state_answers_as_kafka6(delete_state_story: DeleteStateStory) {
-        drop(delete_state_story);
-    }
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/migrated/src/share_coordinator/handlers/delete.feature",
-        name = "A resigned coordinator refuses deletion"
-    )]
-    #[tokio::test]
-    async fn delete_state_answers_as_kafka7(delete_state_story: DeleteStateStory) {
-        drop(delete_state_story);
-    }
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/share_coordinator/handlers/delete.feature",
+        fixtures = [delete_state_story: DeleteStateStory],
+    );
 }

@@ -99,8 +99,8 @@ mod tests {
         controller_queue_metrics.metrics = BrokerMetrics::new();
     }
 
-    #[rstest_bdd_macros::when(
-        "a controller operation waits {milliseconds} milliseconds in the queue"
+    #[rstest_bdd_macros::given(
+        "a controller operation has waited {milliseconds} milliseconds in the queue"
     )]
     fn record_queue_wait(controller_queue_metrics: &ControllerQueueMetrics, milliseconds: u64) {
         controller_queue_metrics
@@ -108,8 +108,8 @@ mod tests {
             .queue_time(Duration::from_millis(milliseconds));
     }
 
-    #[rstest_bdd_macros::when(
-        "a controller operation takes {milliseconds} milliseconds to process"
+    #[rstest_bdd_macros::given(
+        "a controller operation has taken {milliseconds} milliseconds to process"
     )]
     fn record_queue_processing(
         controller_queue_metrics: &ControllerQueueMetrics,
@@ -120,17 +120,19 @@ mod tests {
             .processing_time(Duration::from_millis(milliseconds));
     }
 
-    #[rstest_bdd_macros::when("a controller operation starts")]
+    #[rstest_bdd_macros::given("a controller operation has started")]
     fn record_queue_operation(controller_queue_metrics: &ControllerQueueMetrics) {
         controller_queue_metrics.metrics.operation_started();
     }
 
-    #[rstest_bdd_macros::when("a controller operation times out")]
+    #[rstest_bdd_macros::given("a controller operation has timed out")]
     fn record_queue_timeout(controller_queue_metrics: &ControllerQueueMetrics) {
         controller_queue_metrics.metrics.operation_timed_out();
     }
 
-    #[rstest_bdd_macros::when("the controller queue is idle for {milliseconds} milliseconds")]
+    #[rstest_bdd_macros::given(
+        "the controller queue has been idle for {milliseconds} milliseconds"
+    )]
     fn record_queue_idle(controller_queue_metrics: &ControllerQueueMetrics, milliseconds: u64) {
         controller_queue_metrics
             .metrics
@@ -165,7 +167,7 @@ mod tests {
         );
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/metrics/event_queue.feature",
         fixtures = [controller_queue_metrics: ControllerQueueMetrics]
     );

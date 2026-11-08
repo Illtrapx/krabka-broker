@@ -32,7 +32,7 @@ Feature: Broker registration transitions write and replay Kafka change records
     And broker 1 retains its identity with fenced <fenced> and controlled shutdown <shutdown>
 
     Examples:
-      | fenced | shutdown | operation |
-      | true | false | fence |
-      | false | false | unfence |
-      | false | true | controlled shutdown |
+      | case                           | fenced | shutdown | operation           |
+      | already fenced                 | true   | false    | fence               |
+      | already unfenced               | false  | false    | unfence             |
+      | already in controlled shutdown | false  | true     | controlled shutdown |

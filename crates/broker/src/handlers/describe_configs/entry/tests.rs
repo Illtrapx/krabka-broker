@@ -160,7 +160,10 @@ fn check_unknown_config_entry(unknown_config: &UnknownConfigScenario) {
             }
     );
 }
-rstest_bdd_macros::scenarios!("tests/features/handler_unknown_config_entry",fixtures=[unknown_config:UnknownConfigScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_unknown_config_entry",
+    fixtures = [unknown_config: UnknownConfigScenario],
+);
 
 /// The same row as `log.retention.ms` would carry, so the chain test does not
 /// depend on a key krabka happens to have.

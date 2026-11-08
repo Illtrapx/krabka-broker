@@ -271,7 +271,10 @@ fn expected_acl_resources(acl_pattern_query: &AclPatternQuery, expected: String)
     check!(acl_pattern_query.matched.as_ref() == Some(&expected));
 }
 
-rstest_bdd_macros::scenarios!("tests/features/migrated/src/handlers/acl_wire/binding_filter/tests.feature", fixtures = [acl_pattern_query: AclPatternQuery]);
+krabka_bdd::scenarios!(
+    "tests/features/migrated/src/handlers/acl_wire/binding_filter/tests.feature",
+    fixtures = [acl_pattern_query: AclPatternQuery],
+);
 
 #[test]
 fn entry_matching_takes_only_null_as_any() {

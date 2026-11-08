@@ -218,7 +218,10 @@ fn check_refused_logger_alteration(
             == Some(LogLevel::Info)
     );
 }
-rstest_bdd_macros::scenarios!("tests/features/handler_broker_logger_refusals",fixtures=[logger_alteration:LoggerAlterationScenario]);
+krabka_bdd::scenarios!(
+    "tests/features/handler_broker_logger_refusals",
+    fixtures = [logger_alteration: LoggerAlterationScenario],
+);
 
 #[test]
 fn the_default_filter_names_the_loggers_an_operator_reaches_for() {

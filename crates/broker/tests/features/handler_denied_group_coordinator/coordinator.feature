@@ -4,6 +4,6 @@ Feature: FindCoordinator group denials use Kafka response evolution
     When alice requests the group coordinator
     Then the coordinator refusal uses the <shape> Kafka response shape
     Examples:
-      | version | shape                                    |
-      | 4       | per-key without message                  |
-      | 3       | legacy with default message and no node   |
+      | case                     | version | shape                                   |
+      | batched coordinator keys | 4       | per-key without message                 |
+      | single coordinator key   | 3       | legacy with default message and no node |

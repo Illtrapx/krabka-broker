@@ -702,5 +702,5 @@ mod tests {
         krabka-otlp-heartbeat-interval KRABKA_OTLP_HEARTBEAT_INTERVAL [] +------++--------\n\
         gcp-project-id KRABKA_GCP_PROJECT_ID [] +++++++++++++++++\n\
 ";
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/bin/broker/cli.feature", fixtures = [cluster_id_command: ClusterIdCommand]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/bin/broker/cli.feature", fixtures = [cluster_id_command: ClusterIdCommand]);
 }

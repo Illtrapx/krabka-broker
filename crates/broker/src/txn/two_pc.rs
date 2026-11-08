@@ -202,7 +202,7 @@ mod tests {
         assert2::assert!(ordinary_transaction_timeout.resolved == Some(Err(code)));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/txn/two_pc.feature",
         fixtures = [ordinary_transaction_timeout: OrdinaryTransactionTimeout]
     );

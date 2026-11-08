@@ -5,10 +5,10 @@ Feature: ListConfigResources applies membership filters and stable Kafka resourc
     When configuration resources are collected on the PLAINTEXT listener
     Then the complete configuration resource rows in order are <expected>
     Examples:
-      | version | types               | expected                                                                                                                   |
-      | 0       | all                 | client_metrics:sub-1                                                                                                       |
-      | 1       | all                 | group:g-1,client_metrics:sub-1,broker_logger:2,broker_logger:10,broker:2,broker:10,topic:t-a,topic:t-b                         |
-      | 1       | topic,topic         | topic:t-a,topic:t-b                                                                                                         |
-      | 1       | topic,broker,group  | group:g-1,broker:2,broker:10,topic:t-a,topic:t-b                                                                               |
-      | 1       | broker_logger       | broker_logger:2,broker_logger:10                                                                                            |
-      | 1       | client_metrics      | client_metrics:sub-1                                                                                                       |
+      | case                                   | version | types              | expected                                                                                               |
+      | version zero lists client metrics only | 0       | all                | client_metrics:sub-1                                                                                   |
+      | version one lists every type           | 1       | all                | group:g-1,client_metrics:sub-1,broker_logger:2,broker_logger:10,broker:2,broker:10,topic:t-a,topic:t-b |
+      | duplicate type filter                  | 1       | topic,topic        | topic:t-a,topic:t-b                                                                                    |
+      | several type filters                   | 1       | topic,broker,group | group:g-1,broker:2,broker:10,topic:t-a,topic:t-b                                                       |
+      | broker loggers                         | 1       | broker_logger      | broker_logger:2,broker_logger:10                                                                       |
+      | client metrics                         | 1       | client_metrics     | client_metrics:sub-1                                                                                   |

@@ -7,11 +7,11 @@ Feature: Kafka topic INT keys preserve signed 32-bit domains
     Then the supplied topic value is accepted <accepted>
 
     Examples:
-      | key | value | accepted |
-      | segment.bytes | "2147483647" | true |
-      | segment.bytes | "2147483648" | false |
-      | segment.bytes | "9223372036854775807" | false |
-      | min.insync.replicas | "2147483647" | true |
-      | min.insync.replicas | "2147483648" | false |
-      | min.insync.replicas | "0" | false |
-      | min.insync.replicas | "-1" | false |
+      | case                             | key | value | accepted |
+      | the largest segment              | segment.bytes | "2147483647" | true |
+      | a segment past the int range     | segment.bytes | "2147483648" | false |
+      | a segment at the long maximum    | segment.bytes | "9223372036854775807" | false |
+      | the largest minimum ISR          | min.insync.replicas | "2147483647" | true |
+      | a minimum ISR past the int range | min.insync.replicas | "2147483648" | false |
+      | a zero minimum ISR               | min.insync.replicas | "0" | false |
+      | a negative minimum ISR           | min.insync.replicas | "-1" | false |

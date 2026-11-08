@@ -991,6 +991,14 @@ mod tests {
         check!(group_configuration.result == Some(Err(message)));
     }
 
+    #[rstest_bdd_macros::then("the group alteration refusal message is:")]
+    fn refused_group_alteration_message(
+        group_configuration: &GroupConfiguration,
+        docstring: String,
+    ) {
+        check!(group_configuration.result == Some(Err(docstring.trim().to_owned())));
+    }
+
     #[rstest_bdd_macros::given("Kafka trunk group configuration definitions")]
     fn trunk_group_definitions(group_configuration: &mut GroupConfiguration) {
         group_configuration.definitions = Some(KAFKA_GROUP_KEYS);
@@ -1029,7 +1037,7 @@ mod tests {
         check!(ordered == *names);
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/config_keys/group",
         fixtures = [group_configuration: GroupConfiguration]
     );

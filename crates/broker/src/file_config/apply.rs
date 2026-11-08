@@ -421,7 +421,7 @@ protocol = "Plaintext"
     }
 
     #[rstest_bdd_macros::then(
-        "the metadata log directory is {metadata} and data log directories are JSON {data}"
+        "the metadata log directory is {metadata} and data log directories are {data}"
     )]
     fn expected_metadata_directory_file(
         metadata_directory_file: &MetadataDirectoryFile,
@@ -430,12 +430,12 @@ protocol = "Plaintext"
     ) {
         let expected = (
             metadata.into(),
-            serde_json::from_str(&data).expect("explicit ordered data directory paths"),
+            data.split(", ").map(PathBuf::from).collect::<Vec<_>>(),
         );
         assert!(metadata_directory_file.resolved.as_ref() == Some(&expected));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/file_config/apply.feature",
         fixtures = [metadata_directory_file: MetadataDirectoryFile]
     );

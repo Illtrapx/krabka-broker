@@ -828,7 +828,7 @@ mod tests {
                 .has_subscription_metadata_record
         );
     }
-    use rstest_bdd_macros::{given, scenarios, then, when};
+    use rstest_bdd_macros::{given, then, when};
     #[derive(Default)]
     struct MemberSubscriptionRecord {
         member: Option<MemberState>,
@@ -864,5 +864,5 @@ mod tests {
         check!(record.subscribed_topic_names == vec!["a", "b", "c"]);
         check!(record.subscribed_topic_regex.as_deref() == Some(""));
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/actor/persistence.feature",fixtures=[subscription_record:MemberSubscriptionRecord]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/actor/persistence.feature",fixtures=[subscription_record:MemberSubscriptionRecord]);
 }

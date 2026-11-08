@@ -2,13 +2,11 @@ Feature: ISR maintenance follows Kafka follower lag and eligibility rules
   A scan shrinks followers that lost progress and admits caught-up replicas only
   when their fetch proves the current registered broker epoch.
 
-  Background:
+  Scenario Outline: Scan when <case>
     Given brokers 1, 2 and 3 are unfenced at broker epoch 5 with ISR minimum 1 and lag limit 1000 milliseconds
     And leader 1 has leader epoch 7, partition epoch 3, log end 100, high watermark 90 and epoch start 80
-
-  Scenario Outline: Scan when <case>
-    Given the installed ISR, assigned replicas and follower observations are JSON <members>
-    When the leader scans for Kafka ISR expansion or shrink
+    And the installed ISR, assigned replicas and follower observations are JSON <members>
+    When the leader scans its ISR against Kafka follower rules
     Then the complete ISR proposal is JSON <proposal>
 
     Examples:

@@ -181,7 +181,10 @@ mod tests {
                 ))]
         );
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_share_coordinator_key",fixtures=[share_coordinator_key:ShareCoordinatorKeyScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_share_coordinator_key",
+        fixtures = [share_coordinator_key: ShareCoordinatorKeyScenario],
+    );
 
     #[yare::parameterized(
         empty_group = { format!(":{TOPIC_ID}:0") },

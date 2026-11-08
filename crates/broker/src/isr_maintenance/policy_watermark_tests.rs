@@ -164,4 +164,4 @@ fn observe_policy(policy_refresh: &PolicyRefresh, watermark: i64, notified: bool
     check!(policy_refresh.observed == Some((watermark, notified, committed)));
 }
 
-rstest_bdd_macros::scenarios!("tests/features/isr_policy_refresh/policy.feature", fixtures = [policy_refresh: PolicyRefresh]);
+krabka_bdd::scenarios!("tests/features/isr_policy_refresh/policy.feature", fixtures = [policy_refresh: PolicyRefresh]);

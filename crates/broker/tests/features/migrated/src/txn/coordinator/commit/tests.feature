@@ -6,14 +6,14 @@ Feature: Transaction-state append errors preserve Kafka coordinator availability
     Then the transaction append response carries Kafka code <response>
 
     Examples:
-      | append | response |
-      | 3 | 15 |
-      | 20 | 15 |
-      | 2 | 2 |
-      | 19 | 15 |
-      | 7 | 15 |
-      | 6 | 16 |
-      | 56 | 16 |
-      | 10 | -1 |
-      | 18 | -1 |
-      | -1 | -1 |
+      | case                                      | append | response |
+      | an unknown partition means unavailable    | 3      | 15       |
+      | too few replicas after append             | 20     | 15       |
+      | a corrupt message passes through          | 2      | 2        |
+      | too few replicas before append            | 19     | 15       |
+      | a timed out append means unavailable      | 7      | 15       |
+      | a lost leader means not coordinator       | 6      | 16       |
+      | a storage error means not coordinator     | 56     | 16       |
+      | an oversized message is unknown           | 10     | -1       |
+      | an oversized record list is unknown       | 18     | -1       |
+      | an unknown error stays unknown            | -1     | -1       |

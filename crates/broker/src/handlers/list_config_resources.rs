@@ -314,7 +314,10 @@ mod tests {
             .collect();
         assert2::check!(config_resource_listing.resources.as_ref().unwrap() == &expected);
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_list_config_resources",fixtures=[config_resource_listing:ConfigResourceListingScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_list_config_resources",
+        fixtures = [config_resource_listing: ConfigResourceListingScenario],
+    );
 
     krabka_broker_macros::wire_codec_helpers! {
         test_context ["admin-client"];

@@ -328,7 +328,7 @@ mod tests {
         check!(remote_segment_lineage.within_lineage == Some(false));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/remote_reader/lineage.feature",
         fixtures = [remote_segment_lineage: RemoteSegmentLineage]
     );

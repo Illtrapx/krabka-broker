@@ -4,9 +4,9 @@ Feature: Bootstrap reconstructs classic group protocol membership
     When bootstrap applies the classic group metadata record
     Then the loaded classic group preserves all stored member and protocol fields with Kafka timeout defaults
     Examples:
-      | instance | rebalance | session |
-      | inst | 45000 | 30000 |
-      | absent | -1 | 30000 |
+      | case                                                  | instance | rebalance | session |
+      | a static member stores its rebalance timeout          | inst     | 45000     | 30000   |
+      | an omitted rebalance timeout uses the session timeout | absent   | -1        | 30000   |
   Scenario: An empty stored protocol type becomes absent
     Given persisted classic group g is empty with an empty protocol type and generation 5
     When bootstrap applies the classic group metadata record

@@ -4,8 +4,8 @@ Feature: DescribeGroups exposes every classic coordinator state in Kafka vocabul
     When DescribeGroups renders the classic group state
     Then the reported classic group state is <expected>
     Examples:
-      | condition                  | expected            |
-      | has no members             | Empty               |
-      | is preparing a rebalance   | PreparingRebalance  |
-      | is completing a rebalance  | CompletingRebalance |
-      | has a stable assignment    | Stable              |
+      | case                 | condition                 | expected            |
+      | empty                | has no members            | Empty               |
+      | preparing rebalance  | is preparing a rebalance  | PreparingRebalance  |
+      | completing rebalance | is completing a rebalance | CompletingRebalance |
+      | stable               | has a stable assignment   | Stable              |

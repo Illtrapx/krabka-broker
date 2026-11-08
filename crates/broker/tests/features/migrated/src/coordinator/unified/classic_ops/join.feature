@@ -4,9 +4,9 @@ Feature: JoinGroup member identifier bootstrap
     When the coordinator checks known member identity for JoinGroup version <version>
     Then the member must obtain an assigned member identifier <required>
     Examples:
-      | member | instance | version | required |
-      | empty | absent | 4 | true |
-      | empty | absent | 9 | true |
-      | empty | absent | 3 | false |
-      | empty | instance-1 | 9 | false |
-      | m1 | absent | 9 | false |
+      | case                                        | member | instance   | version | required |
+      | an anonymous member at version four         | empty  | absent     | 4       | true     |
+      | an anonymous member at version nine         | empty  | absent     | 9       | true     |
+      | version three predates member id bootstrap  | empty  | absent     | 3       | false    |
+      | a static member keeps its instance identity | empty  | instance-1 | 9       | false    |
+      | a known member id needs no bootstrap        | m1     | absent     | 9       | false    |

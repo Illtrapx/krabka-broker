@@ -330,7 +330,7 @@ fn expected_share_append_failure(
     check!(*message == expected_message.as_str());
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/share_coordinator/coordinator/persist/tests.feature",
     fixtures = [share_state_append_failure: ShareStateAppendFailure]
 );

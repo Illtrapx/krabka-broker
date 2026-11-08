@@ -191,5 +191,8 @@ mod tests {
         assert!((*classified != ListOffsetsKind::Unsupported) == supported);
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/handlers/list_offsets/sentinels.feature", fixtures = [offset_timestamp: OffsetTimestampContract]);
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/handlers/list_offsets/sentinels.feature",
+        fixtures = [offset_timestamp: OffsetTimestampContract],
+    );
 }

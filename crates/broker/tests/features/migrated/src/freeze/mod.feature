@@ -8,6 +8,6 @@ Feature: Freeze scope vocabulary
     Then the operator-facing pattern type is <name>
 
     Examples:
-      | pattern  | name     |
-      | Literal  | literal  |
-      | Prefixed | prefixed |
+      | case             | pattern  | name     |
+      | a literal scope  | Literal  | literal  |
+      | a prefixed scope | Prefixed | prefixed |

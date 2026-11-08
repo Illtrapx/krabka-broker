@@ -538,9 +538,7 @@ mod tests {
         .await;
         share_offsets_deletion.groups_before = vec!["share-empty".into(), "share-held".into()];
     }
-    #[rstest_bdd_macros::when(
-        "DeleteShareGroupOffsets targets group \"{group}\" and topics {topics}"
-    )]
+    #[rstest_bdd_macros::when("DeleteShareGroupOffsets targets group {group} and topics {topics}")]
     async fn delete_share_offsets_request(
         share_offsets_deletion: &mut ShareOffsetsDeletion,
         group: String,
@@ -571,7 +569,7 @@ mod tests {
         );
     }
     #[rstest_bdd_macros::then(
-        "the complete share deletion response has code {code}, message \"{message}\" and these topic rows"
+        "the complete share deletion response has code {code}, message {message} and these topic rows"
     )]
     fn share_deletion_rows(
         share_offsets_deletion: &ShareOffsetsDeletion,
@@ -619,54 +617,10 @@ mod tests {
         started.broker.shutdown().await;
     }
 
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_delete_share_offsets.feature",
-        name = "Disabled API returns top-level unsupported version"
-    )]
-    #[tokio::test]
-    async fn share_offset_deletion_case_0(share_offsets_deletion: ShareOffsetsDeletion) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_delete_share_offsets.feature",
-        name = "Denied group returns top-level authorization failure"
-    )]
-    #[tokio::test]
-    async fn share_offset_deletion_case_1(share_offsets_deletion: ShareOffsetsDeletion) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_delete_share_offsets.feature",
-        name = "An empty group ID is invalid"
-    )]
-    #[tokio::test]
-    async fn share_offset_deletion_case_2(share_offsets_deletion: ShareOffsetsDeletion) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_delete_share_offsets.feature",
-        name = "An absent group is not created"
-    )]
-    #[tokio::test]
-    async fn share_offset_deletion_case_3(share_offsets_deletion: ShareOffsetsDeletion) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_delete_share_offsets.feature",
-        name = "A classic group cannot be deleted as share offsets"
-    )]
-    #[tokio::test]
-    async fn share_offset_deletion_case_4(share_offsets_deletion: ShareOffsetsDeletion) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_delete_share_offsets.feature",
-        name = "A share group without partition metadata returns no rows"
-    )]
-    #[tokio::test]
-    async fn share_offset_deletion_case_5(share_offsets_deletion: ShareOffsetsDeletion) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_delete_share_offsets.feature",
-        name = "Existing share metadata distinguishes unstored and unknown topics"
-    )]
-    #[tokio::test]
-    async fn share_offset_deletion_case_6(share_offsets_deletion: ShareOffsetsDeletion) {}
+    krabka_bdd::scenarios!(
+        "tests/features/handler_delete_share_offsets.feature",
+        fixtures = [share_offsets_deletion: ShareOffsetsDeletion],
+    );
 
     #[tokio::test]
     async fn delete_removes_only_requested_state_and_a_retry_finds_none() {

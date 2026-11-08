@@ -789,47 +789,10 @@ async fn observed_growth_rows(
     started.broker.shutdown().await;
 }
 
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_partition_rows.feature",
-    name = "the same growth twice"
-)]
-#[tokio::test]
-async fn partition_growth_case_0(partition_growth_rows: PartitionGrowthRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_partition_rows.feature",
-    name = "two different growths"
-)]
-#[tokio::test]
-async fn partition_growth_case_1(partition_growth_rows: PartitionGrowthRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_partition_rows.feature",
-    name = "the same growth twice validate only"
-)]
-#[tokio::test]
-async fn partition_growth_case_2(partition_growth_rows: PartitionGrowthRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_partition_rows.feature",
-    name = "duplicates precede other rows"
-)]
-#[tokio::test]
-async fn partition_growth_case_3(partition_growth_rows: PartitionGrowthRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_partition_rows.feature",
-    name = "a count below the current one"
-)]
-#[tokio::test]
-async fn partition_growth_case_4(partition_growth_rows: PartitionGrowthRows) {}
-
-#[rstest_bdd_macros::scenario(
-    path = "tests/features/handler_create_partition_rows.feature",
-    name = "too few explicit assignments"
-)]
-#[tokio::test]
-async fn partition_growth_case_5(partition_growth_rows: PartitionGrowthRows) {}
+krabka_bdd::scenarios!(
+    "tests/features/handler_create_partition_rows.feature",
+    fixtures = [partition_growth_rows: PartitionGrowthRows],
+);
 
 /// Both operations initially observe the same count. Only one may create the
 /// new indices; the other must see the committed count on its next attempt.

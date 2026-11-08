@@ -542,7 +542,7 @@ mod tests {
     }
     use {
         rstest_bdd::datatable::Rows,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
     };
     struct ShareAssignmentInput {
         group: GroupSpec,
@@ -577,11 +577,15 @@ mod tests {
     use crate::coordinator::unified::test_support::partition_assignments::{
         self, ExpectedMemberPartitions, MemberAssignmentInput, TopicPartitionsInput,
     };
-    #[given("the Share subscription builder is {builder}")]
-    fn subscription_policy(shared_placement: &mut SharedPlacement, builder: String) {
+    #[given("a {builder} Share group has these member subscriptions and previous assignments")]
+    fn subscription_policy(
+        shared_placement: &mut SharedPlacement,
+        builder: String,
+        #[datatable] rows: Rows<MemberAssignmentInput>,
+    ) {
         shared_placement.source = Some(ShareAssignmentInput {
             group: GroupSpec {
-                members: vec![],
+                members: partition_assignments::member_subscriptions(rows),
                 subscription_type: partition_assignments::subscription_type(&builder),
             },
             topics: TopicMetadata::default(),
@@ -599,18 +603,6 @@ mod tests {
             .expect("subscription builder given")
             .topics = partition_assignments::topic_metadata(rows);
     }
-    #[given("the Share members have these subscriptions and previous assignments")]
-    fn assignment_member_subscriptions(
-        shared_placement: &mut SharedPlacement,
-        #[datatable] rows: Rows<MemberAssignmentInput>,
-    ) {
-        shared_placement
-            .source
-            .as_mut()
-            .expect("subscription builder given")
-            .group
-            .members = partition_assignments::member_subscriptions(rows);
-    }
     #[then("the complete Share assignment is")]
     fn complete_assignment(
         shared_placement: &SharedPlacement,
@@ -620,25 +612,29 @@ mod tests {
         check!(shared_placement.assignment.as_ref() == Some(&expected));
     }
 
-    #[given("the Share assignable partition set is {partitions}")]
-    fn share_eligible_partitions(shared_placement: &mut SharedPlacement, partitions: String) {
-        let eligible = serde_json::from_str::<Option<HashMap<String, Vec<i32>>>>(&partitions)
-            .expect("eligible partitions object or null");
+    #[derive(rstest_bdd_macros::DataTableRow)]
+    struct AssignablePartitions {
+        topic: u8,
+        partitions: String,
+    }
+    #[given("only these Share partitions are assignable")]
+    fn share_eligible_partitions(
+        shared_placement: &mut SharedPlacement,
+        #[datatable] rows: Rows<AssignablePartitions>,
+    ) {
         shared_placement
             .source
             .as_mut()
             .expect("group and topics prepared")
-            .assignable = eligible.map(|topics| {
-            topics
-                .into_iter()
-                .map(|(topic, partitions)| {
-                    (
-                        Uuid([topic.parse::<u8>().expect("topic rank"); 16]),
-                        partitions.into_iter().collect(),
-                    )
+            .assignable = Some(
+            rows.into_iter()
+                .map(|row| {
+                    let partitions: Vec<i32> =
+                        serde_json::from_str(&row.partitions).expect("assignable partition list");
+                    (Uuid([row.topic; 16]), partitions.into_iter().collect())
                 })
-                .collect()
-        });
+                .collect(),
+        );
     }
-    scenarios!("tests/features/migrated/src/coordinator/unified/share/assignor.feature",fixtures=[shared_placement:SharedPlacement]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/unified/share/assignor.feature",fixtures=[shared_placement:SharedPlacement]);
 }

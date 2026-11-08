@@ -717,38 +717,11 @@ mod tests {
         check!(names == vec![None, Some("alice".to_owned())]);
         quota_filter.started.take().unwrap().broker.shutdown().await;
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_describe_quota_filters/filter.feature",
-        name = "Invalid filter shapes fail the complete request before matching stored quotas"
-    )]
-    #[tokio::test]
-    async fn invalid_filters_answer_kafkas_top_level_error(
-        quota_filter: QuotaFilterScenario,
-        components: String,
-        code: i16,
-        message: String,
-    ) {
-        let _ = (quota_filter, components, code, message);
-    }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_describe_quota_filters/filter.feature",
-        name = "Exact and default filters preserve complete matching quota rows"
-    )]
-    #[tokio::test]
-    async fn valid_quota_filter_rows(
-        quota_filter: QuotaFilterScenario,
-        components: String,
-        user: String,
-        value: f64,
-    ) {
-        let _ = (quota_filter, components, user, value);
-    }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_describe_quota_filters/filter.feature",
-        name = "Specified-user matching includes default user entities"
-    )]
-    #[tokio::test]
-    async fn specified_user_quota_rows(quota_filter: QuotaFilterScenario) { let _ = quota_filter; }
+
+    krabka_bdd::scenarios!(
+        "tests/features/handler_describe_quota_filters/filter.feature",
+        fixtures = [quota_filter: QuotaFilterScenario],
+    );
 
     #[tokio::test]
     async fn successful_empty_match_uses_some_empty_entries() {

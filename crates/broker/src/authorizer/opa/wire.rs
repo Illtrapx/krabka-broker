@@ -194,7 +194,7 @@ mod tests {
         assert2::assert!(policy_operation.rendered == Some(expected.as_str()));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/authorizer/opa/wire.feature",
         fixtures = [policy_operation: PolicyOperation]
     );

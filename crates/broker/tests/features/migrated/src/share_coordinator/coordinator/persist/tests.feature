@@ -8,10 +8,10 @@ Feature: Share state append failures map to Kafka operation errors
     Then the share state operation error has code <code> and message <message>
 
     Examples:
-      | condition | code | message |
-      | awaiting replay | 14 | The coordinator is loading and hence can't process requests. |
-      | not local | 15 | This server does not host this topic-partition. |
-      | not the leader | 16 | This is not the correct coordinator. |
+      | case                                     | condition       | code | message                                                      |
+      | the partition is still loading           | awaiting replay | 14   | The coordinator is loading and hence can't process requests. |
+      | the partition is not hosted here         | not local       | 15   | This server does not host this topic-partition.              |
+      | the broker no longer leads the partition | not the leader  | 16   | This is not the correct coordinator.                         |
 
   Scenario: A timed-out append reports unavailable coordinator with timeout text
     Given the share state append timed out

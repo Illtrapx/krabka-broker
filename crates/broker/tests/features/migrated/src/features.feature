@@ -8,21 +8,21 @@ Feature: Metadata version transition compatibility
     Then a metadata format change is crossed <changed>
 
     Examples:
-      | source | target | changed |
-      | 25     | 25     | false   |
-      | 25     | 24     | false   |
-      | 24     | 25     | false   |
-      | 29     | 24     | false   |
-      | 25     | 22     | true    |
-      | 25     | 23     | false   |
-      | 23     | 22     | true    |
-      | 17     | 15     | true    |
-      | 16     | 15     | false   |
-      | 13     | 12     | true    |
-      | 12     | 11     | false   |
-      | 30     | 29     | true    |
-      | 32     | 31     | true    |
-      | 31     | 30     | false   |
-      | 8      | 7      | true    |
-      | 7      | 6      | true    |
-      | 33     | 32     | true    |
+      | case                                   | source | target | changed |
+      | the same version                       | 25     | 25     | false   |
+      | a downgrade between unchanged versions | 25     | 24     | false   |
+      | an upgrade between unchanged versions  | 24     | 25     | false   |
+      | a wide downgrade without a change      | 29     | 24     | false   |
+      | a downgrade across version 23          | 25     | 22     | true    |
+      | a downgrade onto version 23            | 25     | 23     | false   |
+      | a downgrade from version 23            | 23     | 22     | true    |
+      | a downgrade from version 17            | 17     | 15     | true    |
+      | a downgrade below version 17           | 16     | 15     | false   |
+      | a downgrade from version 13            | 13     | 12     | true    |
+      | a downgrade below version 13           | 12     | 11     | false   |
+      | a downgrade from version 30            | 30     | 29     | true    |
+      | a downgrade from version 32            | 32     | 31     | true    |
+      | a downgrade onto version 30            | 31     | 30     | false   |
+      | a downgrade from version 8             | 8      | 7      | true    |
+      | a downgrade from version 7             | 7      | 6      | true    |
+      | a downgrade from version 33            | 33     | 32     | true    |

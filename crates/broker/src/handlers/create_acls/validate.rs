@@ -402,7 +402,10 @@ mod tests {
     ) {
         assert!(acl_validation.classification.unwrap() == (unknown, filter_only));
     }
-    rstest_bdd_macros::scenarios!("tests/features/handler_acl_validation",fixtures=[acl_validation:AclValidationScenario]);
+    krabka_bdd::scenarios!(
+        "tests/features/handler_acl_validation",
+        fixtures = [acl_validation: AclValidationScenario],
+    );
 
     /// A resource name with a NUL byte is a valid Kafka resource name.
     #[test]

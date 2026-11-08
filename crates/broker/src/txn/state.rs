@@ -279,7 +279,7 @@ mod tests {
         assert2::assert!(transaction_status_record.recovered.get() == Some(None));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/txn/state.feature",
         fixtures = [transaction_status_record: TransactionStatusRecord]
     );

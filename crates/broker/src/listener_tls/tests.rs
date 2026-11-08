@@ -374,7 +374,7 @@ fn refused_listener_store_change(
     check!(listener_store_change.checked == Some(Err((code, message))));
 }
 
-rstest_bdd_macros::scenarios!(
+krabka_bdd::scenarios!(
     "tests/features/migrated/src/listener_tls/tests.feature",
     fixtures = [listener_store_change: ListenerStoreChange]
 );

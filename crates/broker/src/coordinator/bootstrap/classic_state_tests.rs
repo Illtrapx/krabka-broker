@@ -221,7 +221,7 @@ async fn a_replayed_group_admits_a_new_member_that_proposes_its_protocol() {
     );
 }
 
-use rstest_bdd_macros::{given, scenarios, then, when};
+use rstest_bdd_macros::{given, then, when};
 #[derive(Default)]
 struct ClassicLoad {
     stored: Option<GroupMetadataValue>,
@@ -295,4 +295,4 @@ fn loaded_classic_group(classic_load: &ClassicLoad) {
     }
     assert!(loaded == &expected);
 }
-scenarios!("tests/features/migrated/src/coordinator/bootstrap/classic_state_tests.feature",fixtures=[classic_load:ClassicLoad]);
+krabka_bdd::scenarios!("tests/features/migrated/src/coordinator/bootstrap/classic_state_tests.feature",fixtures=[classic_load:ClassicLoad]);

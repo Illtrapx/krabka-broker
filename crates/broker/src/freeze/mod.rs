@@ -112,7 +112,7 @@ mod tests {
         check!(freeze_scope.name == Some(name.as_str()));
     }
 
-    rstest_bdd_macros::scenarios!(
+    krabka_bdd::scenarios!(
         "tests/features/migrated/src/freeze/mod.feature",
         fixtures = [freeze_scope: FreezeScopeVocabulary]
     );

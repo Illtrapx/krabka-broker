@@ -60,18 +60,18 @@ Feature: Classic consumer online upgrade validates persisted protocol compatibil
     When the coordinator decodes the embedded consumer subscription
     Then the embedded subscription resolves to <topics>
     Examples:
-      | encoding | topics |
-      | empty | undecodable |
-      | short | undecodable |
-      | negative-version | undecodable |
-      | above-schema | t1 |
+      | case                                   | encoding         | topics      |
+      | no bytes                               | empty            | undecodable |
+      | too short for a version                | short            | undecodable |
+      | a negative version                     | negative-version | undecodable |
+      | a newer version reads the known fields | above-schema     | t1          |
   Scenario Outline: Online policy protocol and size checks use Kafka refusal messages
     Given classic group g uses protocol <protocol> with <members> consumer members
     When the coordinator validates online upgrade enabled <enabled> with maximum size <maximum>
     Then online conversion is <outcome> with the exact Kafka reason
     Examples:
-      | protocol | members | enabled | maximum | outcome |
-      | consumer | 2 | true | 2 | allowed |
-      | consumer | 2 | false | 2 | disabled |
-      | connect | 2 | true | 2 | wrong-protocol |
-      | consumer | 3 | true | 2 | too-large |
+      | case                               | protocol | members | enabled | maximum | outcome        |
+      | a small consumer group upgrades    | consumer | 2       | true    | 2       | allowed        |
+      | online upgrade is disabled         | consumer | 2       | false   | 2       | disabled       |
+      | a connect group cannot upgrade     | connect  | 2       | true    | 2       | wrong-protocol |
+      | the group exceeds the maximum size | consumer | 3       | true    | 2       | too-large      |

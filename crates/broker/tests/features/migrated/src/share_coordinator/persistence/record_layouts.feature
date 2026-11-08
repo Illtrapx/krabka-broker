@@ -3,8 +3,15 @@ Feature: Kafka share-state coordinator record layouts
   batch arrays, tag trailers, and optional delivery-complete-count tag.
 
   Scenario: An initial empty snapshot omits the default delivery-complete-count tag
-    Given a share snapshot has snapshot epoch 0, state epoch 1, leader epoch 0, and start offset -1
-    And snapshot creation time is 1000, write time is 1000, and delivery-complete count is -1
+    Given a share snapshot has these fields:
+      | field                   | value |
+      | snapshot epoch          | 0     |
+      | state epoch             | 1     |
+      | leader epoch            | 0     |
+      | start offset            | -1    |
+      | creation time           | 1000  |
+      | write time              | 1000  |
+      | delivery-complete count | -1    |
     And the persisted share-state batches are:
       | first | last | delivery | attempts |
     When the share snapshot is encoded and decoded as a coordinator record
@@ -12,8 +19,15 @@ Feature: Kafka share-state coordinator record layouts
     And decoding preserves every field of the share snapshot
 
   Scenario: A populated snapshot retains batches, timestamps, and the delivery-complete tag
-    Given a share snapshot has snapshot epoch 3, state epoch 2, leader epoch 4, and start offset 10
-    And snapshot creation time is 1000, write time is 2000, and delivery-complete count is 5
+    Given a share snapshot has these fields:
+      | field                   | value |
+      | snapshot epoch          | 3     |
+      | state epoch             | 2     |
+      | leader epoch            | 4     |
+      | start offset            | 10    |
+      | creation time           | 1000  |
+      | write time              | 2000  |
+      | delivery-complete count | 5     |
     And the persisted share-state batches are:
       | first | last | delivery     | attempts |
       | 10    | 19   | available    | 1        |

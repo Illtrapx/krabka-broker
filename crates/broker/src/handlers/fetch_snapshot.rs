@@ -420,89 +420,10 @@ mod tests {
         check!(part.position == 0);
         check!(page.freeze() == snapshot_fetch.first_page);
     }
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "The named snapshot starts with the captured page"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_0(snapshot_fetch: SnapshotFetchScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "Another end offset does not identify this snapshot"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_1(snapshot_fetch: SnapshotFetchScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "Another snapshot epoch does not identify this snapshot"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_2(snapshot_fetch: SnapshotFetchScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "Another topic has no metadata snapshot"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_3(snapshot_fetch: SnapshotFetchScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "Another partition has no metadata snapshot"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_4(snapshot_fetch: SnapshotFetchScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "Position at the end is outside the snapshot"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_5(snapshot_fetch: SnapshotFetchScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "Negative position is outside the snapshot"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_6(snapshot_fetch: SnapshotFetchScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "Stale leader epochs are fenced"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_7(snapshot_fetch: SnapshotFetchScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "Future leader epochs are unknown"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_8(snapshot_fetch: SnapshotFetchScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "Base64 cluster identity is accepted"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_9(snapshot_fetch: SnapshotFetchScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "Hyphenated cluster identity is accepted"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_10(snapshot_fetch: SnapshotFetchScenario) {}
-
-    #[rstest_bdd_macros::scenario(
-        path = "tests/features/handler_fetch_snapshot.feature",
-        name = "Another cluster identity has no topic rows"
-    )]
-    #[tokio::test]
-    async fn snapshot_fetch_case_11(snapshot_fetch: SnapshotFetchScenario) {}
+    krabka_bdd::scenarios!(
+        "tests/features/handler_fetch_snapshot.feature",
+        fixtures = [snapshot_fetch: SnapshotFetchScenario],
+    );
 
     /// A broker-only observer keeps no metadata log, so it answers without
     /// asking an engine.
