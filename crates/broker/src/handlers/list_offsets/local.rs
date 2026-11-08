@@ -9,7 +9,7 @@
 use {
     crate::{codes, partition::Partition},
     krabka_log::{DeliveryPolicy, Log},
-    std::sync::{MutexGuard, atomic},
+    std::sync::MutexGuard,
 };
 
 /// The partition's log, locked, or `KAFKA_STORAGE_ERROR` when its mutex is
@@ -104,9 +104,7 @@ pub(super) fn leader_epoch_for_offset(partition: &Partition, offset: i64) -> Res
 /// Returns `KAFKA_STORAGE_ERROR` if the log mutex is poisoned; see
 /// [`lock_log`].
 pub(super) fn epoch_start_offset(partition: &Partition) -> Result<Option<i64>, i16> {
-    let current = partition
-        .current_leader_epoch
-        .load(atomic::Ordering::Acquire);
+    let current = partition.leader_epoch();
     let log = lock_log(partition)?;
     Ok(log
         .epoch_checkpoint()

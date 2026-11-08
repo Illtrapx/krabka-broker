@@ -729,11 +729,7 @@ mod tests {
         krabka_protocol::{owned::fetch_response, primitives::uuid::Uuid, records},
         krabka_units::prelude::millis,
         krabka_verified::{FetchReader, Isolation},
-        std::{
-            fs, io,
-            path::Path,
-            sync::{Arc, atomic},
-        },
+        std::{fs, io, path::Path, sync::Arc},
         tokio::time,
     };
 
@@ -925,9 +921,7 @@ mod tests {
             let cut_epoch = log.epoch_checkpoint().epoch_for_offset(Offset(0));
             drop(log);
             assert!(cut_epoch == None);
-            self.part
-                .current_leader_epoch
-                .store(7, atomic::Ordering::Release);
+            self.part.test_set_leader_epoch(7);
         }
     }
 

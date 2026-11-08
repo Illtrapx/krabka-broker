@@ -21,7 +21,7 @@ use {
     krabka_ids::LeaderEpoch,
     krabka_log::Offset,
     krabka_remote_storage::{RemoteStorageError, TopicIdPartition},
-    std::{sync::atomic::Ordering, time::Instant},
+    std::time::Instant,
 };
 
 impl RemoteReader {
@@ -147,7 +147,7 @@ impl RemoteReader {
         tp: &TopicIdPartition,
         offset: Offset,
     ) -> Result<LeaderEpoch, RemoteStorageError> {
-        let current = LeaderEpoch(partition.current_leader_epoch.load(Ordering::Acquire));
+        let current = partition.leader_epoch();
         let (cached, earliest) = {
             let log = partition
                 .lock_log()
