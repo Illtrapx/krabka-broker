@@ -4607,6 +4607,7 @@ dependencies = [
  "futures-util",
  "krabka-audit",
  "krabka-backup",
+ "krabka-bdd",
  "krabka-broker",
  "krabka-cli-connection",
  "krabka-client-admin",
