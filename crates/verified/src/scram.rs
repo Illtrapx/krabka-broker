@@ -172,8 +172,6 @@ mod tests {
         }
     }
 
-    use std::vec;
-
     #[derive(Default)]
     struct ScramValidation {
         facts: Option<ScramAlterationFacts>,
@@ -241,7 +239,7 @@ mod tests {
         assert2::check!(alteration.decision == Some(expected));
     }
 
-    rstest_bdd_macros::scenarios!("tests/features/migrated/src/scram.feature", fixtures = [alteration: ScramValidation]);
+    krabka_bdd::scenarios!("tests/features/migrated/src/scram.feature", fixtures = [alteration: ScramValidation]);
 
     #[test]
     fn accepts_only_supported_complete_rows() {

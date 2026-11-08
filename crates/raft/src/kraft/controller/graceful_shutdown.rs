@@ -81,7 +81,7 @@ mod tests {
         assert2::check,
         krabka_units::prelude::millis,
         rstest::fixture,
-        rstest_bdd_macros::{given, scenarios, then, when},
+        rstest_bdd_macros::{given, then, when},
     };
 
     #[derive(Default)]
@@ -116,5 +116,8 @@ mod tests {
         check!(shutdown.window == Some(Duration::from_millis(window_ms)));
     }
 
-    scenarios!("tests/features/migrated/src/kraft/controller/graceful_shutdown.feature", fixtures = [shutdown: ShutdownWindow]);
+    krabka_bdd::scenarios!(
+        "tests/features/migrated/src/kraft/controller/graceful_shutdown.feature",
+        fixtures = [shutdown: ShutdownWindow],
+    );
 }
