@@ -2,13 +2,13 @@
 
 use {
     super::{
-        driver::{self, Cluster},
+        driver::{self, Cluster, PlaintextBroker},
         params::{BrokerAnswer, Outcome},
         transcript::{Run, Transcript},
     },
     krabka_bdd::Given,
     krabka_units::Time,
-    std::path::PathBuf,
+    std::{collections::BTreeMap, path::PathBuf},
 };
 
 /// One scenario's state.
@@ -32,6 +32,10 @@ pub struct GuardScenario {
     pub trust_file: Given<PathBuf>,
     /// The broker answer a When hands the tool.
     pub answer: Given<BrokerAnswer>,
+    /// The plaintext broker, once a step needed one.
+    plaintext: Option<PlaintextBroker>,
+    /// The variables the operator's shell exports.
+    pub environment: BTreeMap<String, String>,
 }
 
 #[rstest::fixture]
@@ -46,6 +50,8 @@ pub fn guard() -> GuardScenario {
         transcript: Given::new("transcript", "When <operator> lists <what>"),
         trust_file: Given::new("trust_file", "Given the operator's machine holds <keys>"),
         answer: Given::new("answer", "When the broker answers a request with <answer>"),
+        plaintext: None,
+        environment: BTreeMap::new(),
     }
 }
 
@@ -78,5 +84,14 @@ impl GuardScenario {
             None => driver::boot().maybe_proposal_ttl(proposal_ttl).call().await,
         };
         self.cluster.insert(cluster)
+    }
+
+    /// The plaintext broker the shipped tool can reach, booted on first use.
+    pub async fn plaintext_broker(&mut self) -> &PlaintextBroker {
+        let broker = match self.plaintext.take() {
+            Some(broker) => broker,
+            None => PlaintextBroker::boot().await,
+        };
+        self.plaintext.insert(broker)
     }
 }

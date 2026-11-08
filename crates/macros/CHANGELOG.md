@@ -20,6 +20,15 @@ release that contains `krabka-macros`.
   refusal is reported to, and passes it to the caller's `report_error` as its
   first argument.
 
+### Added
+
+- `bootstrap_cli_entrypoint!`, the `run_from_args` of a tool whose `Cli`
+  flattens `krabka_cli_connection::ConnectionArgs`. It parses with
+  `krabka_cli_connection::try_parse_with_env` over the process environment,
+  so `KRABKA_BOOTSTRAP_SERVER` still stands in for `--bootstrap-server`. A
+  parse error returns the caller's `EXIT_USAGE`, as `parsed_cli_entrypoint!`
+  does.
+
 ### Removed
 
 - The unused `duration_cases_fixture!` macro. No workspace crate invoked it.

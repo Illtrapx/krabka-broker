@@ -18,6 +18,7 @@ use {
         config::{InterBrokerCredentials, ListenerSpec},
         operator_keys::{OperatorKeyEntry, OperatorKeys},
     },
+    krabka_cli_connection::try_parse_with_env,
     krabka_client_core::{Client, SaslCredentials, security::ClientSecurity},
     krabka_protocol::{
         krabka::{
@@ -33,6 +34,7 @@ use {
         signature::{Ed25519KeyPair, KeyPair as _},
     },
     std::{
+        collections::BTreeMap,
         fs,
         net::SocketAddr,
         path::{Path, PathBuf},
@@ -162,6 +164,38 @@ pub async fn boot(proposal_ttl: Option<Time>) -> Cluster {
         dir,
         keys,
     }
+}
+
+/// A single broker behind the plaintext listener the shipped tool can reach.
+///
+/// The scenario [`Cluster`] authenticates every connection over SASL, and the
+/// shipped tool cannot log in, so the steps that run the tool connect step and
+/// all need this one.
+pub struct PlaintextBroker {
+    /// Held so the broker runs as long as the scenario does.
+    _broker: BrokerHandle,
+    bootstrap: SocketAddr,
+    /// Held so the data directory outlives the broker.
+    _dir: TempDir,
+}
+
+impl PlaintextBroker {
+    /// Boot a broker with the test defaults and nothing else.
+    pub async fn boot() -> Self {
+        let dir = TempDir::new().expect("a scenario directory");
+        let broker = Broker::start(BrokerConfig::for_tests(dir.path().join("data")))
+            .await
+            .expect("the broker starts");
+        let bootstrap = broker.listen_addr();
+        Self {
+            _broker: broker,
+            bootstrap,
+            _dir: dir,
+        }
+    }
+
+    /// The bootstrap address an operator types.
+    pub fn bootstrap(&self) -> String { self.bootstrap.to_string() }
 }
 
 /// How an operator signs one freeze or thaw.
@@ -466,8 +500,27 @@ impl Cluster {
 pub async fn run_binary(bootstrap: &str, args: &[&str]) -> Run {
     let mut command_line = vec!["krabka-guard", "--bootstrap-server", bootstrap];
     command_line.extend_from_slice(args);
-    let cli = Cli::parse_from(command_line);
+    run_parsed(Cli::parse_from(command_line)).await
+}
+
+/// Run one parsed command line, connect step included, with buffers in place
+/// of its streams.
+async fn run_parsed(cli: Cli) -> Run {
     let (mut stdout, mut stderr) = (Vec::new(), Vec::new());
     let code = run_with(cli, &mut stdout, &mut stderr).await;
     Run::new(code, &stdout, &stderr)
+}
+
+/// Run the shipped tool with `command_line` as its whole command line, reading
+/// its environment variables from `environment`, connect step included.
+///
+/// A scenario cannot set a variable in its own process, because that is
+/// `unsafe` in edition 2024, so it hands the parser this map instead.
+pub async fn run_in(command_line: &[&str], environment: &BTreeMap<String, String>) -> Run {
+    let Ok(cli) =
+        try_parse_with_env::<Cli, _, _>(command_line, |name| environment.get(name).cloned())
+    else {
+        return Run::command_line_refused();
+    };
+    run_parsed(cli).await
 }

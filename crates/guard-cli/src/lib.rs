@@ -40,7 +40,6 @@
 
 use {
     self::command::run_command,
-    clap::Parser,
     std::io::{self, Write},
 };
 
@@ -103,8 +102,9 @@ pub const EXIT_BAD_SIGNATURE: i32 = 5;
 /// `--help` and `--version` are not usage errors, and exit `0`.
 pub const EXIT_USAGE: i32 = 64;
 
-krabka_macros::parsed_cli_entrypoint!({
+krabka_macros::bootstrap_cli_entrypoint!({
     /// Run the tool from an argv-style iterator, returning its exit code.
+    /// Without `--bootstrap-server`, it reads `KRABKA_BOOTSTRAP_SERVER`.
     ///
     /// `0` means the broker accepted the request. `1` means it refused one, and the
     /// reason is on stderr. `2` means no request completed, because the broker

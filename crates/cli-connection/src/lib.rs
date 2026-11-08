@@ -13,9 +13,45 @@ mod command_config;
 
 pub use self::command_config::{CommandConfigError, SecurityArgs};
 use {
-    clap::Args,
+    clap::{Args, CommandFactory, FromArgMatches},
     krabka_client_core::{Client, ClientError},
+    std::ffi::OsString,
 };
+
+/// The environment variable `--bootstrap-server` falls back to.
+pub const BOOTSTRAP_SERVER_ENV: &str = "KRABKA_BOOTSTRAP_SERVER";
+
+/// Parse `argv` as the command line `P`, which flattens [`ConnectionArgs`],
+/// taking `--bootstrap-server` from [`BOOTSTRAP_SERVER_ENV`] when `argv` leaves
+/// it out.
+///
+/// `env` looks a variable up by name: a tool's `run_from_args` passes the
+/// process environment, and a test passes its own, because setting a variable
+/// in process is `unsafe` in edition 2024. The flag wins when both name a
+/// broker, and an empty variable counts as unset.
+///
+/// # Errors
+///
+/// Returns clap's error for an `argv` that does not parse, including one that
+/// names no broker while the variable is unset.
+pub fn try_parse_with_env<P, I, T>(
+    argv: I,
+    env: impl FnOnce(&str) -> Option<String>,
+) -> Result<P, clap::Error>
+where
+    P: CommandFactory + FromArgMatches,
+    I: IntoIterator<Item = T>,
+    T: Into<OsString> + Clone,
+{
+    let mut command = P::command();
+    if let Some(bootstrap) = env(BOOTSTRAP_SERVER_ENV).filter(|value| !value.is_empty()) {
+        command = command.mut_arg("bootstrap_server", |arg| {
+            arg.required(false).default_value(bootstrap)
+        });
+    }
+    let mut matches = command.try_get_matches_from(argv)?;
+    P::from_arg_matches_mut(&mut matches).map_err(|error| error.format(&mut P::command()))
+}
 
 /// Where the cluster is, and how to authenticate to it.
 ///
@@ -23,8 +59,9 @@ use {
 /// tool that takes it accepts the same flags.
 #[derive(Debug, Args, Clone)]
 pub struct ConnectionArgs {
-    /// One or more `host:port` pairs to bootstrap against.
-    #[arg(long, short = 'b', env = "KRABKA_BOOTSTRAP_SERVER", required = true)]
+    /// One or more `host:port` pairs to bootstrap against. Without it the
+    /// tool reads `KRABKA_BOOTSTRAP_SERVER`; see [`try_parse_with_env`].
+    #[arg(long, short = 'b', required = true)]
     pub bootstrap_server: String,
 
     /// TLS and SASL properties for the connection. Without them the tool

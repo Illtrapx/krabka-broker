@@ -777,6 +777,18 @@ pub fn parsed_cli_entrypoint(tokens: TokenStream) -> Result<TokenStream, ParseEr
     cli_support::parsed_cli_entrypoint(tokens)
 }
 
+/// Generate the `run_from_args` of a CLI whose `Cli` carries
+/// flattens `krabka_cli_connection::ConnectionArgs`, reading
+/// `KRABKA_BOOTSTRAP_SERVER` from the process environment.
+///
+/// # Errors
+///
+/// Rejects input outside this macro's syntax.
+#[cfg_attr(not(test), moxy::function)]
+pub fn bootstrap_cli_entrypoint(tokens: TokenStream) -> Result<TokenStream, ParseError> {
+    cli_support::bootstrap_cli_entrypoint(tokens)
+}
+
 /// Generate a duration-parser test from explicit literal cases.
 ///
 /// # Errors
@@ -1078,7 +1090,7 @@ mod export_contract_tests {
         meta::{FunctionMacro, empty_input_accepted},
     };
 
-    const FUNCTION_MACROS: [FunctionMacro; 55] = [
+    const FUNCTION_MACROS: [FunctionMacro; 56] = [
         FunctionMacro {
             name: "cli_main",
             expand: cli_main,
@@ -1210,6 +1222,10 @@ mod export_contract_tests {
         FunctionMacro {
             name: "parsed_cli_entrypoint",
             expand: parsed_cli_entrypoint,
+        },
+        FunctionMacro {
+            name: "bootstrap_cli_entrypoint",
+            expand: bootstrap_cli_entrypoint,
         },
         FunctionMacro {
             name: "duration_parser_fixture",
