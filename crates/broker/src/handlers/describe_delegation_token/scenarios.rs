@@ -14,7 +14,7 @@ use {
         test_support::allow_acl,
     },
     assert2::assert,
-    krabka_bdd::{Given, Outcome, ScenarioSpec, World},
+    krabka_bdd::{Given, Outcome, ScenarioSpec, World, table},
     krabka_metadata::{
         AclEntry, AclOperation, MetadataRecord, PatternType, PermissionType, ResourceType,
     },
@@ -281,7 +281,7 @@ struct OwnedToken {
 
 #[krabka_bdd::given("these tokens exist")]
 async fn these_tokens_exist(token_visibility: &mut TokenVisibility, datatable: Vec<Vec<String>>) {
-    let rows: Vec<OwnedToken> = krabka_bdd::table::rows(&datatable).expect("token table");
+    let rows: Vec<OwnedToken> = table::rows(&datatable).expect("token table");
     for OwnedToken { token, owner } in rows {
         seed_owned(token_visibility, &owner, &token, None, None).await;
     }
