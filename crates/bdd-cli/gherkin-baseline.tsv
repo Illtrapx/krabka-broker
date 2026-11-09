@@ -384,10 +384,7 @@ crates/broker/tests/features/migrated/src/coordinator/unified/assignor/uniform/t
 crates/broker/tests/features/migrated/src/coordinator/unified/assignor/uniform/tests.feature	one-when	scenario `Diverging resolved subscriptions force the heterogeneous builder` has 2 `When` steps, and exactly one is allowed	1
 crates/broker/tests/features/migrated/src/coordinator/unified/assignor/uniform/tests.feature	one-when	scenario `heterogeneous reassignment is a fixed point in every member order` has 2 `When` steps, and exactly one is allowed	1
 crates/broker/tests/features/migrated/src/coordinator/unified/assignor/uniform/tests.feature	one-when	scenario `homogeneous reassignment is a fixed point in every member order` has 2 `When` steps, and exactly one is allowed	1
-crates/broker/tests/features/migrated/src/coordinator/unified/classic_ops/join.feature	case-column	the Examples table starts with column `member`, not `case`	1
-crates/broker/tests/features/migrated/src/coordinator/unified/classic_ops/offset_validation.feature	case-column	the Examples table starts with column `state`, not `case`	1
 crates/broker/tests/features/migrated/src/coordinator/unified/classic_state/membership.feature	case-column	the Examples table starts with column `is_new`, not `case`	1
-crates/broker/tests/features/migrated/src/coordinator/unified/classic_state/protocol.feature	case-column	the Examples table starts with column `state`, not `case`	1
 crates/broker/tests/features/migrated/src/coordinator/unified/consumer_state/group.feature	case-column	the Examples table starts with column `epoch`, not `case`	1
 crates/broker/tests/features/migrated/src/coordinator/unified/consumer_state/group.feature	max-steps	scenario `Assignment epochs survive retained and revoked partitions and reset on static leave` has 11 steps, and at most 5 are allowed	1
 crates/broker/tests/features/migrated/src/coordinator/unified/consumer_state/group.feature	one-when	scenario `Assignment epochs survive retained and revoked partitions and reset on static leave` has 5 `When` steps, and exactly one is allowed	1
