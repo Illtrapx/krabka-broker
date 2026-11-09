@@ -183,7 +183,6 @@ crates/broker/tests/features/handler_isr_validation/isr.feature	unknown-tag	tag 
 crates/broker/tests/features/handler_join_group/join.feature	case-column	the Examples table starts with column `group`, not `case`	1
 crates/broker/tests/features/handler_join_group/join.feature	case-column	the Examples table starts with column `protocol`, not `case`	1
 crates/broker/tests/features/handler_lagging_watermark/fencing.feature	case-column	the Examples table starts with column `kind`, not `case`	1
-crates/broker/tests/features/handler_leave_group/leave.feature	case-column	the Examples table starts with column `version`, not `case`	1
 crates/broker/tests/features/handler_legacy_delete.feature	case-column	the Examples table starts with column `version`, not `case`	1
 crates/broker/tests/features/handler_list_config_resources/list.feature	case-column	the Examples table starts with column `version`, not `case`	1
 crates/broker/tests/features/handler_list_groups/list.feature	case-column	the Examples table starts with column `states`, not `case`	1
@@ -532,24 +531,23 @@ crates/broker/tests/features/migrated/src/network/codec.feature	or-in-step	step 
 crates/broker/tests/features/migrated/src/network/dispatch/sasl.feature	case-column	the Examples table starts with column `key`, not `case`	1
 crates/broker/tests/features/migrated/src/partition/leadership.feature	case-column	the Examples table starts with column `epoch`, not `case`	1
 crates/broker/tests/features/migrated/src/partition/leadership.feature	no-background	the feature has a `Background`	1
-crates/broker/tests/features/migrated/src/quota/lookup.feature	no-background	the feature has a `Background`	1
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["client-id","app"]] permits 1000 bytes per second` quotes a value	1
-crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["client-id","app"]] permits 5000 bytes per second` quotes a value	2
+crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["client-id","app"]] permits 5000 bytes per second` quotes a value	1
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["client-id",null]] permits 5000 bytes per second` quotes a value	1
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user","alice"],["client-id","app"]] permits 1000 bytes per second` quotes a value	1
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user","alice"],["client-id",null]] permits 1000 bytes per second` quotes a value	2
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user","alice"],["client-id",null]] permits 5000 bytes per second` quotes a value	1
-crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user","alice"]] permits 1000 bytes per second` quotes a value	3
+crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user","alice"]] permits 1000 bytes per second` quotes a value	2
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user","alice"]] permits 5000 bytes per second` quotes a value	1
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user",null],["client-id","app"]] permits 1000 bytes per second` quotes a value	1
-crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user",null],["client-id","app"]] permits 5000 bytes per second` quotes a value	3
+crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user",null],["client-id","app"]] permits 5000 bytes per second` quotes a value	2
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user",null],["client-id",null]] permits 1000 bytes per second` quotes a value	1
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user",null],["client-id",null]] permits 5000 bytes per second` quotes a value	2
-crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user",null]] permits 1000 bytes per second` quotes a value	2
+crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user",null]] permits 1000 bytes per second` quotes a value	1
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `producer quota entity JSON [["user",null]] permits 5000 bytes per second` quotes a value	1
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `the quota uses bucket JSON [["client-id","app"],["user","alice"]] at 1000 bytes per second` quotes a value	5
 crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `the quota uses bucket JSON [["client-id","app"]] at 1000 bytes per second` quotes a value	1
-crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `the quota uses bucket JSON [["user","alice"]] at 1000 bytes per second` quotes a value	5
+crates/broker/tests/features/migrated/src/quota/lookup.feature	quote-in-step	step `the quota uses bucket JSON [["user","alice"]] at 1000 bytes per second` quotes a value	3
 crates/broker/tests/features/migrated/src/raft_handshake/frame/receive_limit.feature	case-column	the Examples table starts with column `size`, not `case`	1
 crates/broker/tests/features/migrated/src/raft_handshake/frame/valid_requests.feature	case-column	the Examples table starts with column `frame`, not `case`	1
 crates/broker/tests/features/migrated/src/re2j.feature	or-in-step	step `pattern compilation reports Kafka's invalid or unsupported Perl syntax message` offers alternatives with `or`	1
@@ -627,9 +625,6 @@ crates/broker/tests/features/migrated/src/share_partition/dlq/validate.feature	c
 crates/broker/tests/features/migrated/src/share_partition/dlq/validate.feature	no-background	the feature has a `Background`	1
 crates/broker/tests/features/migrated/src/share_partition/manager/persistence.feature	case-column	the Examples table starts with column `persister`, not `case`	1
 crates/broker/tests/features/migrated/src/site_placement/tests.feature	case-column	the Examples table starts with column `brokers`, not `case`	1
-crates/broker/tests/features/migrated/src/throttle/mod.feature	case-column	the Examples table starts with column `value`, not `case`	1
-crates/broker/tests/features/migrated/src/throttle/mod.feature	quote-in-step	step `the throttled replica configuration is JSON " "` quotes a value	1
-crates/broker/tests/features/migrated/src/throttle/mod.feature	quote-in-step	step `the throttled replica configuration is JSON " * "` quotes a value	1
 crates/broker/tests/features/migrated/src/txn/coordinator/commit/tests.feature	case-column	the Examples table starts with column `append`, not `case`	1
 crates/broker/tests/features/migrated/src/txn/coordinator/leadership/tests.feature	case-column	the Examples table starts with column `status`, not `case`	1
 crates/broker/tests/features/migrated/src/txn/coordinator/produce_verification/tests.feature	case-column	the Examples table starts with column `producer`, not `case`	1
@@ -1291,7 +1286,6 @@ crates/broker/tests/features/migrated/tests/mtls.feature	max-steps	scenario `A t
 crates/broker/tests/features/migrated/tests/mtls.feature	max-steps	scenario `An optional certificate listener serves clients that present no certificate` has 7 steps, and at most 5 are allowed	1
 crates/broker/tests/features/migrated/tests/offset_delete.feature	max-steps	scenario `A subscribed topic refuses deletion and retains its committed offset` has 6 steps, and at most 5 are allowed	1
 crates/broker/tests/features/migrated/tests/offset_delete.feature	one-when	scenario `A subscribed topic refuses deletion and retains its committed offset` has 2 `When` steps, and exactly one is allowed	1
-crates/broker/tests/features/migrated/tests/offset_delete.feature	or-in-step	step `topic t2 exists but group ghost has never joined or committed` offers alternatives with `or`	1
 crates/broker/tests/features/migrated/tests/offsets_retention.feature	max-steps	scenario `The background sweeper removes a memberless group after its final offset is deleted` has 7 steps, and at most 5 are allowed	1
 crates/broker/tests/features/migrated/tests/offsets_retention.feature	one-when	scenario `The background sweeper removes a memberless group after its final offset is deleted` has 3 `When` steps, and exactly one is allowed	1
 crates/broker/tests/features/migrated/tests/offsets_retention.feature	or-in-step	step `all broker configurations are described without synonyms or documentation` offers alternatives with `or`	1
