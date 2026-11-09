@@ -634,10 +634,6 @@ crates/broker/tests/features/migrated/src/txn/handlers/end_txn/producer_identity
 crates/broker/tests/features/migrated/src/txn/handlers/txn_offset_commit/integration_tests.feature	case-column	the Examples table starts with column `input`, not `case`	1
 crates/broker/tests/features/migrated/src/txn/handlers/txn_offset_commit/verification.feature	case-column	the Examples table starts with column `coordinator`, not `case`	1
 crates/broker/tests/features/migrated/src/txn/marker.feature	case-column	the Examples table starts with column `code`, not `case`	1
-crates/broker/tests/features/migrated/src/txn/state.feature	case-column	the Examples table starts with column `state`, not `case`	1
-crates/broker/tests/features/migrated/src/txn/state.feature	case-column	the Examples table starts with column `status`, not `case`	1
-crates/broker/tests/features/migrated/src/txn/two_pc.feature	case-column	the Examples table starts with column `requested`, not `case`	2
-crates/broker/tests/features/migrated/src/txn/two_pc.feature	no-background	the feature has a `Background`	1
 crates/broker/tests/features/migrated/src/wal/quorum/follower/fetch.feature	case-column	the Examples table starts with column `epoch`, not `case`	2
 crates/broker/tests/features/migrated/tests/acl_handlers/implications.feature	case-column	the Examples table starts with column `operation`, not `case`	1
 crates/broker/tests/features/migrated/tests/acl_handlers/metadata_group_txn.feature	max-steps	scenario `join group denied without group read acl` has 8 steps, and at most 5 are allowed	1
