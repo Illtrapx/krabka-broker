@@ -163,7 +163,7 @@ fn truncate_locked_to_current_epochs(current: &Log, future: &mut Log) -> Result<
 mod tests {
     use {
         super::*,
-        crate::log_dir,
+        crate::{future_log::test_support::step_list, log_dir},
         assert2::assert,
         bytes::Bytes,
         krabka_bdd::{Given, given, then, when},
@@ -327,13 +327,7 @@ mod tests {
         type Err = ParseIntError;
 
         fn from_str(text: &str) -> Result<Self, Self::Err> {
-            if text == "nothing" {
-                return Ok(Self(Vec::new()));
-            }
-            text.split(',')
-                .map(|epoch| epoch.parse().map(LeaderEpoch))
-                .collect::<Result<_, _>>()
-                .map(Self)
+            step_list(text, |epoch| epoch.parse().map(LeaderEpoch)).map(Self)
         }
     }
 

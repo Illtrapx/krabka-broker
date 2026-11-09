@@ -5,7 +5,9 @@
 use {
     super::*,
     crate::{
-        cleaner::test_support::{CompactionSetup, compactable_partition, record_count},
+        cleaner::test_support::{
+            CompactionSetup, ReplicaRole, compactable_partition, record_count,
+        },
         metrics::PartitionLabel,
     },
     assert2::assert,
@@ -16,30 +18,8 @@ use {
     tempfile::TempDir,
 };
 
-/// This broker's node id, which leads the partitions a scenario calls led.
-const THIS_BROKER: NodeId = NodeId(7);
-
-/// The broker that leads the partitions this broker follows.
-const OTHER_BROKER: NodeId = NodeId(8);
-
 /// The topic every scenario's replica belongs to.
 const TOPIC: &str = "orders";
-
-/// Whether this broker leads the replica or follows it.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, krabka_bdd::StepParam)]
-enum Role {
-    Leader,
-    Follower,
-}
-
-impl Role {
-    const fn leader(self) -> NodeId {
-        match self {
-            Self::Leader => THIS_BROKER,
-            Self::Follower => OTHER_BROKER,
-        }
-    }
-}
 
 /// A topic's `cleanup.policy`, as Kafka writes it.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, krabka_bdd::StepParam)]
@@ -114,7 +94,7 @@ impl CompactionSweepScenario {
 #[given("a {role} replica of a topic with cleanup.policy {policy}")]
 async fn replica_with_policy(
     compaction_sweep: &mut CompactionSweepScenario,
-    role: Role,
+    role: ReplicaRole,
     policy: Policy,
 ) {
     let cfg = LogConfig {
@@ -130,7 +110,9 @@ async fn replica_with_dirty_ratio(compaction_sweep: &mut CompactionSweepScenario
         min_cleanable_dirty_ratio: krabka_units::fraction(ratio),
         ..CompactionSetup::default().cfg
     };
-    compaction_sweep.host(THIS_BROKER, cfg).await;
+    compaction_sweep
+        .host(ReplicaRole::Leader.leader(), cfg)
+        .await;
 }
 
 #[given("its records are older than a max.compaction.lag.ms of {lag} millisecond(s)")]

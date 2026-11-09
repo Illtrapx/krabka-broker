@@ -4,34 +4,18 @@
 use {
     super::*,
     crate::{
+        cleaner::test_support::ReplicaRole,
         log_retention::test_support::{expired_partition, segment_files},
         test_support::CommittedPartitionSetup,
     },
     assert2::assert,
     krabka_bdd::{Given, given, then, when},
     krabka_ids::PartitionIndex,
-    krabka_metadata::NodeId,
     tempfile::TempDir,
 };
 
 /// The topic every scenario's replica belongs to.
 const TOPIC: &str = "orders";
-
-/// Whether this broker, node 7, leads the replica or follows node 8.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, krabka_bdd::StepParam)]
-enum Role {
-    Leader,
-    Follower,
-}
-
-impl Role {
-    const fn leader(self) -> NodeId {
-        match self {
-            Self::Leader => NodeId(7),
-            Self::Follower => NodeId(8),
-        }
-    }
-}
 
 struct RetentionSweepScenario {
     dir: TempDir,
@@ -53,7 +37,7 @@ fn retention_sweep() -> RetentionSweepScenario {
 }
 
 #[given("a {role} replica holds sealed segments past retention.ms")]
-async fn expired_replica(retention_sweep: &mut RetentionSweepScenario, role: Role) {
+async fn expired_replica(retention_sweep: &mut RetentionSweepScenario, role: ReplicaRole) {
     let partition = expired_partition(&retention_sweep.dir, CommittedPartitionSetup {
         topic: TOPIC,
         leader: role.leader(),

@@ -318,7 +318,7 @@ pub fn spawn_watcher(
 mod tests {
     use {
         super::*,
-        crate::test_support::broker_registration,
+        crate::{future_log::test_support::step_list, test_support::broker_registration},
         assert2::{assert, check},
         krabka_bdd::{Given, given, then, when},
         krabka_metadata::{BrokerConfigRecord, MetadataRecord},
@@ -383,17 +383,12 @@ mod tests {
         type Err = String;
 
         fn from_str(text: &str) -> Result<Self, Self::Err> {
-            if text == "nothing" {
-                return Ok(Self(Vec::new()));
-            }
-            text.split(',')
-                .map(|letter| match letter {
-                    "a" => Ok(uuid::Uuid::from_u128(1)),
-                    "b" => Ok(uuid::Uuid::from_u128(2)),
-                    other => Err(format!("{other} is not a directory letter")),
-                })
-                .collect::<Result<_, _>>()
-                .map(Self)
+            step_list(text, |letter| match letter {
+                "a" => Ok(uuid::Uuid::from_u128(1)),
+                "b" => Ok(uuid::Uuid::from_u128(2)),
+                other => Err(format!("{other} is not a directory letter")),
+            })
+            .map(Self)
         }
     }
 
@@ -405,11 +400,7 @@ mod tests {
         type Err = String;
 
         fn from_str(text: &str) -> Result<Self, Self::Err> {
-            Ok(Self(if text == "nothing" {
-                Vec::new()
-            } else {
-                text.split(',').map(PathBuf::from).collect()
-            }))
+            step_list(text, |path| Ok(PathBuf::from(path))).map(Self)
         }
     }
 
