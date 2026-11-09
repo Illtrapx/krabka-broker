@@ -456,7 +456,7 @@ fn caller_sees_no_token(token_visibility: &TokenVisibility, caller: String) {
 }
 
 krabka_bdd::scenarios!(
-    "tests/features/migrated/src/handlers/describe_delegation_token/visibility.feature",
+    "tests/features/migrated/src/handlers/describe_delegation_token",
     fixtures = [token_visibility: TokenVisibility],
     world = token_visibility,
     runtime = "tokio-multi-thread",
