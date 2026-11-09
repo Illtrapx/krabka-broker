@@ -53,7 +53,6 @@ crates/broker/tests/features/handler_delegation_token_creation.feature	quote-in-
 crates/broker/tests/features/handler_delegation_token_creation.feature	quote-in-step	step `the token request has owner type "null", owner name "null", lifetime 3600000 and renewers none` quotes a value	1
 crates/broker/tests/features/handler_delegation_token_creation.feature	quote-in-step	step `the token request has owner type "null", owner name "null", lifetime 604800000 and renewers none` quotes a value	1
 crates/broker/tests/features/handler_delete_acl_matching.feature	no-background	the feature has a `Background`	1
-crates/broker/tests/features/handler_delete_acl_matching.feature	quote-in-step	step `admin deletes Topic ACLs with pattern any, name "<empty>" and principal "<empty>"` quotes a value	1
 crates/broker/tests/features/handler_delete_acl_matching.feature	quote-in-step	step `admin deletes Topic ACLs with pattern any, name "<empty>" and principal "null"` quotes a value	1
 crates/broker/tests/features/handler_delete_acl_matching.feature	quote-in-step	step `admin deletes Topic ACLs with pattern any, name "foo" and principal "null"` quotes a value	1
 crates/broker/tests/features/handler_delete_acl_matching.feature	quote-in-step	step `admin deletes Topic ACLs with pattern any, name "null" and principal "<empty>"` quotes a value	1
@@ -494,7 +493,6 @@ crates/broker/tests/features/migrated/src/handlers/acl_wire/binding_filter/tests
 crates/broker/tests/features/migrated/src/handlers/alter_user_scram_credentials/validation.feature	case-column	the Examples table starts with column `iterations`, not `case`	1
 crates/broker/tests/features/migrated/src/handlers/alter_user_scram_credentials/validation.feature	no-background	the feature has a `Background`	1
 crates/broker/tests/features/migrated/src/handlers/api_versions/feature_keys.feature	case-column	the Examples table starts with column `version`, not `case`	2
-crates/broker/tests/features/migrated/src/handlers/authorized_operations.feature	case-column	the Examples table starts with column `operation`, not `case`	1
 crates/broker/tests/features/migrated/src/handlers/list_offsets/sentinels.feature	case-column	the Examples table starts with column `position`, not `case`	1
 crates/broker/tests/features/migrated/src/handlers/list_offsets/sentinels.feature	case-column	the Examples table starts with column `timestamp`, not `case`	1
 crates/broker/tests/features/migrated/src/handlers/produce/topic_settings.feature	case-column	the Examples table starts with column `before`, not `case`	1
