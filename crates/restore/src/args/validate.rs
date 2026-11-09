@@ -133,7 +133,10 @@ mod tests {
     fn validate_rejects_two_bounds_on_one_partition() {
         let args =
             args_from(&["--to-offset", "orders:0=10", "--to-offset", "orders:0=20"]).expect("args");
-        check!(args.validate().is_err());
+        check!(matches!(
+            args.validate(),
+            Err(RestoreError::InvalidArgument(_))
+        ));
     }
 
     #[test]

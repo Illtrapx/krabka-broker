@@ -336,13 +336,17 @@ pub fn update_voter_current_leader(quorum: &QuorumStateSnapshot) -> CurrentLeade
 /// The voter operation a request asked for, which its refusal names as Kafka's
 /// `AddVoterHandler` and `RemoveVoterHandler` do.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, krabka_macros::EnumStr)]
+#[cfg_attr(test, derive(krabka_bdd::StepParam))]
 #[enum_str(as_str = gerund)]
 pub enum VoterOperation {
     #[enum_str(name = "adding")]
+    #[cfg_attr(test, step_param("AddVoter"))]
     Add,
     #[enum_str(name = "removing")]
+    #[cfg_attr(test, step_param("RemoveVoter"))]
     Remove,
     #[enum_str(name = "updating")]
+    #[cfg_attr(test, step_param("UpdateVoter"))]
     Update,
 }
 
@@ -558,33 +562,6 @@ mod tests {
         check!(update_voter_current_leader(&quorum) == expected, "{label}");
     }
 
-    /// `AddVoterHandler` and `RemoveVoterHandler` name their own operation in
-    /// the `UNSUPPORTED_VERSION` message, and the level is the finalized one.
-    #[yare::parameterized(
-        add_v0 = { VoterOperation::Add, 0, "adding" },
-        remove_v0 = { VoterOperation::Remove, 0, "removing" },
-        add_v2 = { VoterOperation::Add, 2, "adding" },
-    )]
-    fn unsupported_kraft_version_names_the_operation(
-        operation: VoterOperation,
-        level: u16,
-        verb: &'static str,
-    ) {
-        check!(
-            reconfiguration_refusal(
-                Err(RaftError::UnsupportedKraftVersion(level)),
-                operation,
-                3,
-                DIRECTORY
-            ) == (
-                UNSUPPORTED_VERSION,
-                Some(format!(
-                    "Cluster doesn't support {verb} voter because the kraft.version feature is {level}"
-                ))
-            ),
-            "{operation:?} at {level}"
-        );
-    }
     use {
         rstest::fixture,
         rstest_bdd::Slot,
@@ -599,6 +576,7 @@ mod tests {
         refusal: Slot<Option<Refusal>>,
         update_code: Slot<Option<i16>>,
         operation: Option<Result<ReconfigOutcome, RaftError>>,
+        change: VoterOperation,
         mapped: Option<Refusal>,
         key: Option<(i32, WireUuid)>,
         formatted: Option<String>,
@@ -614,6 +592,7 @@ mod tests {
             refusal: Slot::default(),
             update_code: Slot::default(),
             operation: None,
+            change: VoterOperation::Add,
             mapped: None,
             key: None,
             formatted: None,
@@ -713,6 +692,7 @@ mod tests {
             "REQUEST_TIMED_OUT" => REQUEST_TIMED_OUT,
             "DUPLICATE_VOTER" => DUPLICATE_VOTER,
             "VOTER_NOT_FOUND" => VOTER_NOT_FOUND,
+            "UNSUPPORTED_VERSION" => UNSUPPORTED_VERSION,
             _ => panic!("unknown voter-request response code: {code}"),
         }
     }
@@ -818,6 +798,12 @@ mod tests {
         });
     }
 
+    #[given("a voter change {operation} for voter 3 is refused at kraft.version {level}")]
+    fn unsupported_operation(request: &mut VoterRequests, operation: VoterOperation, level: u16) {
+        request.change = operation;
+        request.operation = Some(Err(RaftError::UnsupportedKraftVersion(level)));
+    }
+
     #[when("the reconfiguration result is translated into a Kafka response")]
     fn translate_reconfiguration(request: &mut VoterRequests) {
         request.mapped = Some(reconfiguration_refusal(
@@ -825,7 +811,7 @@ mod tests {
                 .operation
                 .take()
                 .expect("an operation outcome was given"),
-            VoterOperation::Add,
+            request.change,
             3,
             DIRECTORY,
         ));

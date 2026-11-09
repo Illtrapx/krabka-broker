@@ -153,9 +153,12 @@ pub fn scram_alteration_decision(facts: ScramAlterationFacts) -> ScramAlteration
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        ScramAlterationDecision, ScramAlterationFacts, ScramAlterationKind, ScramPriorState,
-        scram_alteration_decision,
+    use {
+        super::{
+            ScramAlterationDecision, ScramAlterationFacts, ScramAlterationKind, ScramPriorState,
+            scram_alteration_decision,
+        },
+        krabka_bdd::Given,
     };
 
     fn valid_upsert() -> ScramAlterationFacts {
@@ -172,16 +175,58 @@ mod tests {
         }
     }
 
-    #[derive(Default)]
+    // A deletion row carries no iteration count, so it sends zero.
+    fn deletion(mechanism: i8, target_exists: bool) -> ScramAlterationFacts {
+        ScramAlterationFacts {
+            kind: ScramAlterationKind::Delete,
+            mechanism,
+            iterations: 0,
+            deletion_target_exists: target_exists,
+            ..valid_upsert()
+        }
+    }
+
+    /// A SCRAM mechanism as a scenario names it: by its Kafka name.
+    #[derive(Clone, Copy, Debug, krabka_bdd::StepParam)]
+    enum ScramMechanism {
+        #[step_param("SCRAM-SHA-256")]
+        Sha256,
+        #[step_param("SCRAM-SHA-512")]
+        Sha512,
+    }
+
+    impl ScramMechanism {
+        /// The KIP-554 wire code of the mechanism.
+        const fn code(self) -> i8 {
+            match self {
+                Self::Sha256 => 1,
+                Self::Sha512 => 2,
+            }
+        }
+    }
+
+    impl From<ScramMechanism> for ScramAlterationDecision {
+        fn from(mechanism: ScramMechanism) -> Self {
+            match mechanism {
+                ScramMechanism::Sha256 => Self::AcceptSha256,
+                ScramMechanism::Sha512 => Self::AcceptSha512,
+            }
+        }
+    }
+
     struct ScramValidation {
-        facts: Option<ScramAlterationFacts>,
+        facts: Given<ScramAlterationFacts>,
         decision: Option<ScramAlterationDecision>,
     }
 
     #[rstest::fixture]
     fn alteration() -> ScramValidation {
         ScramValidation {
-            ..ScramValidation::default()
+            facts: Given::new(
+                "facts",
+                "Given an upsert or a deletion of a <mechanism> credential",
+            ),
+            decision: None,
         }
     }
 
@@ -207,7 +252,7 @@ mod tests {
             "maximum-integer" => i32::MAX,
             _ => iterations.parse().expect("iteration count is an integer"),
         };
-        alteration.facts = Some(ScramAlterationFacts {
+        alteration.facts.set(ScramAlterationFacts {
             prior,
             authorized,
             name_empty: empty_name,
@@ -219,9 +264,50 @@ mod tests {
 
     #[rstest_bdd_macros::when("the SCRAM upsert is validated")]
     fn validate_upsert(alteration: &mut ScramValidation) {
-        alteration.decision = Some(scram_alteration_decision(
-            alteration.facts.expect("a SCRAM upsert was given"),
-        ));
+        alteration.decision = Some(scram_alteration_decision(*alteration.facts.get()));
+    }
+
+    #[rstest_bdd_macros::given(
+        "an authorized upsert of a {mechanism} credential with {iterations} iterations"
+    )]
+    fn authorized_upsert(
+        alteration: &mut ScramValidation,
+        mechanism: ScramMechanism,
+        iterations: i32,
+    ) {
+        alteration.facts.set(ScramAlterationFacts {
+            mechanism: mechanism.code(),
+            iterations,
+            ..valid_upsert()
+        });
+    }
+
+    #[rstest_bdd_macros::given("a deletion of a {mechanism} credential that does not exist")]
+    fn deletion_of_missing_credential(alteration: &mut ScramValidation, mechanism: ScramMechanism) {
+        alteration.facts.set(deletion(mechanism.code(), false));
+    }
+
+    #[rstest_bdd_macros::given("a deletion of an existing {mechanism} credential")]
+    fn deletion_of_existing_credential(
+        alteration: &mut ScramValidation,
+        mechanism: ScramMechanism,
+    ) {
+        alteration.facts.set(deletion(mechanism.code(), true));
+    }
+
+    #[rstest_bdd_macros::when("the deletion is validated")]
+    fn validate_deletion(alteration: &mut ScramValidation) {
+        alteration.decision = Some(scram_alteration_decision(*alteration.facts.get()));
+    }
+
+    #[rstest_bdd_macros::then("the alteration is accepted as a {mechanism} credential")]
+    fn scram_accepted(alteration: &ScramValidation, mechanism: ScramMechanism) {
+        assert2::check!(alteration.decision == Some(mechanism.into()));
+    }
+
+    #[rstest_bdd_macros::then("the deletion is refused because no such credential exists")]
+    fn deletion_refused_as_missing(alteration: &ScramValidation) {
+        assert2::check!(alteration.decision == Some(ScramAlterationDecision::MissingCredential));
     }
 
     #[rstest_bdd_macros::then("the SCRAM response preserves {outcome}")]
@@ -240,43 +326,4 @@ mod tests {
     }
 
     krabka_bdd::scenarios!("tests/features/migrated/src/scram.feature", fixtures = [alteration: ScramValidation]);
-
-    #[test]
-    fn accepts_only_supported_complete_rows() {
-        let facts = valid_upsert();
-        assert2::check!(scram_alteration_decision(facts) == ScramAlterationDecision::AcceptSha256);
-
-        let sha512 = ScramAlterationFacts {
-            mechanism: 2,
-            iterations: 16384,
-            ..facts
-        };
-        assert2::check!(scram_alteration_decision(sha512) == ScramAlterationDecision::AcceptSha512);
-
-        let missing = ScramAlterationFacts {
-            kind: ScramAlterationKind::Delete,
-            deletion_target_exists: false,
-            ..facts
-        };
-        assert2::check!(
-            scram_alteration_decision(missing) == ScramAlterationDecision::MissingCredential
-        );
-
-        let deletion = ScramAlterationFacts {
-            deletion_target_exists: true,
-            ..missing
-        };
-        assert2::check!(
-            scram_alteration_decision(deletion) == ScramAlterationDecision::AcceptSha256
-        );
-        // A deletion carries no iteration count, so neither bound applies.
-        let sha512_deletion = ScramAlterationFacts {
-            mechanism: 2,
-            iterations: 0,
-            ..deletion
-        };
-        assert2::check!(
-            scram_alteration_decision(sha512_deletion) == ScramAlterationDecision::AcceptSha512
-        );
-    }
 }
