@@ -1,5 +1,6 @@
+# The idle reaper's boundaries are illustrated in crates/verified, in
+# tests/features/migrated/src/transaction/tests/idle_transaction_reaper_matches_kafka_timed_out_transactions.feature.
 Feature: Transaction timeouts follow Kafka's bounds and KIP-939
-  Depends on: Idle transaction reaper boundaries - ../../../../../../verified/tests/features/migrated/src/transaction/tests/idle_transaction_reaper_matches_kafka_timed_out_transactions.feature
 
   Rule: An ordinary transaction timeout is positive and at most the broker maximum
 

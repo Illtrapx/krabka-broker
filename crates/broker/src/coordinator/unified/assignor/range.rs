@@ -102,13 +102,13 @@ mod tests {
     }
 
     /// Comma-separated names, as a scenario lists members or topics.
-    struct Names(Vec<String>);
+    struct IdList(Vec<String>);
 
-    impl FromStr for Names {
+    impl FromStr for IdList {
         type Err = Infallible;
 
         fn from_str(text: &str) -> Result<Self, Self::Err> {
-            Ok(Self(text.split(',').map(str::to_owned).collect()))
+            Ok(Self(text.split(',').map(String::from).collect()))
         }
     }
 
@@ -178,21 +178,25 @@ mod tests {
     }
 
     #[krabka_bdd::given("topics {topics} with {partitions} partitions each")]
-    fn equal_topics(range_assignment: &mut RangeAssignment, topics: Names, partitions: i32) {
+    fn equal_topics(range_assignment: &mut RangeAssignment, topics: IdList, partitions: i32) {
         for topic in &topics.0 {
             range_assignment.add_topic(topic, partitions);
         }
     }
 
     #[krabka_bdd::given("members {members} subscribe to {topics}")]
-    fn members_subscribe(range_assignment: &mut RangeAssignment, members: Names, topics: Names) {
+    fn members_subscribe(range_assignment: &mut RangeAssignment, members: IdList, topics: IdList) {
         for member_id in &members.0 {
             range_assignment.subscribe(member_id, &topics.0);
         }
     }
 
     #[krabka_bdd::given("member {member_id} subscribes to {topics}")]
-    fn member_subscribes(range_assignment: &mut RangeAssignment, member_id: String, topics: Names) {
+    fn member_subscribes(
+        range_assignment: &mut RangeAssignment,
+        member_id: String,
+        topics: IdList,
+    ) {
         range_assignment.subscribe(&member_id, &topics.0);
     }
 
