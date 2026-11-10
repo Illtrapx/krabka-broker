@@ -443,9 +443,13 @@ async fn boot_with_topics(
     topics: &[BenchTopic<'_>],
 ) -> Result<(BenchBroker, Vec<WireUuid>), BenchError> {
     let dir = TempDir::new()?;
-    let broker = Broker::start(BrokerConfig::for_tests(dir.path().to_path_buf())).await?;
+    let mut config = BrokerConfig::for_tests(dir.path().to_path_buf());
+    // A benchmark fixture has no failover peer and can miss heartbeats under load.
+    config.heartbeat_timeout = krabka_units::secs(30);
+    let broker = Broker::start(config).await?;
     let bootstrap = broker.listen_addr().to_string();
     let client = Client::builder().bootstrap(bootstrap).build().await?;
+    broker.wait_until_broker_alive(broker.node_id()).await;
     let topic_ids = create_topics(&broker, &client, topics).await?;
     Ok((
         BenchBroker {
